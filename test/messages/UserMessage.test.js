@@ -130,10 +130,10 @@ test('Test mobile only users', () => {
   });
   mutant.isMobileOnly().should.be.true;
 
-  // Test 12176859258@mobile.import
+  // Test 15554443332@mobile.import
   mutant = mutator({
     change: 'email',
-    value: '12176859258@mobile.import',
+    value: '15554443332@mobile.import',
     message: generator(),
   });
   mutant.isMobileOnly().should.be.true;
