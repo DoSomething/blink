@@ -109,4 +109,42 @@ test('User Message should fail on incorrect types', () => {
   });
 });
 
+test('Test mobile only users', () => {
+  let mutant;
+
+  // Test normal user.
+  generator().isMobileOnly().should.be.false;
+
+  // Test no email
+  mutant = mutator({
+    remove: 'email',
+    message: generator(),
+  });
+  mutant.isMobileOnly().should.be.true;
+
+  // Test no email
+  mutant = mutator({
+    change: 'email',
+    value: '',
+    message: generator(),
+  });
+  mutant.isMobileOnly().should.be.true;
+
+  // Test 12176859258@mobile.import
+  mutant = mutator({
+    change: 'email',
+    value: '12176859258@mobile.import',
+    message: generator(),
+  });
+  mutant.isMobileOnly().should.be.true;
+
+  // Test runscope source
+  mutant = mutator({
+    change: 'source',
+    value: 'runscope',
+    message: generator(),
+  });
+  mutant.isMobileOnly().should.be.true;
+});
+
 // ------- End -----------------------------------------------------------------

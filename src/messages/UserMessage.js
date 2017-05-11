@@ -56,6 +56,23 @@ class UserMessage extends Message {
     .or('email', 'mobile');
   }
 
+  isMobileOnly() {
+    const userData = this.getData();
+    if (!userData.email) {
+      return true;
+    }
+    if (userData.email === '') {
+      return true;
+    }
+    if (userData.email.match(/@.*\.import$/)) {
+      return true;
+    }
+    if (userData.source === 'runscope') {
+      return true;
+    }
+    return false;
+  }
+
   static fromCtx(ctx) {
     // TODO: save more metadata
     // TODO: metadata parse helper
