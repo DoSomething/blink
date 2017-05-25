@@ -1,5 +1,6 @@
 'use strict';
 
+require('isomorphic-fetch');
 const logger = require('winston');
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
@@ -37,19 +38,15 @@ class GambitChatbotMdataProxyWorker extends Worker {
   }
 
   async consume(mdataMessage) {
-    const data = mdataMessage.getData();
+    const body = JSON.stringify(mdataMessage.getData());
+    const headers = this.getRequestHeaders(mdataMessage);
 
-    const url = `${this.gambitBaseUrl}/chatbot`;
     const response = await fetch(
-      url,
+      `${this.gambitBaseUrl}/chatbot`,
       {
         method: 'POST',
-        headers: {
-          'x-gambit-api-key': this.gambitApiKey,
-          'X-Request-ID': mdataMessage.getRequestId(),
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        headers,
+        body,
       }
     );
 
@@ -59,6 +56,16 @@ class GambitChatbotMdataProxyWorker extends Worker {
         mdataMessage,
         response,
         'success_gambit_proxy_response_200'
+      );
+      return true;
+    }
+
+    if (this.checkRetrySuppress(response)) {
+      this.log(
+        'debug',
+        mdataMessage,
+        response,
+        'success_gambit_proxy_retry_suppress'
       );
       return true;
     }
@@ -101,6 +108,30 @@ class GambitChatbotMdataProxyWorker extends Worker {
     // Todo: log error?
     logger.log(level, cleanedBody, meta);
   }
+
+  getRequestHeaders(mdataMessage) {
+    const headers = {
+      'x-gambit-api-key': this.gambitApiKey,
+      'X-Request-ID': mdataMessage.getRequestId(),
+      'Content-type': 'application/json',
+    };
+
+    if (mdataMessage.getMeta().retry && mdataMessage.getMeta().retry > 0) {
+      headers['x-blink-retry-count'] = mdataMessage.getMeta().retry;
+    }
+
+    return headers;
+  }
+
+  checkRetrySuppress(response) {
+    // TODO: create common helper
+    const headerResult = response.headers.get(this.blink.config.app.retrySuppressHeader);
+    if (!headerResult) {
+      return false;
+    }
+    return headerResult.toLowerCase() === 'true';
+  }
+
 }
 
 module.exports = GambitChatbotMdataProxyWorker;

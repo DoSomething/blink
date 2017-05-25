@@ -10,6 +10,7 @@ const config = {
     password: process.env.BLINK_APP_AUTH_PASSWORD || 'blink',
   },
   version: packageJson.version,
+  retrySuppressHeader: 'x-blink-retry-suppress',
 };
 
 module.exports = config;

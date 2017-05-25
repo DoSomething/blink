@@ -8,6 +8,7 @@ const moment = require('moment');
 
 // App modules
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
+const MdataMessage = require('../../src/messages/MdataMessage');
 const UserMessage = require('../../src/messages/UserMessage');
 
 // ------- Init ----------------------------------------------------------------
@@ -98,6 +99,49 @@ class MessageFactoryHelper {
           role: chance.pickone(['user', 'admin', 'staff']),
           interests: chance.n(chance.word, chance.natural({ min: 0, max: 20 })),
         },
+      },
+      meta: {},
+    });
+  }
+
+  static getValidMdata() {
+    // TODO: randomize
+    return new MdataMessage({
+      data: {
+        phone: '15555225222',
+        carrier: 'tmobile',
+        profile_id: '167181555',
+        profile_first_name: 'Sergii',
+        profile_last_name: 'Tkachenko',
+        profile_email: 'sergii+test-blink@dosomething.org',
+        profile_street1: 'FL 1',
+        profile_street2: '',
+        profile_city: 'New York',
+        profile_state: 'NY',
+        profile_postal_code: '10010',
+        profile_age: '',
+        profile_birthdate: '2000-01-01',
+        profile_birthyear: '',
+        profile_cause: '',
+        profile_college_gradyear: '',
+        profile_ctd_completed: '',
+        profile_ctd_day1: '',
+        profile_ctd_day2: '',
+        profile_ctd_day3: '',
+        profile_ctd_start: '',
+        profile_date_of_birth: '2000-01-01',
+        profile_edutype: '',
+        profile_gambit_chatbot_response: 'Hi it\'s Freddie from DoSomething...',
+        profile_sfw_day3: '',
+        profile_source: 'Niche',
+        profile_texting_frequency: '',
+        args: '',
+        keyword: 'BLINKMEUP',
+        timestamp: '2017-04-19T13:35:56Z',
+        message_id: '841415468',
+        mdata_id: '14372',
+        mms_image_url: '',
+        phone_number_without_country_code: '15555225222',
       },
       meta: {},
     });
