@@ -1,9 +1,9 @@
 {
   "name": "blink",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
-    "node": "7.10.0"
+    "node": "8.1.4"
   },
   "scripts": {
     "test": "NODE_ENV=test ava",
@@ -28,18 +28,18 @@
   "dependencies": {
     "amqp-uri": "^2.0.0",
     "amqplib": "^0.5.1",
-    "chance": "^1.0.8",
+    "chance": "^1.0.9",
     "change-case": "^3.0.1",
     "customerio-node": "^0.2.0",
     "dotenv": "^4.0.0",
     "isomorphic-fetch": "^2.2.1",
-    "joi": "^10.4.1",
+    "joi": "^10.5.2",
     "koa": "^2.2.0",
     "koa-basic-auth": "^2.0.0",
     "koa-bodyparser": "^4.2.0",
-    "koa-router": "^7.1.1",
+    "koa-router": "^7.2.0",
     "moment": "^2.18.1",
-    "newrelic": "^1.39.0",
+    "newrelic": "^1.39.1",
     "throng": "^4.0.0",
     "uuid": "^3.0.1",
     "winston": "^2.3.1",
@@ -48,12 +48,12 @@
   "devDependencies": {
     "@dosomething/eslint-config": "^2.0.0",
     "ava": "^0.19.1",
-    "chai": "^3.5.0",
+    "chai": "^4.0.2",
     "chai-as-promised": "^6.0.0",
-    "codecov": "^2.1.0",
+    "codecov": "^2.2.0",
     "eslint": "^3.19.0",
     "eslint-plugin-ava": "^4.2.0",
-    "nyc": "^10.3.2",
+    "nyc": "^11.0.2",
     "supertest": "^3.0.0"
   },
   "ava": {
