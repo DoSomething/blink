@@ -59,13 +59,17 @@
   "ava": {
     "concurrency": 10,
     "powerAssert": false,
-    "failWithoutAssertions": false
+    "failWithoutAssertions": false,
+    "files": [
+      "test/**/*.test.js"
+    ]
   },
   "nyc": {
     "exclude": [
       "config",
       "coverage",
-      "test"
+      "test",
+      "tests-old"
     ]
   }
 }
