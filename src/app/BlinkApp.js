@@ -4,9 +4,11 @@ const changeCase = require('change-case');
 const logger = require('winston');
 
 const Exchange = require('../lib/Exchange');
+
 const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const FetchQ = require('../queues/FetchQ');
 const GambitChatbotMdataQ = require('../queues/GambitChatbotMdataQ');
+const MocoMessageDataQ = require('../queues/MocoMessageDataQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
 
 class BlinkApp {
@@ -44,6 +46,7 @@ class BlinkApp {
         CustomerIoUpdateCustomerQ,
         FetchQ,
         GambitChatbotMdataQ,
+        MocoMessageDataQ,
         QuasarCustomerIoEmailActivityQ,
       ]);
     } catch (error) {
@@ -51,7 +54,7 @@ class BlinkApp {
       this.scheduleReconnect(
         this.reconnectTimeout,
         'blink_bootstrap_error',
-        `Blink bootrstrap failed: ${error}`
+        `Blink bootrstrap failed: ${error}`,
       );
       return false;
     }
@@ -105,16 +108,16 @@ class BlinkApp {
       this.scheduleReconnect(
         0,
         'amqp_channel_closed_from_server',
-        'Unexpected AMQP client shutdown'
+        'Unexpected AMQP client shutdown',
       );
     });
 
     exchange.connection.on('close', () => {
       this.scheduleReconnect(
-         this.reconnectTimeout,
-         'amqp_connection_closed_from_server',
-         'Unexpected AMQP connection shutdown'
-       );
+        this.reconnectTimeout,
+        'amqp_connection_closed_from_server',
+        'Unexpected AMQP connection shutdown',
+      );
     });
 
     return exchange;

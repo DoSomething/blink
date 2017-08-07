@@ -67,7 +67,7 @@ test.skip('Queue.setup(): Test RabbitMQ topology assertion', async () => {
   // Test that the queue is binded to the exchange.
   const testBindingQBindings = await rabbit.getQueueBindings(
     testBindingQ.name,
-    testBindingQ.exchange.name
+    testBindingQ.exchange.name,
   );
   testBindingQBindings.should.be.an('array').and.have.length(2);
   // Specific route
@@ -123,7 +123,7 @@ test.skip('Queue.purge(): Ensure incorrect queue purging fails', async () => {
   const purgeResult = testIncorrectPurgeQ.purge();
   await purgeResult.should.be.rejectedWith(
     Error,
-    'Queue.purge(): failed to purge queue "test-incorrect-purge"'
+    'Queue.purge(): failed to purge queue "test-incorrect-purge"',
   );
 });
 

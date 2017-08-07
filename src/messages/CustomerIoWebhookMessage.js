@@ -7,7 +7,6 @@ const Message = require('./Message');
 // TODO: url whitelist
 // TODO: authentication
 class CustomerIoWebhookMessage extends Message {
-
   constructor(...args) {
     super(...args);
 
@@ -31,7 +30,6 @@ class CustomerIoWebhookMessage extends Message {
     });
     return fetchMessage;
   }
-
 }
 
 module.exports = CustomerIoWebhookMessage;

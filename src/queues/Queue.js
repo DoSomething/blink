@@ -95,7 +95,7 @@ class Queue {
               'warning',
               `Got error ${error}, retry ${retry}, retrying after ${retryDelay}ms`,
               message,
-              'error_got_retry_request'
+              'error_got_retry_request',
             );
             setTimeout(() => {
               this.retry(error.toString(), message);
@@ -105,7 +105,7 @@ class Queue {
               'warning',
               `Got error ${error}, retry limit reached, rejecting`,
               message,
-              'error_got_retry_limit_reached'
+              'error_got_retry_limit_reached',
             );
             this.nack(message);
           }
@@ -116,7 +116,7 @@ class Queue {
           'warning',
           error.toString(),
           message,
-          'message_processing_error'
+          'message_processing_error',
         );
         // TODO: send to dead letters?
         this.nack(message);
@@ -130,14 +130,14 @@ class Queue {
           'debug',
           'Message acknowledged, processed true',
           message,
-          'acknowledged_true_result'
+          'acknowledged_true_result',
         );
       } else {
         this.log(
           'debug',
           'Message acknowledged, processed false',
           message,
-          'success_message_ack_false_result'
+          'success_message_ack_false_result',
         );
       }
       return true;
@@ -156,14 +156,14 @@ class Queue {
           'warning',
           `payload='${error.badPayload}' Can't parse payload: ${error}`,
           null,
-          'error_cant_parse_message'
+          'error_cant_parse_message',
         );
       } else {
         this.log(
           'warning',
           `Unknown message parsing error: ${error}`,
           null,
-          'error_cant_parse_message_unknown'
+          'error_cant_parse_message_unknown',
         );
       }
       this.nack(rabbitMessage);
@@ -179,14 +179,14 @@ class Queue {
           'warning',
           error.toString(),
           message,
-          'error_queue_message_validation'
+          'error_queue_message_validation',
         );
       } else {
         this.log(
           'warning',
           `Unexpected message validation error: ${error}`,
           null,
-          'error_queue_unexpected_message_validation'
+          'error_queue_unexpected_message_validation',
         );
       }
       this.nack(message);
@@ -197,7 +197,7 @@ class Queue {
       'debug',
       `Message valid ${message.toString()}`,
       message,
-      'success_message_valid'
+      'success_message_valid',
     );
 
     return message;
@@ -220,7 +220,6 @@ class Queue {
     // eslint-disable-next-line no-mixed-operators
     return ((currentRetryNumber ** 2) / 4 + 1) * 1000;
   }
-
 }
 
 module.exports = Queue;

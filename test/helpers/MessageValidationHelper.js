@@ -3,7 +3,6 @@
 const MessageValidationBlinkError = require('../../src/errors/MessageValidationBlinkError');
 
 class MessageValidationHelper {
-
   static failsWithout(fieldName, generator, mutator) {
     let mutant;
     mutant = mutator({
@@ -72,7 +71,6 @@ class MessageValidationHelper {
     });
     mutant.validateStrict.should.throw(MessageValidationBlinkError, `"${fieldName}" must be a`);
   }
-
 }
 
 module.exports = MessageValidationHelper;

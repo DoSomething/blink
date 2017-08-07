@@ -51,7 +51,7 @@ test.skip('Exchange.setup(): Test exchange with empty name to fail', async () =>
   // No exchange name should result in rejection from Exchange.setup() .
   await incorrectSetupResult.should.be.rejectedWith(
     Error,
-    'Exchange.setup(): Exchange assertion failed for ""'
+    'Exchange.setup(): Exchange assertion failed for ""',
   );
 });
 
@@ -76,6 +76,6 @@ test.skip('Exchange.assertQueue(): Test queue with empty name to fail', async ()
   const incorrectSetupResult = wrongNameQ.setup();
   await incorrectSetupResult.should.be.rejectedWith(
     Error,
-    'Exchange.setup(): Queue assertion failed for ""'
+    'Exchange.setup(): Queue assertion failed for ""',
   );
 });

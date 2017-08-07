@@ -58,7 +58,7 @@ class BlinkWebApp extends BlinkApp {
     router.post(
       'api.v1.events.user-create',
       '/api/v1/events/user-create',
-      eventsWebController.userCreate
+      eventsWebController.userCreate,
     );
 
     // Webhooks
@@ -66,12 +66,17 @@ class BlinkWebApp extends BlinkApp {
     router.post(
       'api.v1.webhooks.customerio-email-activity',
       '/api/v1/webhooks/customerio-email-activity',
-      webHooksWebController.customerioEmailActivity
+      webHooksWebController.customerioEmailActivity,
     );
     router.post(
       'api.v1.webhooks.gambit-chatbot-mdata',
       '/api/v1/webhooks/gambit-chatbot-mdata',
-      webHooksWebController.gambitChatbotMdata
+      webHooksWebController.gambitChatbotMdata,
+    );
+    router.post(
+      'api.v1.webhooks.moco-message-data',
+      '/api/v1/webhooks/moco-message-data',
+      webHooksWebController.mocoMessageData,
     );
     return router;
   }
@@ -146,7 +151,7 @@ class BlinkWebApp extends BlinkApp {
 
         const readableUrl = `http://${this.config.web.hostname}:${address.port}`;
         logger.debug(`Blink Web is listening on ${readableUrl}`, meta);
-      }
+      },
     );
     // TODO: HTTPS?
   }
@@ -167,7 +172,6 @@ class BlinkWebApp extends BlinkApp {
       logger.debug('Blink Web is stopped', meta);
     });
   }
-
 }
 
 module.exports = BlinkWebApp;

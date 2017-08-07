@@ -8,7 +8,6 @@ const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 // TODO: url whitelist
 // TODO: authentication
 class FetchMessage extends Message {
-
   constructor(...args) {
     super(...args);
 
@@ -46,7 +45,6 @@ class FetchMessage extends Message {
     fetchMessage.fields = rabbitMessage.fields;
     return fetchMessage;
   }
-
 }
 
 module.exports = FetchMessage;

@@ -3,7 +3,7 @@
   "version": "1.1.2",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
-    "node": "8.1.4"
+    "node": "8.2.1"
   },
   "scripts": {
     "test": "NODE_ENV=test ava",
@@ -28,30 +28,30 @@
   "dependencies": {
     "amqp-uri": "^2.0.0",
     "amqplib": "^0.5.1",
-    "chance": "^1.0.9",
+    "chance": "^1.0.10",
     "change-case": "^3.0.1",
     "customerio-node": "^0.2.0",
     "dotenv": "^4.0.0",
     "isomorphic-fetch": "^2.2.1",
-    "joi": "^10.5.2",
-    "koa": "^2.2.0",
+    "joi": "^10.6.0",
+    "koa": "^2.3.0",
     "koa-basic-auth": "^2.0.0",
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.2.0",
     "moment": "^2.18.1",
-    "newrelic": "^1.39.1",
+    "newrelic": "^2.0.1",
     "throng": "^4.0.0",
-    "uuid": "^3.0.1",
+    "uuid": "^3.1.0",
     "winston": "^2.3.1",
-    "yargs": "^8.0.1"
+    "yargs": "^8.0.2"
   },
   "devDependencies": {
-    "@dosomething/eslint-config": "^2.0.0",
-    "ava": "^0.19.1",
+    "@dosomething/eslint-config": "^3.1.0",
+    "ava": "^0.21.0",
     "chai": "^4.0.2",
-    "chai-as-promised": "^6.0.0",
+    "chai-as-promised": "^7.1.1",
     "codecov": "^2.2.0",
-    "eslint": "^3.19.0",
+    "eslint": "^4.3.0",
     "eslint-plugin-ava": "^4.2.0",
     "nyc": "^11.0.2",
     "supertest": "^3.0.0"

@@ -5,7 +5,6 @@ const logger = require('winston');
 const Worker = require('./Worker');
 
 class FetchWorker extends Worker {
-
   constructor(blink) {
     super(blink);
     this.blink = blink;
@@ -26,7 +25,7 @@ class FetchWorker extends Worker {
         'debug',
         fetchMessage,
         response,
-        'success_fetch_response_200'
+        'success_fetch_response_200',
       );
       return true;
     }
@@ -36,7 +35,7 @@ class FetchWorker extends Worker {
       'warning',
       fetchMessage,
       response,
-      'error_fetch_response_not_200'
+      'error_fetch_response_not_200',
     );
     return false;
   }

@@ -3,7 +3,6 @@
 const logger = require('winston');
 
 class Worker {
-
   constructor(blink) {
     this.blink = blink;
   }
@@ -17,7 +16,6 @@ class Worker {
       logger.warning('Queue is not established, waiting');
     }
   }
-
 }
 
 module.exports = Worker;

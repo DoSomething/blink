@@ -6,7 +6,6 @@ const moment = require('moment');
 const Message = require('./Message');
 
 class CustomerIoUpdateCustomerMessage extends Message {
-
   constructor(...args) {
     super(...args);
     // Data validation rules.
@@ -69,6 +68,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         source_detail: optionalStringDefaultsToUndefined,
         language: optionalStringDefaultsToUndefined,
         country: optionalStringDefaultsToUndefined,
+        facebook_id: optionalStringDefaultsToUndefined,
         // TODO: Only explicitly set for new users.
         unsubscribed: Joi.boolean().empty(whenNullOrEmpty).default(undefined),
         subscribed_at: optionalTimestampDefaultsToUndefined,
@@ -109,7 +109,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
     if (customerData.last_authenticated_at) {
       customerData.last_authenticated_at = moment(
         customerData.last_authenticated_at,
-        moment.ISO_8601
+        moment.ISO_8601,
       ).unix();
     }
 
@@ -129,7 +129,6 @@ class CustomerIoUpdateCustomerMessage extends Message {
     });
     return customerIoUpdateCustomerMessage;
   }
-
 }
 
 module.exports = CustomerIoUpdateCustomerMessage;

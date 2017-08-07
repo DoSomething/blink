@@ -6,7 +6,6 @@ const Message = require('./Message');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 
 class MdataMessage extends Message {
-
   constructor(...args) {
     super(...args);
 
@@ -55,7 +54,6 @@ class MdataMessage extends Message {
     mdataMessage.fields = rabbitMessage.fields;
     return mdataMessage;
   }
-
 }
 
 module.exports = MdataMessage;

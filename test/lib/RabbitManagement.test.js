@@ -36,7 +36,7 @@ test('RabbitManagement.getQueueInfo(): Test Queue not found response', async () 
   const failedGetQueueInfo = rabbit.getQueueInfo('not-initialized');
   await failedGetQueueInfo.should.be.rejectedWith(
     Error,
-    'Incorrect RabbitManagement.getQueueInfo() response for GET /queues/blink/not-initialized'
+    'Incorrect RabbitManagement.getQueueInfo() response for GET /queues/blink/not-initialized',
   );
 });
 

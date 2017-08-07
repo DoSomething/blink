@@ -53,7 +53,7 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
         // Also make sure that blink recongnizes non standart header case
         'X-BlInK-RetRY-SuPPRESS': 'TRUE',
       },
-    }
+    },
   );
 
   gambitWorker.checkRetrySuppress(retrySuppressResponse).should.be.true;
@@ -68,7 +68,7 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
       headers: {
         'x-taco-count': 'infinity',
       },
-    }
+    },
   );
   gambitWorker.checkRetrySuppress(normalFailedResponse).should.be.false;
 });

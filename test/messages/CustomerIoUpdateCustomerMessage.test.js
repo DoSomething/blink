@@ -64,7 +64,7 @@ test('Cio identify should fail if required fields are missing, undefined, null, 
     'created_at',
     'updated_at',
   ]
-  .forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
+    .forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
 });
 
 test('Cio identify should remove certain optional fields when empty', () => {
@@ -72,6 +72,7 @@ test('Cio identify should remove certain optional fields when empty', () => {
     'mobile_status',
     'last_authenticated_at',
     'birthdate',
+    'facebook_id',
     'first_name',
     'last_name',
     'addr_city',
@@ -84,7 +85,7 @@ test('Cio identify should remove certain optional fields when empty', () => {
     'unsubscribed',
     'subscribed_at',
   ]
-  .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
+    .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
 });
 
 test.skip('Cio identify optional fields should have correct default values', () => {
@@ -106,6 +107,7 @@ test('Cio identify should fail on incorrect types', () => {
     // no mobile_status
     last_authenticated_at: chance.date().toISOString(),
     birthdate: chance.timestamp(),
+    facebook_id: chance.fbid(),
     first_name: chance.integer(),
     last_name: chance.integer(),
     addr_city: chance.integer(),
@@ -134,7 +136,7 @@ test('Cio identify created from Northsar is correct', () => {
     const userData = userMessage.getData();
     const customerIoUpdateCustomerMessage = CustomerIoUpdateCustomerMessage.fromUser(
       userMessage,
-      true
+      true,
     );
 
     customerIoUpdateCustomerMessage.validateStrict.should.not.throw(MessageValidationBlinkError);
@@ -150,56 +152,56 @@ test('Cio identify created from Northsar is correct', () => {
     const cioUpdateAttributes = cioUpdateData.data;
     cioUpdateAttributes.should.have.property(
       'updated_at',
-      moment(userData.updated_at).unix()
+      moment(userData.updated_at).unix(),
     );
     cioUpdateAttributes.should.have.property(
       'created_at',
-      moment(userData.created_at).unix()
+      moment(userData.created_at).unix(),
     );
 
     // Optional:
     if (cioUpdateAttributes.mobile_status) {
       expect(cioUpdateAttributes.mobile_status).to.be.equal(
-        userData.mobile_status
+        userData.mobile_status,
       );
     }
     expect(cioUpdateAttributes.last_authenticated_at).to.be.equal(
-      moment(userData.last_authenticated_at).unix()
+      moment(userData.last_authenticated_at).unix(),
     );
     expect(cioUpdateAttributes.first_name).to.be.equal(
-      userData.first_name
+      userData.first_name,
     );
     expect(cioUpdateAttributes.last_name).to.be.equal(
-      userData.last_name
+      userData.last_name,
     );
     expect(cioUpdateAttributes.addr_city).to.be.equal(
-      userData.addr_city
+      userData.addr_city,
     );
     expect(cioUpdateAttributes.addr_state).to.be.equal(
-      userData.addr_state
+      userData.addr_state,
     );
     expect(cioUpdateAttributes.addr_zip).to.be.equal(
-      userData.addr_zip
+      userData.addr_zip,
     );
     expect(cioUpdateAttributes.source).to.be.equal(
-      userData.source
+      userData.source,
     );
     expect(cioUpdateAttributes.source_detail).to.be.equal(
-      userData.source_detail
+      userData.source_detail,
     );
     expect(cioUpdateAttributes.language).to.be.equal(
-      userData.language
+      userData.language,
     );
     expect(cioUpdateAttributes.country).to.be.equal(
-      userData.country
+      userData.country,
     );
     expect(cioUpdateAttributes.unsubscribed).to.be.equal(false);
     cioUpdateAttributes.should.have.property('subscribed_at');
     expect(cioUpdateAttributes.role).to.be.equal(
-      userData.role
+      userData.role,
     );
     expect(cioUpdateAttributes.interests).to.deep.equal(
-      userData.interests
+      userData.interests,
     );
     count -= 1;
   }

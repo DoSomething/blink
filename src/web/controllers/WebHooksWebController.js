@@ -1,6 +1,7 @@
 'use strict';
 
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
+const FreeFormMessage = require('../../messages/FreeFormMessage');
 const MdataMessage = require('../../messages/MdataMessage');
 const WebController = require('./WebController');
 
@@ -11,12 +12,14 @@ class WebHooksWebController extends WebController {
     this.index = this.index.bind(this);
     this.customerioEmailActivity = this.customerioEmailActivity.bind(this);
     this.gambitChatbotMdata = this.gambitChatbotMdata.bind(this);
+    this.mocoMessageData = this.mocoMessageData.bind(this);
   }
 
   async index(ctx) {
     ctx.body = {
       'customerio-email-activity': this.fullUrl('api.v1.webhooks.customerio-email-activity'),
       'gambit-chatbot-mdata': this.fullUrl('api.v1.webhooks.gambit-chatbot-mdata'),
+      'moco-message-data': this.fullUrl('api.v1.webhooks.moco-message-data'),
     };
   }
 
@@ -39,6 +42,18 @@ class WebHooksWebController extends WebController {
       const { gambitChatbotMdataQ } = this.blink.queues;
       gambitChatbotMdataQ.publish(mdataMessage);
       this.sendOK(ctx, mdataMessage, 200);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
+  }
+
+  async mocoMessageData(ctx) {
+    try {
+      const freeFormMessage = FreeFormMessage.fromCtx(ctx);
+      freeFormMessage.validate();
+      const { mocoMessageDataQ } = this.blink.queues;
+      mocoMessageDataQ.publish(freeFormMessage);
+      this.sendOK(ctx, freeFormMessage);
     } catch (error) {
       this.sendError(ctx, error);
     }

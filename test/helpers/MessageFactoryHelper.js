@@ -18,7 +18,6 @@ const chance = new Chance();
 // ------- Helpers -------------------------------------------------------------
 
 class MessageFactoryHelper {
-
   static getValidUser() {
     const fakeId = chance.hash({ length: 24 });
     return new UserMessage({
@@ -31,7 +30,7 @@ class MessageFactoryHelper {
         photo: chance.url({ extensions: ['gif', 'jpg', 'png'] }),
         email: chance.email(),
         mobile: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
-        facebook_id: chance.fbid(),
+        facebook_id: chance.fbid().toString(),
         interests: chance.n(chance.word, chance.natural({ min: 0, max: 20 })),
         birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
         addr_street1: chance.address(),
@@ -85,6 +84,7 @@ class MessageFactoryHelper {
           ]),
           last_authenticated_at: chance.timestamp(),
           birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
+          facebook_id: chance.fbid().toString(),
           first_name: chance.first(),
           last_name: chance.last(),
           addr_city: chance.city(),
@@ -146,7 +146,6 @@ class MessageFactoryHelper {
       meta: {},
     });
   }
-
 }
 
 module.exports = MessageFactoryHelper;

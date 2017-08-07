@@ -7,7 +7,6 @@ const supertest = require('supertest');
 const BlinkWebApp = require('../../src/app/BlinkWebApp');
 
 class HooksHelper {
-
   static async startBlinkWebApp(t) {
     t.context.config = require('../../config');
     t.context.blink = new BlinkWebApp(t.context.config);
@@ -20,7 +19,6 @@ class HooksHelper {
     t.context.supertest = false;
     t.context.config = false;
   }
-
 }
 
 module.exports = HooksHelper;

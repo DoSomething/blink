@@ -78,7 +78,7 @@ class Exchange {
       this.name,
       routingKey,
       new Buffer(message.toString(), 'utf-8'),
-      options
+      options,
     );
 
     // Always true.
@@ -91,7 +91,6 @@ class Exchange {
   limitConsumerPrefetchCount(count) {
     this.channel.prefetch(count);
   }
-
 }
 
 module.exports = Exchange;

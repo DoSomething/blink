@@ -7,7 +7,6 @@ const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 
 class Message {
-
   constructor({ data = {}, meta = {} }) {
     this.payload = { data, meta };
     // Generate unique message id or reuse request id.
@@ -52,7 +51,7 @@ class Message {
       this.schema || {},
       {
         stripUnknown: true,
-      }
+      },
     );
     if (error) {
       throw new MessageValidationBlinkError(error.message, this.toString());
@@ -71,7 +70,6 @@ class Message {
     }
     return payload;
   }
-
 }
 
 module.exports = Message;

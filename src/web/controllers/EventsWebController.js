@@ -23,7 +23,7 @@ class EventsWebController extends WebController {
       userMessage.validateStrict();
       this.blink.exchange.publish(
         'create.user.event',
-        userMessage
+        userMessage,
       );
       this.sendOK(ctx, userMessage);
     } catch (error) {

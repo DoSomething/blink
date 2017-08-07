@@ -49,7 +49,7 @@ test('User Message should fail if required fields are missing, undefined, null, 
     'created_at',
     'updated_at',
   ]
-  .forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
+    .forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
 });
 
 test('User Message should remove certain optional fields when empty', () => {
@@ -57,13 +57,14 @@ test('User Message should remove certain optional fields when empty', () => {
     'email',
     'mobile',
   ]
-  .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
+    .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
 });
 
 test('User Message optional fields should have correct default values', () => {
   const mapping = {
     last_authenticated_at: null,
     birthdate: null,
+    facebook_id: null,
     first_name: null,
     last_name: null,
     addr_city: null,
@@ -92,6 +93,7 @@ test('User Message should fail on incorrect types', () => {
     // no mobile_status
     last_authenticated_at: chance.integer(),
     birthdate: chance.integer(),
+    facebook_id: chance.integer(),
     first_name: chance.integer(),
     last_name: chance.integer(),
     addr_city: chance.integer(),
