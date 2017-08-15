@@ -1,6 +1,6 @@
 'use strict';
 
-require('isomorphic-fetch');
+const fetch = require('node-fetch');
 const URL = require('url');
 
 class RabbitManagement {

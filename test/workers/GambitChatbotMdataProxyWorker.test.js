@@ -2,9 +2,9 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const test = require('ava');
 const chai = require('chai');
-require('isomorphic-fetch');
+const fetch = require('node-fetch');
+const test = require('ava');
 
 const BlinkWorkerApp = require('../../src/app/BlinkWorkerApp');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
@@ -12,6 +12,7 @@ const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
+const { Response } = fetch;
 
 // ------- Tests ---------------------------------------------------------------
 

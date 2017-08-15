@@ -1,7 +1,5 @@
 'use strict';
 
-require('isomorphic-fetch');
-
 const FetchMessage = require('../messages/FetchMessage');
 const Queue = require('./Queue');
 

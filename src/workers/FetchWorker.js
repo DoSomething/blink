@@ -1,5 +1,6 @@
 'use strict';
 
+const fetch = require('node-fetch');
 const logger = require('winston');
 
 const Worker = require('./Worker');

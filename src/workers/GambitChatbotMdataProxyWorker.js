@@ -1,6 +1,6 @@
 'use strict';
 
-require('isomorphic-fetch');
+const fetch = require('node-fetch');
 const logger = require('winston');
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
