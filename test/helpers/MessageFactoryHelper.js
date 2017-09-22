@@ -7,8 +7,11 @@ const Chance = require('chance');
 const moment = require('moment');
 
 // App modules
+const CampaignSignupMessage = require('../../src/messages/CampaignSignupMessage');
+const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPostMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const MdataMessage = require('../../src/messages/MdataMessage');
+const TwillioStatusCallbackMessage = require('../../src/messages/TwillioStatusCallbackMessage');
 const UserMessage = require('../../src/messages/UserMessage');
 
 // ------- Init ----------------------------------------------------------------
@@ -143,6 +146,100 @@ class MessageFactoryHelper {
         mms_image_url: '',
         phone_number_without_country_code: '15555225222',
       },
+      meta: {},
+    });
+  }
+
+  static getValidMessageData() {
+    // TODO: randomize
+    const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
+    return new TwillioStatusCallbackMessage({
+      data: {
+        ToCountry: 'US',
+        MediaContentType0: 'image/png',
+        ToState: '',
+        SmsMessageSid: sid,
+        NumMedia: '1',
+        ToCity: '',
+        FromZip: chance.zip(),
+        SmsSid: sid,
+        FromState: chance.state({ territories: true }),
+        SmsStatus: 'received',
+        FromCity: chance.city(),
+        Body: '',
+        FromCountry: 'US',
+        To: '38383',
+        ToZip: '',
+        NumSegments: '1',
+        MessageSid: sid,
+        From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        MediaUrl0: chance.avatar({ protocol: 'https' }),
+        ApiVersion: '2010-04-01',
+      },
+      meta: {},
+    });
+  }
+
+  static getValidCampaignSignup() {
+    const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
+    const updatedAt = moment(createdAt).add(1, 'days').toISOString();
+
+    return new CampaignSignupMessage({
+      data: {
+        id: chance.integer({ min: 0 }),
+        northstar_id: chance.hash({ length: 24 }),
+        campaign_id: chance.string({ length: 4, pool: '1234567890' }),
+        campaign_run_id: chance.string({ length: 4, pool: '1234567890' }),
+        quantity: null,
+        why_participated: null,
+        source: chance.pickone(['campaigns', 'phoenix-web']),
+        created_at: createdAt,
+        updated_at: updatedAt,
+      },
+      meta: {},
+    });
+  }
+
+  static getValidCampaignSignupPost() {
+    const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
+    const updatedAt = moment(createdAt).add(1, 'days').toISOString();
+
+    const data = {
+      // Required
+      id: chance.integer({ min: 0 }),
+      signup_id: chance.integer({ min: 0 }),
+      northstar_id: chance.hash({ length: 24 }),
+      campaign_id: chance.string({ length: 4, pool: '1234567890' }),
+      campaign_run_id: chance.string({ length: 4, pool: '1234567890' }),
+      quantity: chance.integer({ min: 0 }),
+
+      // Optional
+      source: chance.pickone(['campaigns', 'phoenix-web']),
+      caption: chance.sentence({ words: 5 }),
+      why_participated: chance.sentence(),
+      url: chance.avatar({ protocol: 'https' }),
+
+      // Timestamps
+      created_at: createdAt,
+      updatead_at: updatedAt,
+      deleted_at: null,
+    };
+
+    // Optional, may be empty.
+    const optionalFields = [
+      'source',
+      'caption',
+      'why_participated',
+      'url',
+    ];
+    optionalFields.forEach((key) => {
+      if (chance.bool({ likelihood: 40 })) {
+        delete data[key];
+      }
+    });
+
+    return new CampaignSignupPostMessage({
+      data,
       meta: {},
     });
   }

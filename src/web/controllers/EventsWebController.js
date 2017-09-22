@@ -1,6 +1,7 @@
 'use strict';
 
-const FreeFormMessage = require('../../messages/FreeFormMessage');
+const CampaignSignupMessage = require('../../messages/CampaignSignupMessage');
+const CampaignSignupPostMessage = require('../../messages/CampaignSignupPostMessage');
 const UserMessage = require('../../messages/UserMessage');
 const WebController = require('./WebController');
 
@@ -38,13 +39,13 @@ class EventsWebController extends WebController {
 
   async userSignup(ctx) {
     try {
-      const freeFormMessage = FreeFormMessage.fromCtx(ctx);
-      freeFormMessage.validate();
+      const message = CampaignSignupMessage.fromCtx(ctx);
+      message.validateStrict();
       this.blink.exchange.publish(
         'signup.user.event',
-        freeFormMessage,
+        message,
       );
-      this.sendOK(ctx, freeFormMessage);
+      this.sendOK(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
     }
@@ -52,13 +53,13 @@ class EventsWebController extends WebController {
 
   async userSignupPost(ctx) {
     try {
-      const freeFormMessage = FreeFormMessage.fromCtx(ctx);
-      freeFormMessage.validate();
+      const message = CampaignSignupPostMessage.fromCtx(ctx);
+      message.validateStrict();
       this.blink.exchange.publish(
         'signup-post.user.event',
-        freeFormMessage,
+        message,
       );
-      this.sendOK(ctx, freeFormMessage);
+      this.sendOK(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
     }

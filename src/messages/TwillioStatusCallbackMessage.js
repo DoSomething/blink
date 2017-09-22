@@ -5,7 +5,7 @@ const Joi = require('joi');
 const Message = require('./Message');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 
-class FreeFormMessage extends Message {
+class TwillioStatusCallbackMessage extends Message {
   constructor(...args) {
     super(...args);
 
@@ -14,10 +14,14 @@ class FreeFormMessage extends Message {
       .unknown();
   }
 
+  isInbound() {
+    return this.getData().SmsStatus === 'received';
+  }
+
   static fromCtx(ctx) {
     // TODO: save more metadata
     // TODO: metadata parse helper
-    const freeFormMessage = new FreeFormMessage({
+    const freeFormMessage = new TwillioStatusCallbackMessage({
       data: ctx.request.body,
       meta: {
         request_id: ctx.id,
@@ -34,7 +38,7 @@ class FreeFormMessage extends Message {
 
     // TODO: save more metadata
     // TODO: metadata parse helper
-    const message = new FreeFormMessage({
+    const message = new TwillioStatusCallbackMessage({
       data: payload.data,
       meta: payload.meta,
     });
@@ -43,4 +47,4 @@ class FreeFormMessage extends Message {
   }
 }
 
-module.exports = FreeFormMessage;
+module.exports = TwillioStatusCallbackMessage;

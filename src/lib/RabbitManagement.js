@@ -44,13 +44,13 @@ class RabbitManagement {
     return response;
   }
 
-  async getMessagesFrom(queueName, count) {
+  async getMessagesFrom(queueName, count, requeue = true) {
     const endpoint = `/queues/${this.vhost}/${queueName}/get`;
     let response = {};
     try {
       response = await this.post(endpoint, {
         count,
-        requeue: true,
+        requeue,
         encoding: 'auto',
       });
     } catch (error) {

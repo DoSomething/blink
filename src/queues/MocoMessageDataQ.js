@@ -1,12 +1,12 @@
 'use strict';
 
-const FreeFormMessage = require('../messages/FreeFormMessage');
+const TwillioStatusCallbackMessage = require('../messages/TwillioStatusCallbackMessage');
 const Queue = require('./Queue');
 
 class MocoMessageDataQ extends Queue {
   constructor(...args) {
     super(...args);
-    this.messageClass = FreeFormMessage;
+    this.messageClass = TwillioStatusCallbackMessage;
   }
 }
 

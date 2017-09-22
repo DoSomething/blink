@@ -1,9 +1,12 @@
 'use strict';
 
 const BlinkError = require('../errors/BlinkError');
+const CustomerIoCampaignSignupWorker = require('../workers/CustomerIoCampaignSignupWorker');
+const CustomerIoCampaignSignupPostWorker = require('../workers/CustomerIoCampaignSignupPostWorker');
 const CustomerIoUpdateCustomerWorker = require('../workers/CustomerIoUpdateCustomerWorker');
 const FetchWorker = require('../workers/FetchWorker');
 const GambitChatbotMdataProxyWorker = require('../workers/GambitChatbotMdataProxyWorker');
+const GambitMessageDataRelayWorker = require('../workers/GambitMessageDataRelayWorker');
 const BlinkApp = require('./BlinkApp');
 
 class BlinkWorkerApp extends BlinkApp {
@@ -31,7 +34,10 @@ class BlinkWorkerApp extends BlinkApp {
     return {
       fetch: FetchWorker,
       'customer-io-update-customer': CustomerIoUpdateCustomerWorker,
+      'customer-io-campaign-signup': CustomerIoCampaignSignupWorker,
+      'customer-io-campaign-signup-post': CustomerIoCampaignSignupPostWorker,
       'gambit-chatbot-mdata-proxy': GambitChatbotMdataProxyWorker,
+      'gambit-message-data-relay': GambitMessageDataRelayWorker,
     };
   }
 }
