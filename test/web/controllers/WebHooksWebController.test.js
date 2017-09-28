@@ -216,9 +216,9 @@ test('POST /api/v1/webhooks/moco-message-data should publish message to moco-mes
 /**
  * POST /api/v1/webhooks/customerio
  */
-test('POST /api/v1/webhooks/twilio-status-callback should bypass basic http auth', async (t) => {
+test('POST /api/v1/webhooks/gambit-broadcast-relay should bypass basic http auth', async (t) => {
   const data = MessageFactoryHelper.getRandomDataSample();
-  const res = await t.context.supertest.post('/api/v1/webhooks/twilio-status-callback')
+  const res = await t.context.supertest.post('/api/v1/webhooks/gambit-broadcast-relay')
     .send(data);
 
   res.status.should.not.be.equal(401);
