@@ -7,6 +7,7 @@ const chai = require('chai');
 
 const RabbitManagement = require('../../../src/lib/RabbitManagement');
 const HooksHelper = require('../../helpers/HooksHelper');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -216,13 +217,7 @@ test('POST /api/v1/webhooks/moco-message-data should publish message to moco-mes
  * POST /api/v1/webhooks/customerio
  */
 test('POST /api/v1/webhooks/twilio-status-callback should bypass basic http auth', async (t) => {
-  const data = {
-    random: 'key',
-    nested: {
-      random2: 'key2',
-    },
-  };
-
+  const data = MessageFactoryHelper.getRandomDataSample();
   const res = await t.context.supertest.post('/api/v1/webhooks/twilio-status-callback')
     .send(data);
 
