@@ -216,12 +216,12 @@ test('POST /api/v1/webhooks/moco-message-data should publish message to moco-mes
 /**
  * POST /api/v1/webhooks/customerio
  */
-test('POST /api/v1/webhooks/gambit-broadcast-relay should bypass basic http auth', async (t) => {
-  const data = MessageFactoryHelper.getRandomDataSample();
-  const res = await t.context.supertest.post('/api/v1/webhooks/gambit-broadcast-relay')
-    .send(data);
+// test('POST /api/v1/webhooks/gambit-broadcast-relay should bypass basic http auth', async (t) => {
+//   const data = MessageFactoryHelper.getRandomDataSample();
+//   const res = await t.context.supertest.post('/api/v1/webhooks/gambit-broadcast-relay')
+//     .send(data);
 
-  res.status.should.not.be.equal(401);
-});
+//   res.status.should.not.be.equal(401);
+// });
 
 // ------- End -----------------------------------------------------------------
