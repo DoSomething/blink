@@ -180,12 +180,7 @@ test('POST /api/v1/webhooks/gambit-chatbot-mdata should validate incoming messag
  * POST /api/v1/webhooks/customerio
  */
 test('POST /api/v1/webhooks/moco-message-data should publish message to moco-message-data queue', async (t) => {
-  const data = {
-    random: 'key',
-    nested: {
-      random2: 'key2',
-    },
-  };
+  const data = MessageFactoryHelper.getRandomDataSample(true);
 
   const res = await t.context.supertest.post('/api/v1/webhooks/moco-message-data')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
@@ -203,7 +198,7 @@ test('POST /api/v1/webhooks/moco-message-data should publish message to moco-mes
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
   // TODO: queue cleanup to make sure that it's not OLD message.
-  const messages = await rabbit.getMessagesFrom('moco-message-data', 1);
+  const messages = await rabbit.getMessagesFrom('moco-message-data', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');
