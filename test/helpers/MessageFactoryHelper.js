@@ -243,6 +243,28 @@ class MessageFactoryHelper {
       meta: {},
     });
   }
+
+  static getRandomDataSample(nested = false) {
+    const data = {};
+
+    // Add random words.
+    for (let i = 0; i < 8; i++) {
+      data[chance.word()] = chance.word();
+    }
+
+    // One int.
+    data[chance.word()] = chance.integer();
+
+    // One bool
+    data[chance.word()] = chance.bool();
+
+    // Add nested object.
+    if (nested) {
+      data[chance.word()] = MessageFactoryHelper.getRandomDataSample();
+    }
+
+    return data;
+  }
 }
 
 module.exports = MessageFactoryHelper;
