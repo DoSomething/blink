@@ -46,6 +46,15 @@ class BlinkWebApp extends BlinkApp {
     } = this.web.controllers;
 
     const router = new Router();
+
+
+    router.use(basicAuthCustom401);
+    router.use(auth({
+      name: this.config.app.auth.name,
+      pass: this.config.app.auth.password,
+    }));
+
+    
     router.get('root', '/', apiWebController.welcome);
     router.get('api.v1', '/api/v1', apiWebController.v1);
     router.get('api.index', '/api', apiWebController.index);
@@ -126,12 +135,20 @@ class BlinkWebApp extends BlinkApp {
     // Basic Authentication:
     // Custom 401 handling.
     // https://github.com/koajs/basic-auth#example
-    app.use(basicAuthCustom401);
+    // app.use(basicAuthCustom401);
+
     // Enable auth.
-    app.use(auth({
+    // app.use(auth({
+    //   name: this.config.app.auth.name,
+    //   pass: this.config.app.auth.password,
+    // }));
+    this.web.router.use(basicAuthCustom401);
+    this.web.router.use(auth({
       name: this.config.app.auth.name,
       pass: this.config.app.auth.password,
     }));
+
+    // this.web.router.use(basicAuthCustom401);
 
     // Inject Koa Router routes and allowed methods.
     app.use(this.web.router.routes());
