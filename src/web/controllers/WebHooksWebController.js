@@ -3,6 +3,7 @@
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const MdataMessage = require('../../messages/MdataMessage');
+const TwilioStatusCallbackMessage = require('../../messages/TwilioStatusCallbackMessage');
 const WebController = require('./WebController');
 
 class WebHooksWebController extends WebController {
@@ -13,6 +14,8 @@ class WebHooksWebController extends WebController {
     this.customerioEmailActivity = this.customerioEmailActivity.bind(this);
     this.gambitChatbotMdata = this.gambitChatbotMdata.bind(this);
     this.mocoMessageData = this.mocoMessageData.bind(this);
+    this.twilioSmsBroadcast = this.twilioSmsBroadcast.bind(this);
+    this.twilioSmsInbound = this.twilioSmsInbound.bind(this);
   }
 
   async index(ctx) {
@@ -20,6 +23,8 @@ class WebHooksWebController extends WebController {
       'customerio-email-activity': this.fullUrl('api.v1.webhooks.customerio-email-activity'),
       'gambit-chatbot-mdata': this.fullUrl('api.v1.webhooks.gambit-chatbot-mdata'),
       'moco-message-data': this.fullUrl('api.v1.webhooks.moco-message-data'),
+      'twilio-sms-broadcast': this.fullUrl('api.v1.webhooks.twilio-sms-broadcast'),
+      'twilio-sms-inbound': this.fullUrl('api.v1.webhooks.twilio-sms-inbound'),
     };
   }
 
@@ -49,11 +54,42 @@ class WebHooksWebController extends WebController {
 
   async mocoMessageData(ctx) {
     try {
+      // Todo: looks like I should have used TwilioStatusCallbackMessage here.
       const freeFormMessage = FreeFormMessage.fromCtx(ctx);
       freeFormMessage.validate();
       const { mocoMessageDataQ } = this.blink.queues;
       mocoMessageDataQ.publish(freeFormMessage);
       this.sendOK(ctx, freeFormMessage);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
+  }
+
+  async twilioSmsInbound(ctx) {
+    try {
+      const message = FreeFormMessage.fromCtx(ctx);
+      message.validate();
+      this.blink.exchange.publish(
+        'sms-inbound.twilio.webhook',
+        message,
+      );
+      // See https://www.twilio.com/docs/api/twiml/sms/your_response.
+      this.sendOKNoContent(ctx, message);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
+  }
+
+  async twilioSmsBroadcast(ctx) {
+    try {
+      const message = TwilioStatusCallbackMessage.fromCtx(ctx);
+      message.validate();
+      this.blink.exchange.publish(
+        'sms-broadcast.status-callback.twilio.webhook',
+        message,
+      );
+      // See https://www.twilio.com/docs/api/twiml/sms/your_response.
+      this.sendOKNoContent(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
     }

@@ -25,8 +25,9 @@ class UserMessage extends Message {
       // Required:
       updated_at: Joi.string().empty(whenNullOrEmpty).required().isoDate(),
       created_at: Joi.string().empty(whenNullOrEmpty).required().isoDate(),
-      mobile_status: Joi.valid([
+      sms_status: Joi.valid([
         'active',
+        'less',
         'undeliverable',
         'unknown',
         null,
@@ -34,7 +35,10 @@ class UserMessage extends Message {
 
       // Optional, defaults to null when provided as empty string or null.
       last_authenticated_at: optionalDateDefaultsToNull,
-      birthdate: optionalDateDefaultsToNull,
+      birthdate: Joi.string()
+        .empty(whenNullOrEmpty)
+        .regex(/^(\d{4})-(\d{2})-(\d{2})$/, 'valid birthdate')
+        .default(null),
       facebook_id: optionalStringDefaultsToNull,
       first_name: optionalStringDefaultsToNull,
       last_name: optionalStringDefaultsToNull,

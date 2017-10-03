@@ -5,13 +5,15 @@ const logger = require('winston');
 
 const Exchange = require('../lib/Exchange');
 
+const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
+const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ');
 const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const FetchQ = require('../queues/FetchQ');
 const GambitChatbotMdataQ = require('../queues/GambitChatbotMdataQ');
 const MocoMessageDataQ = require('../queues/MocoMessageDataQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
-const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
-const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ');
+const TwilioSmsBroadcastGambitRelayQ = require('../queues/TwilioSmsBroadcastGambitRelayQ');
+const TwilioSmsInboundGambitRelayQ = require('../queues/TwilioSmsInboundGambitRelayQ');
 
 class BlinkApp {
   constructor(config) {
@@ -45,13 +47,15 @@ class BlinkApp {
 
       // Initialize and setup all available queues.
       this.queues = await this.setupQueues([
+        CustomerIoCampaignSignupPostQ,
+        CustomerIoCampaignSignupQ,
         CustomerIoUpdateCustomerQ,
         FetchQ,
         GambitChatbotMdataQ,
         MocoMessageDataQ,
         QuasarCustomerIoEmailActivityQ,
-        CustomerIoCampaignSignupPostQ,
-        CustomerIoCampaignSignupQ,
+        TwilioSmsBroadcastGambitRelayQ,
+        TwilioSmsInboundGambitRelayQ,
       ]);
     } catch (error) {
       this.connecting = false;

@@ -5,3 +5,4 @@ customer-io-update-customer: npm run worker customer-io-update-customer
 customer-io-campaign-signup: npm run worker customer-io-campaign-signup
 customer-io-campaign-signup-post: npm run worker customer-io-campaign-signup-post
 gambit-message-data-relay: npm run worker gambit-message-data-relay
+twilio-sms-broadcast-gambit-relay: npm run worker twilio-sms-broadcast-gambit-relay

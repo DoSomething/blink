@@ -25,24 +25,9 @@ class CustomerIoUpdateCustomerWorker extends Worker {
 
   async consume(userMessage) {
     let meta;
-    if (userMessage.isMobileOnly()) {
-      meta = {
-        env: this.blink.config.app.env,
-        code: 'cio_update_skip_mobile_only',
-        worker: this.constructor.name,
-        request_id: userMessage ? userMessage.getRequestId() : 'not_parsed',
-      };
-      logger.debug(`Skipping mobile only user ${userMessage.getData().id}`, meta);
-      return true;
-    }
-
     let customerIoUpdateCustomerMessage;
     try {
-      // For now all messages are new
-      customerIoUpdateCustomerMessage = CustomerIoUpdateCustomerMessage.fromUser(
-        userMessage,
-        true,
-      );
+      customerIoUpdateCustomerMessage = CustomerIoUpdateCustomerMessage.fromUser(userMessage);
       customerIoUpdateCustomerMessage.validateStrict();
     } catch (error) {
       meta = {

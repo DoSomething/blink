@@ -29,8 +29,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         // Remove field when provided as empty string or null.
         email: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
-        // TODO: make sure has E.164 format
-        // phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
+        phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
 
         // Required:
         updated_at: Joi.date()
@@ -44,8 +43,9 @@ class CustomerIoUpdateCustomerMessage extends Message {
           .timestamp('unix')
           .raw(),
 
-        mobile_status: Joi.valid([
+        sms_status: Joi.valid([
           'active',
+          'less',
           'undeliverable',
           'unknown',
           null,
@@ -56,7 +56,6 @@ class CustomerIoUpdateCustomerMessage extends Message {
         // Exception: kept as an isodate
         birthdate: Joi.string()
           .empty(whenNullOrEmpty)
-          .isoDate()
           .regex(/^(\d{4})-(\d{2})-(\d{2})$/, 'valid birthdate')
           .default(undefined),
         first_name: optionalStringDefaultsToUndefined,
@@ -69,9 +68,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
         language: optionalStringDefaultsToUndefined,
         country: optionalStringDefaultsToUndefined,
         facebook_id: optionalStringDefaultsToUndefined,
-        // TODO: Only explicitly set for new users.
         unsubscribed: Joi.boolean().empty(whenNullOrEmpty).default(undefined),
-        subscribed_at: optionalTimestampDefaultsToUndefined,
 
         // Allow anything as a role, but default to user.
         role: Joi.string().empty(whenNullOrEmpty).default('user'),
@@ -80,13 +77,11 @@ class CustomerIoUpdateCustomerMessage extends Message {
         interests: Joi.array().items(Joi.string()).empty(null).default(undefined),
 
         // TODO: add more cio specific fields, like unsubscribed_at
-      }),
-      // TODO: Bring back when phone is formatted in Northstar
-      // .or('email', 'phone'),
+      }).or('email', 'phone'),
     });
   }
 
-  static fromUser(userMessage, isNew = false) {
+  static fromUser(userMessage) {
     const user = userMessage.getData();
     // Copy user fields.
     const customerData = Object.assign({}, user);
@@ -94,13 +89,9 @@ class CustomerIoUpdateCustomerMessage extends Message {
     delete customerData.id;
 
     // Rename mobile to phone
-    // TODO: format phone
-
     if (customerData.mobile) {
-      // const mobile = customerData.mobile;
+      customerData.phone = customerData.mobile;
       delete customerData.mobile;
-      // TODO: Bring back when phone is formatted in Northstar
-      // customerData.phone = mobile;
     }
 
     customerData.created_at = moment(customerData.created_at, moment.ISO_8601).unix();
@@ -113,9 +104,11 @@ class CustomerIoUpdateCustomerMessage extends Message {
       ).unix();
     }
 
-    if (isNew) {
+    // If a user is newly created (created_at & updated_at are the same)
+    // then set them as "subscribed" to emails in Customer.io!
+    const isNew = customerData.created_at === customerData.updated_at;
+    if (customerData.email && isNew) {
       customerData.unsubscribed = false;
-      customerData.subscribed_at = moment().unix();
     }
 
     const customerIoUpdateCustomerMessage = new CustomerIoUpdateCustomerMessage({

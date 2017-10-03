@@ -11,7 +11,7 @@ const CampaignSignupMessage = require('../../src/messages/CampaignSignupMessage'
 const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPostMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const MdataMessage = require('../../src/messages/MdataMessage');
-const TwillioStatusCallbackMessage = require('../../src/messages/TwillioStatusCallbackMessage');
+const TwilioStatusCallbackMessage = require('../../src/messages/TwilioStatusCallbackMessage');
 const UserMessage = require('../../src/messages/UserMessage');
 
 // ------- Init ----------------------------------------------------------------
@@ -23,6 +23,7 @@ const chance = new Chance();
 class MessageFactoryHelper {
   static getValidUser() {
     const fakeId = chance.hash({ length: 24 });
+    const createdAt = chance.date({ year: chance.year({ min: 2000, max: 2010 }) }).toISOString();
     return new UserMessage({
       data: {
         id: fakeId,
@@ -46,8 +47,9 @@ class MessageFactoryHelper {
         slack_id: chance.natural().toString(),
         mobilecommons_id: chance.natural().toString(),
         parse_installation_ids: chance.n(chance.guid, 2),
-        mobile_status: chance.pickone([
+        sms_status: chance.pickone([
           'undeliverable',
+          'less',
           'active',
           'unknown',
           null,
@@ -62,8 +64,8 @@ class MessageFactoryHelper {
         last_authenticated_at: chance.date({
           year: chance.year({ min: 2013, max: 2015 }),
         }).toISOString(),
-        updated_at: chance.date({ year: chance.year({ min: 2011, max: 2012 }) }).toISOString(),
-        created_at: chance.date({ year: chance.year({ min: 2000, max: 2010 }) }).toISOString(),
+        updated_at: createdAt,
+        created_at: createdAt,
       },
       meta: {},
     });
@@ -78,12 +80,12 @@ class MessageFactoryHelper {
           email: chance.email(),
           updated_at: chance.timestamp(),
           created_at: chance.timestamp(),
-          mobile_status: chance.pickone([
+          sms_status: chance.pickone([
             'undeliverable',
             'active',
+            'less',
             'unknown',
             null,
-            undefined,
           ]),
           last_authenticated_at: chance.timestamp(),
           birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
@@ -98,7 +100,6 @@ class MessageFactoryHelper {
           language: chance.locale({ region: false }),
           country: chance.country(),
           unsubscribed: chance.bool(),
-          subscribed_at: chance.timestamp(),
           role: chance.pickone(['user', 'admin', 'staff']),
           interests: chance.n(chance.word, chance.natural({ min: 0, max: 20 })),
         },
@@ -153,7 +154,7 @@ class MessageFactoryHelper {
   static getValidMessageData() {
     // TODO: randomize
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
-    return new TwillioStatusCallbackMessage({
+    return new TwilioStatusCallbackMessage({
       data: {
         ToCountry: 'US',
         MediaContentType0: 'image/png',

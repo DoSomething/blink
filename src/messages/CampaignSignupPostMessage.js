@@ -92,9 +92,9 @@ class CampaignSignupPostMessage extends Message {
 
     // In future, Rogue will pass different campaign_signup_post types
     // for different kind of member actions. Now everything is considered
-    // as 'action', which corresponds with "classic" Phoenix reportback.
+    // as 'photo', which corresponds with "classic" Phoenix reportback.
     // @see https://github.com/DoSomething/blink/issues/125
-    eventData.type = 'action';
+    eventData.type = 'photo';
 
     const event = new CustomerIoEvent(
       data.northstar_id,
@@ -104,7 +104,7 @@ class CampaignSignupPostMessage extends Message {
     // Signup post -> customer.io event transformation would only happen in this class.
     // It's safe to hardcode schema event version here.
     // Please bump it this when data schema changes.
-    event.setVersion(1);
+    event.setVersion(2);
     return event;
   }
 }

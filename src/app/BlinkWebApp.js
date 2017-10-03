@@ -88,6 +88,16 @@ class BlinkWebApp extends BlinkApp {
       '/api/v1/webhooks/moco-message-data',
       webHooksWebController.mocoMessageData,
     );
+    router.post(
+      'api.v1.webhooks.twilio-sms-broadcast',
+      '/api/v1/webhooks/twilio-sms-broadcast',
+      webHooksWebController.twilioSmsBroadcast,
+    );
+    router.post(
+      'api.v1.webhooks.twilio-sms-inbound',
+      '/api/v1/webhooks/twilio-sms-inbound',
+      webHooksWebController.twilioSmsInbound,
+    );
     return router;
   }
 

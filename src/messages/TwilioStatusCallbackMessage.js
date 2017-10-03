@@ -5,7 +5,7 @@ const Joi = require('joi');
 const Message = require('./Message');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 
-class TwillioStatusCallbackMessage extends Message {
+class TwilioStatusCallbackMessage extends Message {
   constructor(...args) {
     super(...args);
 
@@ -18,16 +18,29 @@ class TwillioStatusCallbackMessage extends Message {
     return this.getData().SmsStatus === 'received';
   }
 
+  isDelivered() {
+    return this.getData().MessageStatus === 'delivered';
+  }
+
   static fromCtx(ctx) {
     // TODO: save more metadata
     // TODO: metadata parse helper
-    const freeFormMessage = new TwillioStatusCallbackMessage({
+
+    const meta = {
+      request_id: ctx.id,
+    };
+
+    // Save GET params when present.
+    // TODO: move to generic function for all messages?
+    if (ctx.query && Object.keys(ctx.query).length) {
+      meta.query = ctx.query;
+    }
+
+    const message = new TwilioStatusCallbackMessage({
       data: ctx.request.body,
-      meta: {
-        request_id: ctx.id,
-      },
+      meta,
     });
-    return freeFormMessage;
+    return message;
   }
 
   static fromRabbitMessage(rabbitMessage) {
@@ -38,7 +51,7 @@ class TwillioStatusCallbackMessage extends Message {
 
     // TODO: save more metadata
     // TODO: metadata parse helper
-    const message = new TwillioStatusCallbackMessage({
+    const message = new TwilioStatusCallbackMessage({
       data: payload.data,
       meta: payload.meta,
     });
@@ -47,4 +60,4 @@ class TwillioStatusCallbackMessage extends Message {
   }
 }
 
-module.exports = TwillioStatusCallbackMessage;
+module.exports = TwilioStatusCallbackMessage;

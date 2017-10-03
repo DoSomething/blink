@@ -76,7 +76,7 @@ test('User Message optional fields should have correct default values', () => {
     country: null,
     role: 'user',
     interests: null,
-    mobile_status: null,
+    sms_status: null,
   };
   Object.entries(mapping).forEach(([field, defaultValue]) => {
     MessageValidationHelper.defaultsToWhenEmpty(field, defaultValue, generator, mutator);
@@ -90,7 +90,7 @@ test('User Message should fail on incorrect types', () => {
     mobile: chance.integer(),
     updated_at: chance.integer(),
     created_at: chance.integer(),
-    // no mobile_status
+    // no sms_status
     last_authenticated_at: chance.integer(),
     birthdate: chance.integer(),
     facebook_id: chance.integer(),

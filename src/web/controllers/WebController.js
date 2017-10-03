@@ -38,7 +38,13 @@ class WebController {
     };
     // Accepted.
     ctx.status = status;
-    this.log('info', ctx, message);
+    this.log('info', ctx, message, ctx.body.code);
+  }
+
+  sendOKNoContent(ctx, message, status = 204) {
+    ctx.body = '';
+    ctx.status = status;
+    this.log('info', ctx, message, 'success_message_queued');
   }
 
   sendError(ctx, error) {
@@ -61,17 +67,17 @@ class WebController {
     }
     ctx.body.message = error.toString();
 
-    this.log(level, ctx);
+    this.log(level, ctx, false, ctx.body.code);
   }
 
-  log(level, ctx, message) {
-    let text = ctx.body.message;
+  log(level, ctx, message, code) {
+    let text = ctx.body ? ctx.body.message : undefined;
     if (message) {
       text = `${text}, message ${message.toString()}`;
     }
     const meta = {
       env: this.blink.config.app.env,
-      code: ctx.body.code || 'unexpected_code',
+      code,
       request_id: ctx.id,
       method: ctx.request.method,
       host: ctx.request.hostname,
