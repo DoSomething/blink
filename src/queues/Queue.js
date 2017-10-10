@@ -2,6 +2,9 @@
 
 const changeCase = require('change-case');
 const logger = require('winston');
+  var PromiseThrottle = require('promise-throttle');
+
+
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
@@ -22,6 +25,11 @@ class Queue {
     this.routes = [];
     // Automagically create direct route to the queue using its name.
     this.routes.push(this.name);
+
+    this.promiseThrottle = new PromiseThrottle({
+      requestsPerSecond: 10,
+      promiseImplementation: Promise,
+    });
   }
 
   async setup() {
@@ -80,7 +88,9 @@ class Queue {
   }
 
   async dequeue(rabbitMessage, callback) {
-    await this.processMessage(rabbitMessage, callback);
+    this.promiseThrottle.add(() => {
+      return this.processMessage(rabbitMessage, callback);
+    });
   }
 
   async processMessage(rabbitMessage, callback) {

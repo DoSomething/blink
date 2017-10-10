@@ -61,9 +61,9 @@ test('Gambit Broadcast relay should be consume 100 messages per second exactly',
   // Ensure that after one second worker consumed exactly 10 messages.
   await new Promise((resolve) => {
     setTimeout(() => {
-      consumeSpy.should.have.callCount(10);
+      consumeSpy.should.have.callCount(30);
       resolve();
-    }, 1000);
+    }, 3000);
   });
 });
 

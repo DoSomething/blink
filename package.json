@@ -42,6 +42,7 @@
     "moment": "^2.18.1",
     "newrelic": "^2.2.1",
     "node-fetch": "^1.7.3",
+    "promise-throttle": "^0.3.1",
     "throng": "^4.0.0",
     "uuid": "^3.1.0",
     "winston": "^2.3.1",
