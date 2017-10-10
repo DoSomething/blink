@@ -25,13 +25,13 @@ test('Gambit Broadcast relay should be consume 100 messages per second exactly',
   // Publish 1000 messages to the queue
   for (let i = 0; i < 1000; i++) {
     const data = MessageFactoryHelper.getRandomDataSample();
-    const freeFormMessage = new TwilioStatusCallbackMessage({
+    const message = new TwilioStatusCallbackMessage({
       data,
       meta: {
         request_id: uuidV4(),
         broadcastId: chance.word(),
       },
-    })
+    });
     this.blink.exchange.publish(
       'sms-broadcast.status-callback.twilio.webhook',
       message,
