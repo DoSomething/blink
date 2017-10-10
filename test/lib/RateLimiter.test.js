@@ -7,17 +7,21 @@ const chai = require('chai');
 const Chance = require('chance');
 const uuidV4 = require('uuid/v4');
 
+const HooksHelper = require('../helpers/HooksHelper');
 const TwilioStatusCallbackMessage = require('../../src/messages/TwilioStatusCallbackMessage');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
+test.beforeEach(HooksHelper.startBlinkApp);
+test.afterEach(HooksHelper.startBlinkApp);
+
 const chance = new Chance();
 
 // ------- Tests ---------------------------------------------------------------
 
-test('Gambit Broadcast relay should be consume 100 messages per second exactly', () => {
+test('Gambit Broadcast relay should be consume 100 messages per second exactly', (t) => {
   // const config = require('../../config');
   // const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-broadcast-gambit-relay');
   // const gambitWorker = gambitWorkerApp.worker;
@@ -32,7 +36,7 @@ test('Gambit Broadcast relay should be consume 100 messages per second exactly',
         broadcastId: chance.word(),
       },
     });
-    this.blink.exchange.publish(
+    t.context.blink.exchange.publish(
       'sms-broadcast.status-callback.twilio.webhook',
       message,
     );
