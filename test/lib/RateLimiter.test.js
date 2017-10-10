@@ -30,7 +30,7 @@ const chance = new Chance();
 
 test('Gambit Broadcast relay should be consume 100 messages per second exactly', async (t) => {
   // Publish 1000 messages to the queue
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 100; i++) {
     const data = MessageFactoryHelper.getRandomDataSample();
     const message = new TwilioStatusCallbackMessage({
       data,
@@ -58,10 +58,10 @@ test('Gambit Broadcast relay should be consume 100 messages per second exactly',
   worker.setup();
   worker.perform();
 
-  // Ensure that after one second worker consumed exactly 100 messages.
+  // Ensure that after one second worker consumed exactly 10 messages.
   await new Promise((resolve) => {
     setTimeout(() => {
-      consumeSpy.should.have.callCount(100);
+      consumeSpy.should.have.callCount(10);
       resolve();
     }, 1000);
   });

@@ -20,6 +20,7 @@ class TwilioSmsBroadcastGambitRelayWorker extends Worker {
 
   setup() {
     this.queue = this.blink.queues.twilioSmsBroadcastGambitRelayQ;
+    // this.rate
   }
 
   async consume(message) {
