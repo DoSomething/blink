@@ -24,8 +24,6 @@ class TwilioSmsBroadcastGambitRelayWorker extends Worker {
 
   async consume(message) {
     const body = JSON.stringify(message.getData());
-    console.log(body);
-    return true;
 
     // Send only delivered messages to Gambit Conversations import.
     if (TwilioSmsBroadcastGambitRelayWorker.shouldSkip(message)) {
