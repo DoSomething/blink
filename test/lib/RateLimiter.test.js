@@ -21,7 +21,7 @@ const chance = new Chance();
 
 // ------- Tests ---------------------------------------------------------------
 
-test('Gambit Broadcast relay should be consume 100 messages per second exactly', (t) => {
+test('Gambit Broadcast relay should be consume 100 messages per second exactly', async (t) => {
   // const config = require('../../config');
   // const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-broadcast-gambit-relay');
   // const gambitWorker = gambitWorkerApp.worker;
@@ -41,6 +41,9 @@ test('Gambit Broadcast relay should be consume 100 messages per second exactly',
       message,
     );
   }
+
+  // Wait for 1 sec for messags to sync in to Rabbit.
+  await new Promise(resolve => setTimeout(resolve, 1000));
 });
 
 // ------- End -----------------------------------------------------------------
