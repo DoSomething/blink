@@ -80,8 +80,12 @@ class Queue {
   }
 
   async dequeue(rabbitMessage, callback) {
+    await this.processMessage(rabbitMessage, callback);
+  }
+
+  async processMessage(rabbitMessage, callback) {
     // Make sure nothing is thrown from here, it will kill the channel.
-    const message = this.processRawMessage(rabbitMessage);
+    const message = this.parseRawMessage(rabbitMessage);
     if (!message) {
       return false;
     }
@@ -148,7 +152,7 @@ class Queue {
     return true;
   }
 
-  processRawMessage(rabbitMessage) {
+  parseRawMessage(rabbitMessage) {
     let message;
 
     // Transform raw to Message object.
