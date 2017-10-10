@@ -226,8 +226,9 @@ test('POST /api/v1/webhooks/moco-message-data should publish message to moco-mes
 
 /**
  * POST /api/v1/webhooks/twilio-sms-broadcast
+ * TODO: move to same file as rate limiter, then run serially.
  */
-test('POST /api/v1/webhooks/twilio-sms-broadcast should publish message to twilio-sms-broadcast-gambit-relay queue', async (t) => {
+test.skip('POST /api/v1/webhooks/twilio-sms-broadcast should publish message to twilio-sms-broadcast-gambit-relay queue', async (t) => {
   const data = {
     random: 'key',
     nested: {

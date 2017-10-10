@@ -29,7 +29,6 @@ class HooksHelper {
 
   static async stopBlinkApp(t) {
     await t.context.blink.stop();
-    t.context.supertest = false;
     t.context.config = false;
   }
 }

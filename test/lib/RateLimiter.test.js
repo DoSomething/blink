@@ -19,8 +19,10 @@ const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 chai.should();
 chai.use(sinonChai);
 
+// Turn off extra logs for this tests, as it genertes thouthands of messages.
+process.env.LOGGER_LEVEL = 'info';
 test.beforeEach(HooksHelper.startBlinkApp);
-test.afterEach(HooksHelper.startBlinkApp);
+test.afterEach.always(HooksHelper.stopBlinkApp);
 
 const chance = new Chance();
 
