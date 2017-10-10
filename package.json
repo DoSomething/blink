@@ -55,6 +55,8 @@
     "codecov": "^2.3.0",
     "eslint-plugin-ava": "^4.2.2",
     "nyc": "^11.2.1",
+    "sinon": "^4.0.1",
+    "sinon-chai": "^2.14.0",
     "supertest": "^3.0.0"
   },
   "ava": {
