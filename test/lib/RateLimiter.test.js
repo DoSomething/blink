@@ -7,8 +7,9 @@ const chai = require('chai');
 const Chance = require('chance');
 const uuidV4 = require('uuid/v4');
 
-const HooksHelper = require('../helpers/HooksHelper');
 const TwilioStatusCallbackMessage = require('../../src/messages/TwilioStatusCallbackMessage');
+const BlinkWorkerApp = require('../../src/app/BlinkWorkerApp');
+const HooksHelper = require('../helpers/HooksHelper');
 const MessageFactoryHelper = require('../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
@@ -22,12 +23,8 @@ const chance = new Chance();
 // ------- Tests ---------------------------------------------------------------
 
 test('Gambit Broadcast relay should be consume 100 messages per second exactly', async (t) => {
-  // const config = require('../../config');
-  // const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-broadcast-gambit-relay');
-  // const gambitWorker = gambitWorkerApp.worker;
-
   // Publish 1000 messages to the queue
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 100; i++) {
     const data = MessageFactoryHelper.getRandomDataSample();
     const message = new TwilioStatusCallbackMessage({
       data,
@@ -43,7 +40,13 @@ test('Gambit Broadcast relay should be consume 100 messages per second exactly',
   }
 
   // Wait for 1 sec for messags to sync in to Rabbit.
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise(resolve => setTimeout(resolve, 100));
+
+  // Create gambit worker
+  const config = require('../../config');
+  const gambitWorkerApp = new BlinkWorkerApp(config, 'twilio-sms-broadcast-gambit-relay');
+  // const gambitWorker = gambitWorkerApp.worker;
+  await gambitWorkerApp.reconnect();
 });
 
 // ------- End -----------------------------------------------------------------
