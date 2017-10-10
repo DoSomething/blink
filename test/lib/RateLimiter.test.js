@@ -45,9 +45,8 @@ test('Gambit Broadcast relay should be consume 100 messages per second exactly',
     );
   }
 
-  // // Wait for 1 sec for messags to sync in to Rabbit.
-  await new Promise(resolve => setTimeout(resolve, 100));
-
+  // Wait for 1 sec for messags to sync in to Rabbit.
+  // await new Promise(resolve => setTimeout(resolve, 100));
 
   const worker = new TwilioSmsBroadcastGambitRelayWorker(t.context.blink);
 
