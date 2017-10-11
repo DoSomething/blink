@@ -27,7 +27,7 @@ class Queue {
     this.routes.push(this.name);
 
     this.promiseThrottle = new PromiseThrottle({
-      requestsPerSecond: 50,
+      requestsPerSecond: 30,
       promiseImplementation: Promise,
     });
   }
