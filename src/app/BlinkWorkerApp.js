@@ -5,6 +5,7 @@ const CustomerIoCampaignSignupPostWorker = require('../workers/CustomerIoCampaig
 const CustomerIoCampaignSignupWorker = require('../workers/CustomerIoCampaignSignupWorker');
 const CustomerIoUpdateCustomerWorker = require('../workers/CustomerIoUpdateCustomerWorker');
 const FetchWorker = require('../workers/FetchWorker');
+const GambitCampaignSignupRelayWorker = require('../workers/GambitCampaignSignupRelayWorker');
 const GambitChatbotMdataProxyWorker = require('../workers/GambitChatbotMdataProxyWorker');
 const GambitMessageDataRelayWorker = require('../workers/GambitMessageDataRelayWorker');
 const TwilioSmsBroadcastGambitRelayWorker = require('../workers/TwilioSmsBroadcastGambitRelayWorker');
@@ -35,9 +36,10 @@ class BlinkWorkerApp extends BlinkApp {
   static getAvailableWorkers() {
     return {
       fetch: FetchWorker,
-      'customer-io-update-customer': CustomerIoUpdateCustomerWorker,
       'customer-io-campaign-signup': CustomerIoCampaignSignupWorker,
       'customer-io-campaign-signup-post': CustomerIoCampaignSignupPostWorker,
+      'customer-io-update-customer': CustomerIoUpdateCustomerWorker,
+      'gambit-campaign-signup-relay': GambitCampaignSignupRelayWorker,
       'gambit-chatbot-mdata-proxy': GambitChatbotMdataProxyWorker,
       'gambit-message-data-relay': GambitMessageDataRelayWorker,
       'twilio-sms-broadcast-gambit-relay': TwilioSmsBroadcastGambitRelayWorker,

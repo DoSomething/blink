@@ -168,16 +168,30 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
   // Check response.
   res.body.should.have.property('ok', true);
 
-  // Check that the message is queued.
+  // Check that the message is queued to customer-io-campaign-signup.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('customer-io-campaign-signup', 1, false);
-  messages.should.be.an('array').and.to.have.lengthOf(1);
+  const cioMessage = await rabbit.getMessagesFrom('customer-io-campaign-signup', 1, false);
+  cioMessage.should.be.an('array').and.to.have.lengthOf(1);
 
-  messages[0].should.have.property('payload');
-  const payload = messages[0].payload;
-  const messageData = JSON.parse(payload);
-  messageData.should.have.property('data');
-  messageData.data.should.be.eql({
+  cioMessage[0].should.have.property('payload');
+  const cioMessageData = JSON.parse(cioMessage[0].payload);
+  cioMessageData.should.have.property('data');
+  cioMessageData.data.should.be.eql({
+    campaign_id: data.campaign_id,
+    campaign_run_id: data.campaign_run_id,
+    created_at: data.created_at,
+    id: data.id,
+    northstar_id: data.northstar_id,
+    source: data.source,
+  });
+
+  const gambitMessage = await rabbit.getMessagesFrom('gambit-campaign-signup-relay', 1, false);
+  gambitMessage.should.be.an('array').and.to.have.lengthOf(1);
+
+  gambitMessage[0].should.have.property('payload');
+  const gambitMessageData = JSON.parse(gambitMessage[0].payload);
+  gambitMessageData.should.have.property('data');
+  gambitMessageData.data.should.be.eql({
     campaign_id: data.campaign_id,
     campaign_run_id: data.campaign_run_id,
     created_at: data.created_at,
