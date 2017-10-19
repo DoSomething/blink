@@ -31,12 +31,22 @@ test('GET /api/v1/events should respond with JSON list available tools', async (
     .and.have.string('application/json');
 
   // Check response.
+  // TODO: map key to destination and check them in loop.
+
   res.body.should.have.property('user-create')
     .and.have.string('/api/v1/events/user-create');
+
   res.body.should.have.property('user-signup')
     .and.have.string('/api/v1/events/user-signup');
+
+  res.body.should.have.property('user-signup')
+    .and.have.string('/api/v1/events/user-signup');
+
   res.body.should.have.property('user-signup-post')
     .and.have.string('/api/v1/events/user-signup-post');
+
+  res.body.should.have.property('quasar-relay')
+    .and.have.string('/api/v1/events/quasar-relay');
 });
 
 
@@ -158,16 +168,30 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
   // Check response.
   res.body.should.have.property('ok', true);
 
-  // Check that the message is queued.
+  // Check that the message is queued to customer-io-campaign-signup.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('customer-io-campaign-signup', 1, false);
-  messages.should.be.an('array').and.to.have.lengthOf(1);
+  const cioMessage = await rabbit.getMessagesFrom('customer-io-campaign-signup', 1, false);
+  cioMessage.should.be.an('array').and.to.have.lengthOf(1);
 
-  messages[0].should.have.property('payload');
-  const payload = messages[0].payload;
-  const messageData = JSON.parse(payload);
-  messageData.should.have.property('data');
-  messageData.data.should.be.eql({
+  cioMessage[0].should.have.property('payload');
+  const cioMessageData = JSON.parse(cioMessage[0].payload);
+  cioMessageData.should.have.property('data');
+  cioMessageData.data.should.be.eql({
+    campaign_id: data.campaign_id,
+    campaign_run_id: data.campaign_run_id,
+    created_at: data.created_at,
+    id: data.id,
+    northstar_id: data.northstar_id,
+    source: data.source,
+  });
+
+  const gambitMessage = await rabbit.getMessagesFrom('gambit-campaign-signup-relay', 1, false);
+  gambitMessage.should.be.an('array').and.to.have.lengthOf(1);
+
+  gambitMessage[0].should.have.property('payload');
+  const gambitMessageData = JSON.parse(gambitMessage[0].payload);
+  gambitMessageData.should.have.property('data');
+  gambitMessageData.data.should.be.eql({
     campaign_id: data.campaign_id,
     campaign_run_id: data.campaign_run_id,
     created_at: data.created_at,
@@ -227,5 +251,44 @@ test('POST /api/v1/events/user-signup-post should publish message to user-signup
     }
   });
 });
+
+
+/**
+ * POST /api/v1/events/quasar-relay
+ */
+test.serial('POST /api/v1/events/quasar-relay should save message as is to quasar queue', async (t) => {
+  const data = MessageFactoryHelper.getRandomDataSample();
+
+  const res = await t.context.supertest.post('/api/v1/events/quasar-relay')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(202);
+
+  // Check response to be json
+  res.header.should.have.property('content-type');
+  res.header['content-type'].should.match(/json/);
+
+  // Check response.
+  res.body.should.have.property('ok', true);
+
+  // Check that the message is queued.
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+
+  // TODO: quasar-customer-io-email-activity to be renamed.
+  // See https://github.com/DoSomething/blink/issues/99
+  // See https://www.pivotaltracker.com/story/show/150330459
+  const messages = await rabbit.getMessagesFrom('quasar-customer-io-email-activity', 1, false);
+  messages.should.be.an('array').and.to.have.lengthOf(1);
+
+  messages[0].should.have.property('payload');
+  const payload = messages[0].payload;
+  const messageData = JSON.parse(payload);
+  messageData.should.have.property('data');
+
+  // Required.
+  messageData.data.should.deep.equal(data);
+});
+
 
 // ------- End -----------------------------------------------------------------

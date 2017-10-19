@@ -53,6 +53,9 @@ class WebController {
       ok: false,
     };
 
+    // Log message only when it's valid.
+    let message = false;
+
     // Check error type.
     let level;
     if (error instanceof MessageValidationBlinkError) {
@@ -60,6 +63,10 @@ class WebController {
       ctx.body.code = 'error_validation_failed';
       ctx.status = 422;
       level = 'warning';
+      // When message exists, log it.
+      if (error.payload) {
+        message = error.payload;
+      }
     } else {
       ctx.body.code = 'error_unexpected_controller_error';
       ctx.status = 400;
@@ -67,7 +74,7 @@ class WebController {
     }
     ctx.body.message = error.toString();
 
-    this.log(level, ctx, false, ctx.body.code);
+    this.log(level, ctx, message, ctx.body.code);
   }
 
   log(level, ctx, message, code) {

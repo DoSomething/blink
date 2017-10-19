@@ -70,6 +70,11 @@ class BlinkWebApp extends BlinkApp {
       '/api/v1/events/user-signup-post',
       eventsWebController.userSignupPost,
     );
+    router.post(
+      'api.v1.events.quasar-relay',
+      '/api/v1/events/quasar-relay',
+      eventsWebController.quasarRelay,
+    );
 
     // Webhooks
     router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksWebController.index);
@@ -126,12 +131,30 @@ class BlinkWebApp extends BlinkApp {
     app.proxy = this.config.web.proxy;
 
     // -------- Setup web middleware --------
-    // Parse incoming request bodies in a middleware before your handlers,
-    // available under the req.body property.
-    app.use(bodyParser());
-
     // Generate unique request id.
     app.use(generateRequestId);
+
+    // Parse incoming request bodies in a middleware before your handlers,
+    // available under the req.body property.
+    // TODO: Might make sense to move to web/middleware.
+    app.use(bodyParser({
+      onerror: (err, ctx) => {
+        // TODO: probably logging needs to be moved to a function.
+        const meta = {
+          env: this.config.app.env,
+          code: 'error_parsing_body',
+          request_id: ctx.id,
+          method: ctx.request.method,
+          host: ctx.request.hostname,
+          path: ctx.request.path,
+          fwd: ctx.request.ip,
+          protocol: ctx.request.protocol,
+        };
+        logger.warning('Body parsing error.', meta);
+        ctx.throw(422, 'Body parsing error.');
+      },
+    }));
+
 
     // Basic Authentication:
     // Custom 401 handling.

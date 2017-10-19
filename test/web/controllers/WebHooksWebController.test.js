@@ -53,7 +53,7 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
 /**
  * POST /api/v1/webhooks/customerio
  */
-test('POST /api/v1/webhooks/customerio-email-activity should publish message to customer-io queue', async (t) => {
+test.serial('POST /api/v1/webhooks/customerio-email-activity should publish message to customer-io queue', async (t) => {
   const data = {
     data: {
       campaign_id: '0',
@@ -83,8 +83,8 @@ test('POST /api/v1/webhooks/customerio-email-activity should publish message to 
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  // TODO: queue cleanup to make sure that it's not OLD message.
-  const messages = await rabbit.getMessagesFrom('quasar-customer-io-email-activity', 1);
+  // Note: might be in conflict with POST /api/v1/events/quasar-relay test
+  const messages = await rabbit.getMessagesFrom('quasar-customer-io-email-activity', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');
