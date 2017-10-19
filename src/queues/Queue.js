@@ -2,6 +2,9 @@
 
 const changeCase = require('change-case');
 const logger = require('winston');
+  var PromiseThrottle = require('promise-throttle');
+
+
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
@@ -22,6 +25,11 @@ class Queue {
     this.routes = [];
     // Automagically create direct route to the queue using its name.
     this.routes.push(this.name);
+
+    this.promiseThrottle = new PromiseThrottle({
+      requestsPerSecond: 30,
+      promiseImplementation: Promise,
+    });
   }
 
   async setup() {
@@ -75,76 +83,86 @@ class Queue {
 
   subscribe(callback) {
     this.channel.consume(this.name, async (rabbitMessage) => {
-      // Make sure nothing is thrown from here, it will kill the channel.
-      const message = this.processRawMessage(rabbitMessage);
-      if (!message) {
-        return false;
-      }
-
-      let result;
-      try {
-        result = await callback(message);
-      } catch (error) {
-        if (error instanceof BlinkRetryError) {
-          // Todo: move to setting
-          const retryLimit = 100;
-          const retry = message.getMeta().retry || 0;
-          const retryDelay = Queue.retryDelay(retry);
-          if (retry < retryLimit) {
-            this.log(
-              'warning',
-              `Got error ${error}, retry ${retry}, retrying after ${retryDelay}ms`,
-              message,
-              'error_got_retry_request',
-            );
-            setTimeout(() => {
-              this.retry(error.toString(), message);
-            }, retryDelay);
-          } else {
-            this.log(
-              'warning',
-              `Got error ${error}, retry limit reached, rejecting`,
-              message,
-              'error_got_retry_limit_reached',
-            );
-            this.nack(message);
-          }
-          return false;
-        }
-
-        this.log(
-          'warning',
-          error.toString(),
-          message,
-          'message_processing_error',
-        );
-        // TODO: send to dead letters?
-        this.nack(message);
-        return false;
-      }
-
-      // TODO: Ack here depending on rejection exception? on result?
-      this.ack(message);
-      if (result) {
-        this.log(
-          'debug',
-          'Message acknowledged, processed true',
-          message,
-          'acknowledged_true_result',
-        );
-      } else {
-        this.log(
-          'debug',
-          'Message acknowledged, processed false',
-          message,
-          'success_message_ack_false_result',
-        );
-      }
-      return true;
+      await this.dequeue(rabbitMessage, callback);
     });
   }
 
-  processRawMessage(rabbitMessage) {
+  async dequeue(rabbitMessage, callback) {
+    this.promiseThrottle.add(() => {
+      return this.processMessage(rabbitMessage, callback);
+    });
+  }
+
+  async processMessage(rabbitMessage, callback) {
+    // Make sure nothing is thrown from here, it will kill the channel.
+    const message = this.parseRawMessage(rabbitMessage);
+    if (!message) {
+      return false;
+    }
+
+    let result;
+    try {
+      result = await callback(message);
+    } catch (error) {
+      if (error instanceof BlinkRetryError) {
+        // Todo: move to setting
+        const retryLimit = 100;
+        const retry = message.getMeta().retry || 0;
+        const retryDelay = Queue.retryDelay(retry);
+        if (retry < retryLimit) {
+          this.log(
+            'warning',
+            `Got error ${error}, retry ${retry}, retrying after ${retryDelay}ms`,
+            message,
+            'error_got_retry_request',
+          );
+          setTimeout(() => {
+            this.retry(error.toString(), message);
+          }, retryDelay);
+        } else {
+          this.log(
+            'warning',
+            `Got error ${error}, retry limit reached, rejecting`,
+            message,
+            'error_got_retry_limit_reached',
+          );
+          this.nack(message);
+        }
+        return false;
+      }
+
+      this.log(
+        'warning',
+        error.toString(),
+        message,
+        'message_processing_error',
+      );
+      // TODO: send to dead letters?
+      this.nack(message);
+      return false;
+    }
+
+    // TODO: Ack here depending on rejection exception? on result?
+    this.ack(message);
+    if (result) {
+      this.log(
+        'debug',
+        'Message acknowledged, processed true',
+        message,
+        'acknowledged_true_result',
+      );
+    } else {
+      this.log(
+        'debug',
+        'Message acknowledged, processed false',
+        message,
+        'success_message_ack_false_result',
+      );
+    }
+    return true;
+  }
+
+  parseRawMessage(rabbitMessage) {
     let message;
 
     // Transform raw to Message object.
