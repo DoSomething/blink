@@ -3,6 +3,7 @@
 const URL = require('url');
 const logger = require('winston');
 
+const BlinkError = require('../../errors/BlinkError');
 const MessageValidationBlinkError = require('../../errors/MessageValidationBlinkError');
 
 class WebController {
@@ -22,11 +23,20 @@ class WebController {
       // Omit port 80 in URLs.
       port = null;
     }
+
+    // Koa router url does not throw an Error when a path isn't found,
+    // but returns (sic!) it.
+    // That's why we need to throw an error by ourselves.
+    const pathname = this.blink.web.router.url(name);
+    if (pathname instanceof Error) {
+      throw new BlinkError(pathname.toString());
+    }
+
     return URL.format({
       protocol: this.web.protocol,
       hostname: this.web.hostname,
       port,
-      pathname: this.blink.web.router.url(name),
+      pathname,
     });
   }
 

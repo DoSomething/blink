@@ -30,13 +30,12 @@ test('Gambit should recieve correct retry count if message has been retried', ()
 
   // retry = 0
   const retriedZero = MessageFactoryHelper.getValidMdata();
-  retriedZero.payload.meta.retry = 0;
   gambitWorker.getRequestHeaders(retriedZero)
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 1
   const retriedOnce = MessageFactoryHelper.getValidMdata();
-  retriedOnce.payload.meta.retry = 1;
+  retriedOnce.incrementRetryAttempt();
   gambitWorker.getRequestHeaders(retriedOnce)
     .should.have.property('x-blink-retry-count').and.equal(1);
 });

@@ -2,14 +2,13 @@
 
 // ------- Imports -------------------------------------------------------------
 
-// Libraries
 const Chance = require('chance');
 const moment = require('moment');
 
-// App modules
 const CampaignSignupMessage = require('../../src/messages/CampaignSignupMessage');
 const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPostMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
+const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const MdataMessage = require('../../src/messages/MdataMessage');
 const TwilioStatusCallbackMessage = require('../../src/messages/TwilioStatusCallbackMessage');
 const UserMessage = require('../../src/messages/UserMessage');
@@ -266,6 +265,25 @@ class MessageFactoryHelper {
     }
 
     return data;
+  }
+
+  static getRandomMessage(nested = false) {
+    const data = MessageFactoryHelper.getRandomDataSample(nested);
+    const meta = {
+      request_id: chance.guid({ version: 4 }),
+    };
+    return new FreeFormMessage({ data, meta });
+  }
+
+  static getFakeRabbitMessage(content) {
+    // @see http://www.squaremobius.net/amqp.node/channel_api.html#callbacks
+    const rabbitMessage = {
+      fields: {},
+      properties: {},
+    };
+    // Todo: add option to set message tag.
+    rabbitMessage.content = Buffer.from(content);
+    return rabbitMessage;
   }
 }
 

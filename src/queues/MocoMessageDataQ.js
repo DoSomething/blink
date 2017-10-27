@@ -1,7 +1,7 @@
 'use strict';
 
 const TwilioStatusCallbackMessage = require('../messages/TwilioStatusCallbackMessage');
-const Queue = require('./Queue');
+const Queue = require('../lib/Queue');
 
 class MocoMessageDataQ extends Queue {
   constructor(...args) {

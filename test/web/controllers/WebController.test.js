@@ -6,23 +6,28 @@ const test = require('ava');
 const chai = require('chai');
 const Router = require('koa-router');
 
+const BlinkError = require('../../../src/errors/BlinkError');
 const WebController = require('../../../src/web/controllers/WebController');
+const HooksHelper = require('../../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
 
-// Chai setup.
 chai.should();
+const expect = chai.expect;
+
+test.beforeEach(HooksHelper.startBlinkWebApp);
+test.afterEach(HooksHelper.stopBlinkWebApp);
 
 // ------- Tests ---------------------------------------------------------------
 
 /**
  * WebController class interface
  */
-test.skip('WebController interface', () => {
-  const config = require('../../../config');
-  const web = new WebController(config);
+test('WebController interface', (t) => {
+  const web = new WebController(t.context.blink);
   web.should.have.respondTo('fullUrl');
   web.should.have.respondTo('sendOK');
+  web.should.have.respondTo('sendOKNoContent');
   web.should.have.respondTo('sendError');
   web.should.have.respondTo('log');
 });
@@ -30,7 +35,7 @@ test.skip('WebController interface', () => {
 /**
  * WebController.fullUrl(): Test generating urls for controller methods
  */
-test.skip('WebController.fullUrl(): Test generating urls for controller methods', () => {
+test('WebController.fullUrl(): Test generating urls for controller methods', (t) => {
   class TestController extends WebController {
     constructor(...args) {
       super(...args);
@@ -42,14 +47,14 @@ test.skip('WebController.fullUrl(): Test generating urls for controller methods'
     }
   }
 
-  const config = require('../../../config');
   const router = new Router();
-  config.router = router;
+  t.context.blink.web.router = router;
 
-  // Expected port
-  config.web.port = 81;
+  // Override port for tests
 
-  const testController = new TestController(config);
+  const testController = new TestController(t.context.blink);
+  testController.web.port = '81';
+
   router.get('test.route', '/test', testController.index);
   testController.fullUrl('test.route').should.be.equal('http://localhost:81/test');
 });
@@ -57,7 +62,7 @@ test.skip('WebController.fullUrl(): Test generating urls for controller methods'
 /**
  * WebController.fullUrl(): Test ommitting port 80
  */
-test.skip('WebController.fullUrl(): Test ommitting port 80', () => {
+test('WebController.fullUrl(): Test ommitting port 80', (t) => {
   class TestController extends WebController {
     constructor(...args) {
       super(...args);
@@ -69,16 +74,25 @@ test.skip('WebController.fullUrl(): Test ommitting port 80', () => {
     }
   }
 
-  const config = require('../../../config');
   const router = new Router();
-  config.router = router;
+  t.context.blink.web.router = router;
 
-  // Expected port
-  config.web.port = '80';
+  const testController = new TestController(t.context.blink);
+  testController.web.port = '80';
 
-  const testController = new TestController(config);
   router.get('test.route', '/test', testController.index);
   testController.fullUrl('test.route').should.be.equal('http://localhost/test');
+});
+
+/**
+ * WebController.fullUrl(): should throw error for unknown path
+ */
+test('WebController.fullUrl(): should throw error for unknown path', (t) => {
+  const web = new WebController(t.context.blink);
+  expect(() => web.fullUrl('unknown.path')).to.throw(
+    BlinkError,
+    'Error: No route found for name: unknown.path',
+  );
 });
 
 // ------- End -----------------------------------------------------------------

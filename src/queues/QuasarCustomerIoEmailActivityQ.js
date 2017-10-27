@@ -1,6 +1,6 @@
 'use strict';
 
-const Queue = require('./Queue');
+const Queue = require('../lib/Queue');
 
 class QuasarCustomerIoEmailActivityQ extends Queue {
   constructor(...args) {

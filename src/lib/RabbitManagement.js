@@ -32,6 +32,18 @@ class RabbitManagement {
     return response;
   }
 
+  async getExchangeInfo(exchangeName) {
+    const endpoint = `/exchanges/${this.vhost}/${exchangeName}`;
+    let response = {};
+    try {
+      response = await this.get(endpoint);
+    } catch (error) {
+      // Wrap HTTP exceptions in meaningful response.
+      throw new Error(`Incorrect RabbitManagement.getExchangeInfo() response for GET ${endpoint}: ${error.message}`);
+    }
+    return response;
+  }
+
   async getQueueBindings(queueName, exchangeName) {
     const endpoint = `/bindings/${this.vhost}/e/${exchangeName}/q/${queueName}`;
     const response = await this.get(endpoint);

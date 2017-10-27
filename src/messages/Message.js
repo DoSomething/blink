@@ -11,6 +11,10 @@ class Message {
     this.payload = { data, meta };
     // Generate unique message id or reuse request id.
     this.payload.meta.request_id = this.payload.meta.request_id || uuidV4();
+    // Automatically set retryAttempt to 0.
+    if (!this.payload.meta.retryAttempt || this.payload.meta.retryAttempt < 1) {
+      this.payload.meta.retryAttempt = 0;
+    }
 
     // Bind public functions.
     this.getData = this.getData.bind(this);
@@ -31,6 +35,18 @@ class Message {
 
   getRequestId() {
     return this.payload.meta.request_id;
+  }
+
+  getRetryAttempt() {
+    return this.payload.meta.retryAttempt || 0;
+  }
+
+  incrementRetryAttempt(reason) {
+    this.payload.meta.retryAttempt = this.getRetryAttempt() + 1;
+    if (reason) {
+      this.payload.meta.retryReason = reason;
+    }
+    return this.payload.meta.retryAttempt;
   }
 
   toString() {

@@ -185,6 +185,9 @@ test('POST /api/v1/webhooks/gambit-chatbot-mdata should validate incoming messag
     .send(fullPayload);
   responseToFullPayload.status.should.be.equal(200);
   responseToFullPayload.body.should.have.property('ok', true);
+
+  // Cleanup
+  await t.context.blink.queues.gambitChatbotMdataQ.purge();
 });
 
 /**
@@ -214,7 +217,7 @@ test('POST /api/v1/webhooks/moco-message-data should publish message to moco-mes
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
   // TODO: queue cleanup to make sure that it's not OLD message.
-  const messages = await rabbit.getMessagesFrom('moco-message-data', 1);
+  const messages = await rabbit.getMessagesFrom('moco-message-data', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');

@@ -1,18 +1,31 @@
 'use strict';
 
-/**
- * Imports.
- */
+// ------- Imports -------------------------------------------------------------
+
 const test = require('ava');
-require('chai').should();
+const chai = require('chai');
 
+const Queue = require('../../src/lib/Queue');
 const FetchQ = require('../../src/queues/FetchQ');
-const Queue = require('../../src/queues/Queue');
+const HooksHelper = require('../helpers/HooksHelper');
+
+// ------- Init ----------------------------------------------------------------
+
+chai.should();
+
+// Setup blink app for each test.
+test.beforeEach(HooksHelper.startBlinkApp);
+test.afterEach.always(HooksHelper.stopBlinkApp);
+
+// ------- Tests ---------------------------------------------------------------
 
 /**
- * Test FetchQ class
+ * Test FetchQ
  */
-test.skip('FetchQ', () => {
-  const fetchQ = new FetchQ();
-  fetchQ.should.be.an.instanceof(Queue);
+test('FetchQ', (t) => {
+  const queue = new FetchQ(t.context.blink.exchange);
+  queue.should.be.an.instanceof(Queue);
+  queue.routes.should.include('fetch');
 });
+
+// ------- End -----------------------------------------------------------------

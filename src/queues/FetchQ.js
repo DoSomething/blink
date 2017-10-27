@@ -1,7 +1,7 @@
 'use strict';
 
 const FetchMessage = require('../messages/FetchMessage');
-const Queue = require('./Queue');
+const Queue = require('../lib/Queue');
 
 class FetchQ extends Queue {
   constructor(...args) {

@@ -6,7 +6,7 @@ const test = require('ava');
 const chai = require('chai');
 
 const Queue = require('../../src/lib/Queue');
-const QuasarCustomerIoEmailActivityQ = require('../../src/queues/QuasarCustomerIoEmailActivityQ');
+const GambitChatbotMdataQ = require('../../src/queues/GambitChatbotMdataQ');
 const HooksHelper = require('../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
@@ -20,13 +20,12 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
 // ------- Tests ---------------------------------------------------------------
 
 /**
- * Test QuasarCustomerIoEmailActivityQ
+ * Test GambitChatbotMdataQ
  */
-test('QuasarCustomerIoEmailActivityQ', (t) => {
-  const queue = new QuasarCustomerIoEmailActivityQ(t.context.blink.exchange);
+test('GambitChatbotMdataQ', (t) => {
+  const queue = new GambitChatbotMdataQ(t.context.blink.exchange);
   queue.should.be.an.instanceof(Queue);
-  queue.routes.should.include('quasar-customer-io-email-activity');
-  queue.routes.should.include('generic-event.quasar');
+  queue.routes.should.include('gambit-chatbot-mdata');
 });
 
 // ------- End -----------------------------------------------------------------

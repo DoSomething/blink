@@ -1,18 +1,32 @@
 'use strict';
 
-/**
- * Imports.
- */
+// ------- Imports -------------------------------------------------------------
+
 const test = require('ava');
-require('chai').should();
+const chai = require('chai');
 
+const Queue = require('../../src/lib/Queue');
 const CustomerIoUpdateCustomerQ = require('../../src/queues/CustomerIoUpdateCustomerQ');
-const Queue = require('../../src/queues/Queue');
+const HooksHelper = require('../helpers/HooksHelper');
+
+// ------- Init ----------------------------------------------------------------
+
+chai.should();
+
+// Setup blink app for each test.
+test.beforeEach(HooksHelper.startBlinkApp);
+test.afterEach.always(HooksHelper.stopBlinkApp);
+
+// ------- Tests ---------------------------------------------------------------
 
 /**
- * Test CustomerIoUpdateCustomerQ class
+ * Test CustomerIoUpdateCustomerQ
  */
-test.skip('CustomerIoUpdateCustomerQ', () => {
-  const customerIoUpdateCustomerQ = new CustomerIoUpdateCustomerQ();
-  customerIoUpdateCustomerQ.should.be.an.instanceof(Queue);
+test('CustomerIoUpdateCustomerQ', (t) => {
+  const queue = new CustomerIoUpdateCustomerQ(t.context.blink.exchange);
+  queue.should.be.an.instanceof(Queue);
+  queue.routes.should.include('customer-io-update-customer');
+  queue.routes.should.include('create.user.event');
 });
+
+// ------- End -----------------------------------------------------------------

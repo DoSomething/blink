@@ -1,7 +1,7 @@
 'use strict';
 
 const CampaignSignupPostMessage = require('../messages/CampaignSignupPostMessage');
-const Queue = require('./Queue');
+const Queue = require('../lib/Queue');
 
 class CustomerIoCampaignSignupPostQ extends Queue {
   constructor(...args) {

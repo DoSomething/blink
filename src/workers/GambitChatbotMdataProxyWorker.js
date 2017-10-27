@@ -115,8 +115,8 @@ class GambitChatbotMdataProxyWorker extends Worker {
       'Content-type': 'application/json',
     };
 
-    if (mdataMessage.getMeta().retry && mdataMessage.getMeta().retry > 0) {
-      headers['x-blink-retry-count'] = mdataMessage.getMeta().retry;
+    if (mdataMessage.getRetryAttempt() > 0) {
+      headers['x-blink-retry-count'] = mdataMessage.getRetryAttempt();
     }
 
     return headers;

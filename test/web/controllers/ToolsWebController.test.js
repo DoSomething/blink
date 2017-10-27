@@ -92,7 +92,7 @@ test('GET /api/v1/tools/fetch should publish message to fetch queue', async (t) 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
   // TODO: queue cleanup to make sure that it's not OLD message.
-  const messages = await rabbit.getMessagesFrom('fetch', 1);
+  const messages = await rabbit.getMessagesFrom('fetch', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');

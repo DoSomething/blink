@@ -1,7 +1,7 @@
 'use strict';
 
 const UserMessage = require('../messages/UserMessage');
-const Queue = require('./Queue');
+const Queue = require('../lib/Queue');
 
 class CustomerIoUpdateCustomerQ extends Queue {
   constructor(...args) {

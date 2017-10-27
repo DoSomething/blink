@@ -119,6 +119,8 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
   responseValidPayload.body.should.have.property('ok', true);
   responseValidPayload.body.should.have.property('message')
     .and.equal('Message queued');
+
+  await t.context.blink.queues.customerIoUpdateCustomerQ.purge();
 });
 
 

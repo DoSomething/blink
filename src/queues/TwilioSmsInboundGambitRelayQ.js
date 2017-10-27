@@ -1,7 +1,7 @@
 'use strict';
 
 const FreeFormMessage = require('../messages/FreeFormMessage');
-const Queue = require('./Queue');
+const Queue = require('../lib/Queue');
 
 class TwilioSmsInboundGambitRelayQ extends Queue {
   constructor(...args) {

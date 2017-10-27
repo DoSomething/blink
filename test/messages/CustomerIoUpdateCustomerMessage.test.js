@@ -87,16 +87,6 @@ test('Cio identify should remove certain optional fields when empty', () => {
     .forEach(field => MessageValidationHelper.removesWhenEmpty(field, generator, mutator));
 });
 
-test.skip('Cio identify optional fields should have correct default values', () => {
-  const mapping = {
-    role: 'user',
-    unsubscried: true,
-  };
-  Object.entries(mapping).forEach(([field, defaultValue]) => {
-    MessageValidationHelper.defaultsToWhenEmpty(field, defaultValue, generator, mutator);
-  });
-});
-
 test('Cio identify should fail on incorrect types', () => {
   const mapping = {
     id: chance.integer(),

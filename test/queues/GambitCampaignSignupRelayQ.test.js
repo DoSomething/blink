@@ -6,7 +6,7 @@ const test = require('ava');
 const chai = require('chai');
 
 const Queue = require('../../src/lib/Queue');
-const QuasarCustomerIoEmailActivityQ = require('../../src/queues/QuasarCustomerIoEmailActivityQ');
+const GambitCampaignSignupRelayQ = require('../../src/queues/GambitCampaignSignupRelayQ');
 const HooksHelper = require('../helpers/HooksHelper');
 
 // ------- Init ----------------------------------------------------------------
@@ -20,13 +20,13 @@ test.afterEach.always(HooksHelper.stopBlinkApp);
 // ------- Tests ---------------------------------------------------------------
 
 /**
- * Test QuasarCustomerIoEmailActivityQ
+ * Test GambitCampaignSignupRelayQ
  */
-test('QuasarCustomerIoEmailActivityQ', (t) => {
-  const queue = new QuasarCustomerIoEmailActivityQ(t.context.blink.exchange);
+test('GambitCampaignSignupRelayQ', (t) => {
+  const queue = new GambitCampaignSignupRelayQ(t.context.blink.exchange);
   queue.should.be.an.instanceof(Queue);
-  queue.routes.should.include('quasar-customer-io-email-activity');
-  queue.routes.should.include('generic-event.quasar');
+  queue.routes.should.include('gambit-campaign-signup-relay');
+  queue.routes.should.include('signup.user.event');
 });
 
 // ------- End -----------------------------------------------------------------
