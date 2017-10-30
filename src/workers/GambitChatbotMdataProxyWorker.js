@@ -13,26 +13,12 @@ class GambitChatbotMdataProxyWorker extends Worker {
 
     this.gambitBaseUrl = this.blink.config.gambit.baseUrl;
     this.gambitApiKey = this.blink.config.gambit.apiKey;
-    this.proxyConcurrency = this.blink.config.gambit.proxyConcurrency;
 
     // Bind process method to queue context
     this.consume = this.consume.bind(this);
   }
 
   setup() {
-    if (this.proxyConcurrency > 0) {
-      const meta = {
-        env: this.blink.config.app.env,
-        code: 'gambit_concurrency_change',
-        worker: this.constructor.name,
-      };
-
-      logger.debug(
-        `Setting Gambit concurrency to ${this.proxyConcurrency}`,
-        meta,
-      );
-      this.blink.exchange.limitConsumerPrefetchCount(this.proxyConcurrency);
-    }
     this.queue = this.blink.queues.gambitChatbotMdataQ;
   }
 

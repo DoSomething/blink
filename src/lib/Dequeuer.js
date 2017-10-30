@@ -2,12 +2,13 @@
 
 const logger = require('winston');
 
+const PromiseThrottle = require('promise-throttle');
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 
 class Dequeuer {
-  constructor(queue, callback, retryManager) {
+  constructor(queue, callback, retryManager, rateLimit = 100) {
     this.queue = queue;
     this.callback = callback;
 
@@ -16,12 +17,17 @@ class Dequeuer {
 
     // Inject retry manager.
     this.retryManager = retryManager;
+
+    // Hardcoded dequeue rate limit on all messages.
+    // @todo: make configurable per worker.
+    this.promiseThrottle = new PromiseThrottle({ requestsPerSecond: rateLimit });
   }
 
   async dequeue(rabbitMessage) {
     const message = this.extractOrDiscard(rabbitMessage);
     if (message) {
-      await this.executeCallback(message);
+      // Throttle amount of messages processed per second.
+      this.promiseThrottle.add(() => this.executeCallback(message));
     }
   }
 

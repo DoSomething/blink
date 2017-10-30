@@ -22,7 +22,7 @@ class BlinkWorkerApp extends BlinkApp {
     }
     this.worker = new workersMapping[name](this);
     // TODO: figure out worker names
-    this.workerNname = name;
+    this.workerName = name;
   }
 
   async reconnect() {
@@ -32,6 +32,12 @@ class BlinkWorkerApp extends BlinkApp {
       this.worker.perform();
     }
   }
+
+  // @todo: gracefull worker shutdown
+  // async stop() {
+  //   await this.worker.gracefulStop();
+  //   return await super.reconnect();
+  // }
 
   static getAvailableWorkers() {
     return {

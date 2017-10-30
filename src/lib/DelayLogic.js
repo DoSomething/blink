@@ -15,6 +15,10 @@ class DelayLogic {
     // eslint-disable-next-line no-mixed-operators
     return ((currentRetryAttempt ** 2) / 4 + 1) * 1000;
   }
+
+  static constantTimeDelay(delay) {
+    return () => delay;
+  }
 }
 
 module.exports = DelayLogic;
