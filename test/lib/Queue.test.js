@@ -152,7 +152,7 @@ test('Queue.purge(): Ensure incorrect queue purging fails', async (t) => {
 
   // Ensure the channel reconnects after error.
   t.context.blink.connected.should.be.false;
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 1000));
   t.context.blink.connected.should.be.true;
 });
 

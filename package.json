@@ -1,6 +1,6 @@
 {
   "name": "blink",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
     "node": "8.6.0",
@@ -44,6 +44,7 @@
     "node-fetch": "^1.7.3",
     "promise-throttle": "^0.3.1",
     "throng": "^4.0.0",
+    "twilio": "^3.9.2",
     "uuid": "^3.1.0",
     "winston": "^2.3.1",
     "yargs": "^9.0.1"

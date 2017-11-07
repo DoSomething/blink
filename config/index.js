@@ -15,6 +15,7 @@ config.amqp = require('./amqp');
 config.amqpManagement = require('./amqpManagement');
 config.customerio = require('./customerio');
 config.gambit = require('./gambit');
+config.twilio = require('./twilio');
 
 // Require env-dependent configs
 const envConfigPath = `${__dirname}/env/override-${config.app.env}.js`;

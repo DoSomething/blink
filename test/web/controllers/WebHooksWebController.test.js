@@ -8,6 +8,7 @@ const test = require('ava');
 
 const RabbitManagement = require('../../../src/lib/RabbitManagement');
 const HooksHelper = require('../../helpers/HooksHelper');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -48,6 +49,9 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
 
   res.body.should.have.property('twilio-sms-inbound')
     .and.have.string('/api/v1/webhooks/twilio-sms-inbound');
+
+  res.body.should.have.property('customerio-sms-broadcast')
+    .and.have.string('/api/v1/webhooks/customerio-sms-broadcast');
 });
 
 /**
@@ -238,10 +242,7 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should publish message to twilio-
     },
   };
 
-  const broadcastId = chance.word();
-
   const res = await t.context.supertest.post('/api/v1/webhooks/twilio-sms-inbound')
-    .query({ broadcastId })
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
@@ -261,6 +262,59 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should publish message to twilio-
   const messageData = JSON.parse(payload);
   messageData.should.have.property('data');
   messageData.data.should.be.eql(data);
+});
+
+/**
+ * POST /api/v1/webhooks/customerio-sms-broadcast
+ */
+test('POST /api/v1/webhooks/customerio-sms-broadcast should publish message to customerio-sms-broadcast-relay queue', async (t) => {
+  const broadcastId = chance.word();
+  const data = MessageFactoryHelper.getValidCustomerBroadcastData(broadcastId);
+
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-sms-broadcast')
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  // Ensure Customer.io compatible response.
+  res.status.should.be.equal(201);
+
+  // Check response to be json
+  res.header.should.have.property('content-type');
+  res.header['content-type'].should.match(/json/);
+
+  // Check response.
+  res.body.should.have.property('ok', true);
+
+  // Check that the message is queued.
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+  const messages = await rabbit.getMessagesFrom('customerio-sms-broadcast-relay', 1, false);
+  messages.should.be.an('array').and.to.have.lengthOf(1);
+
+  messages[0].should.have.property('payload');
+  const payload = messages[0].payload;
+  const messageData = JSON.parse(payload);
+  messageData.should.have.property('data');
+  messageData.data.should.be.eql(data);
+});
+
+/**
+ * POST /api/v1/webhooks/customerio-sms-broadcast
+ */
+test('POST /api/v1/webhooks/customerio-sms-broadcast validates incoming payload', async (t) => {
+  const broadcastId = chance.word();
+  const data = MessageFactoryHelper.getValidCustomerBroadcastData(broadcastId);
+  delete data.To;
+
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-sms-broadcast')
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(422);
+  res.body.should.have.property('ok', false);
+  res.body.should.have.property('message')
+    .and.have.string('"To" is required');
 });
 
 // ------- End -----------------------------------------------------------------

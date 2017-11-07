@@ -7,6 +7,7 @@ const Exchange = require('../lib/Exchange');
 
 const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
 const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ');
+const CustomerioSmsBroadcastRelayQ = require('../queues/CustomerioSmsBroadcastRelayQ');
 const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const FetchQ = require('../queues/FetchQ');
 const GambitCampaignSignupRelayQ = require('../queues/GambitCampaignSignupRelayQ');
@@ -50,6 +51,7 @@ class BlinkApp {
       this.queues = await this.setupQueues([
         CustomerIoCampaignSignupPostQ,
         CustomerIoCampaignSignupQ,
+        CustomerioSmsBroadcastRelayQ,
         CustomerIoUpdateCustomerQ,
         FetchQ,
         GambitCampaignSignupRelayQ,

@@ -285,6 +285,16 @@ class MessageFactoryHelper {
     rabbitMessage.content = Buffer.from(content);
     return rabbitMessage;
   }
+
+  static getValidCustomerBroadcastData(broadcastId) {
+    const data = {
+      To: ` 1555${chance.string({ length: 7, pool: '1234567890' })}`,
+      Body: chance.sentence(),
+      MessagingServiceSid: `MG${chance.hash({ length: 32 })}`,
+      StatusCallback: `http://blink:password@blink.dosomething.org/api/v1/webhooks/twilio-sms-broadcast?broadcastId=${broadcastId}`,
+    };
+    return data;
+  }
 }
 
 module.exports = MessageFactoryHelper;
