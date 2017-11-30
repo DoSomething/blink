@@ -1,9 +1,13 @@
 'use strict';
 
+const useTestCreds = process.env.TWILIO_API_TEST_CREDS === 'true';
+const envPrefix = useTestCreds ? 'TWILIO_API_TEST_' : 'TWILIO_API_';
+
 const config = {
-  accountSid: process.env.TWILIO_API_ACCOUNT_SID || 'account_sid',
-  authToken: process.env.TWILIO_API_AUTH_TOKEN || 'totallysecret',
-  serviceSid: process.env.TWILIO_API_SERVICE_SID || 'totallysecret',
+  useTestCreds,
+  accountSid: process.env[`${envPrefix}ACCOUNT_SID`] || 'account_sid',
+  authToken: process.env[`${envPrefix}AUTH_TOKEN`] || 'totallysecret',
+  from: process.env[`${envPrefix}FROM`] || '+15005550006',
 };
 
 module.exports = config;

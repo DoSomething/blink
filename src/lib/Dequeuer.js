@@ -96,6 +96,7 @@ class Dequeuer {
 
     // Transform raw to Message object.
     try {
+      // TODO: store message type in message itself.
       message = this.queue.messageClass.fromRabbitMessage(rabbitMessage);
     } catch (error) {
       if (error instanceof MessageParsingBlinkError) {

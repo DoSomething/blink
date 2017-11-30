@@ -1,175 +1,145 @@
 'use strict';
 
+// ------- Imports -------------------------------------------------------------
+
 const changeCase = require('change-case');
 const logger = require('winston');
 
-const Exchange = require('../lib/Exchange');
+// ------- Internal imports ----------------------------------------------------
 
+// Blink Libs.
+const RabbitMQBroker = require('../lib/brokers/RabbitMQ/RabbitMQBroker');
+
+// Queues.
 const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
 const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ');
 const CustomerioSmsBroadcastRelayQ = require('../queues/CustomerioSmsBroadcastRelayQ');
 const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const FetchQ = require('../queues/FetchQ');
 const GambitCampaignSignupRelayQ = require('../queues/GambitCampaignSignupRelayQ');
-const GambitChatbotMdataQ = require('../queues/GambitChatbotMdataQ');
-const MocoMessageDataQ = require('../queues/MocoMessageDataQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
 const TwilioSmsBroadcastGambitRelayQ = require('../queues/TwilioSmsBroadcastGambitRelayQ');
 const TwilioSmsInboundGambitRelayQ = require('../queues/TwilioSmsInboundGambitRelayQ');
 
+// ------- Class ---------------------------------------------------------------
+
 class BlinkApp {
   constructor(config) {
     this.config = config;
-    this.exchange = false;
     this.queues = [];
-    this.connected = false;
-    this.connecting = false;
-    this.shuttingDown = false;
-    this.reconnectTimeout = 2000;
+    this.broker = false;
 
-    // Attach functions to object context.
+    // Attach Public API functions to object context.
     this.start = this.start.bind(this);
-    this.reconnect = this.reconnect.bind(this);
+    this.stop = this.stop.bind(this);
   }
+
+  // ------- Public API  -------------------------------------------------------
 
   async start() {
-    return this.reconnect();
-  }
+    // Setup connection to message broker server.
+    this.broker = await this.setupBroker();
 
-  async reconnect() {
-    if (this.connected || this.connecting) {
-      return false;
-    }
+    // Assert queues and add them to queue registry.
+    // IMPORTANT: if the broker goes away and returns with no queues,
+    // we will be able to recover the connection automatically,
+    // but queues will not be created.
+    // Full topology is only asserted on app bootstrap.
+    this.queues = await this.setupQueues(BlinkApp.discoverQueueClasses());
 
-    // Block other attempts to reconnect when in progress.
-    this.connecting = true;
-    try {
-      // Initialize and setup exchange.
-      this.exchange = await this.setupExchange();
+    // Log success.
+    logger.info('Blink app is loaded.', { code: 'success_blink_app_loaded' });
 
-      // Initialize and setup all available queues.
-      this.queues = await this.setupQueues([
-        CustomerIoCampaignSignupPostQ,
-        CustomerIoCampaignSignupQ,
-        CustomerioSmsBroadcastRelayQ,
-        CustomerIoUpdateCustomerQ,
-        FetchQ,
-        GambitCampaignSignupRelayQ,
-        GambitChatbotMdataQ,
-        MocoMessageDataQ,
-        QuasarCustomerIoEmailActivityQ,
-        TwilioSmsBroadcastGambitRelayQ,
-        TwilioSmsInboundGambitRelayQ,
-      ]);
-    } catch (error) {
-      this.connecting = false;
-      this.scheduleReconnect(
-        this.reconnectTimeout,
-        'blink_bootstrap_error',
-        `Blink bootrstrap failed: ${error}`,
-      );
-      return false;
-    }
-
-    this.connecting = false;
-    this.connected = true;
+    // TODO: Error handling?
     return true;
   }
 
   async stop() {
     // TODO: log.
+    // Flush queues.
     this.queues = [];
-    this.shuttingDown = true;
-    this.exchange.channel.close();
-    this.exchange.connection.close();
-    this.exchange = false;
+    await this.broker.disconnect();
     return true;
   }
 
-  async setupExchange() {
-    const exchange = new Exchange(this.config);
-    await exchange.setup();
+  // ------- Internal machinery  -----------------------------------------------
 
-    const socket = exchange.channel.connection.stream;
-    let meta;
-    meta = {
+  async setupBroker() {
+    // Optional: tag connection for easier debug.
+    const clientDescription = {
+      // TODO: add dyno name.
+      name: this.config.app.name,
+      version: this.config.app.version,
       env: this.config.app.env,
-      code: 'amqp_connected',
-      amqp_local: `${socket.localAddress}:${socket.localPort}`,
-      amqp_remote: `${socket.remoteAddress}:${socket.remotePort}`,
     };
-    logger.debug('AMQP connection established', meta);
 
-    exchange.channel.on('error', (error) => {
-      meta = {
-        env: this.config.app.env,
-        code: 'amqp_channel_error',
-      };
-      logger.warning(error.toString(), meta);
-    });
-
-    exchange.connection.on('error', (error) => {
-      meta = {
-        env: this.config.app.env,
-        code: 'amqp_connection_error',
-      };
-      logger.warning(error.toString(), meta);
-    });
-
-    exchange.channel.on('close', () => {
-      this.scheduleReconnect(
-        0,
-        'amqp_channel_closed_from_server',
-        'Unexpected AMQP client shutdown',
-      );
-    });
-
-    exchange.connection.on('close', () => {
-      this.scheduleReconnect(
-        this.reconnectTimeout,
-        'amqp_connection_closed_from_server',
-        'Unexpected AMQP connection shutdown',
-      );
-    });
-
-    return exchange;
-  }
-
-  scheduleReconnect(timeout = 0, code, message) {
-    // Don't reconnect on programmatic shutdown.
-    if (this.shuttingDown) {
-      return;
+    // Now only RabbitMQ is supported.
+    const broker = new RabbitMQBroker(this.config.amqp, clientDescription);
+    // Establish connection or perform authorization.
+    const result = await broker.connect();
+    if (!result) {
+      // Do what?
     }
-    const meta = {
-      env: this.config.app.env,
-      code,
-    };
-    logger.error(`${message}, reconnecting in ${timeout}ms`, meta);
-    this.connected = false;
-    setTimeout(this.reconnect, timeout);
+    // Return connected broker.
+    return broker;
   }
 
   async setupQueues(queueClasses) {
+    // TODO: This is too confusing. KISS.
     const queueMappingPromises = queueClasses.map(async (queueClass, i) => {
-      const queue = new queueClasses[i](this.exchange);
-      // Assert Rabbit Topology.
-      await queue.setup();
-      const mappingKey = changeCase.camelCase(queueClass.name);
+      // It's not possible to just say `new queueClass()`, JS would think
+      // we're trying to construct class called 'queueClass'.
+      // To construct a class dynamically, it's possible `new` its reference
+      // stored as an array element: `new queueClasses[i]`.
+      const queue = new queueClasses[i](this.broker);
+      // Ensure the queue is present with exptected settings.
+      // Todo: parse result.
+      await queue.create();
+      // Registry key makes it more convenient to get queues from the
+      // registry using Node's object destructing:
+      // const { fetchQ } = this.blink.queues;
+      const registryKey = BlinkApp.generateQueueRegistryKey(queueClass);
       // Return an item of 2D array for further transformation.
-      return [mappingKey, queue];
+      return [registryKey, queue];
     });
 
-    // Wait for all queues to be set.
-    const queueMappingArray = await Promise.all(queueMappingPromises);
+    // Wait for all queues to be asserted.
+    const queueRegistryArray = await Promise.all(queueMappingPromises);
 
     // Transform resolved promises array to an object.
-    const queueMapping = {};
-    queueMappingArray.forEach((mapping) => {
+    // TODO: Again, too confusing, KISS.
+    const queueRegistry = {};
+    queueRegistryArray.forEach((mapping) => {
       const [key, value] = mapping;
-      queueMapping[key] = value;
+      queueRegistry[key] = value;
     });
-    return queueMapping;
+    return queueRegistry;
+  }
+
+  // ------- Static helpers  ---------------------------------------------------
+
+  static discoverQueueClasses() {
+    // TODO: register them from workers, bottom-up approach.
+    return [
+      CustomerIoCampaignSignupPostQ,
+      CustomerIoCampaignSignupQ,
+      CustomerioSmsBroadcastRelayQ,
+      CustomerIoUpdateCustomerQ,
+      FetchQ,
+      GambitCampaignSignupRelayQ,
+      QuasarCustomerIoEmailActivityQ,
+      TwilioSmsBroadcastGambitRelayQ,
+      TwilioSmsInboundGambitRelayQ,
+    ];
+  }
+
+  static generateQueueRegistryKey(queueClass) {
+    return changeCase.camelCase(queueClass.name);
   }
 }
 
+// ------- Exports -------------------------------------------------------------
+
 module.exports = BlinkApp;
+
+// ------- End -----------------------------------------------------------------

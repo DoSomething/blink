@@ -89,16 +89,6 @@ class BlinkWebApp extends BlinkApp {
       webHooksWebController.customerioSmsBroadcast,
     );
     router.post(
-      'api.v1.webhooks.gambit-chatbot-mdata',
-      '/api/v1/webhooks/gambit-chatbot-mdata',
-      webHooksWebController.gambitChatbotMdata,
-    );
-    router.post(
-      'api.v1.webhooks.moco-message-data',
-      '/api/v1/webhooks/moco-message-data',
-      webHooksWebController.mocoMessageData,
-    );
-    router.post(
       'api.v1.webhooks.twilio-sms-broadcast',
       '/api/v1/webhooks/twilio-sms-broadcast',
       webHooksWebController.twilioSmsBroadcast,

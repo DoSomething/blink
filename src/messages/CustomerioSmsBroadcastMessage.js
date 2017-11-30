@@ -14,9 +14,8 @@ class CustomerioSmsBroadcastMessage extends Message {
     this.schema = Joi.object()
       .keys({
         // Note: first char of To is plus, which is resolved to a space by mistake.
-        To: Joi.string().required().empty(whenNullOrEmpty).regex(/^ 1[0-9]+$/, 'valid phone number'),
+        To: Joi.string().required().empty(whenNullOrEmpty).regex(/^\+1[0-9]+$/, 'valid phone number'),
         Body: Joi.string().required().empty(whenNullOrEmpty),
-        MessagingServiceSid: Joi.string().required().empty(whenNullOrEmpty),
         StatusCallback: Joi.string().required().empty(whenNullOrEmpty).regex(statusRegex, 'valid status callback'),
       });
   }
@@ -26,7 +25,7 @@ class CustomerioSmsBroadcastMessage extends Message {
   }
 
   getPhoneNumber() {
-    return this.getData().To.replace(/^ /, '+');
+    return this.getData().To;
   }
 
   getBroadcastId() {

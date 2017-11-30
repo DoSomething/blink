@@ -2,18 +2,11 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const Chance = require('chance');
 const supertest = require('supertest');
 
 const BlinkApp = require('../../src/app/BlinkApp');
 const BlinkWebApp = require('../../src/app/BlinkWebApp');
-const Exchange = require('../../src/lib/Exchange');
-const Queue = require('../../src/lib/Queue');
-const FreeFormMessage = require('../../src/messages/FreeFormMessage');
-
-// ------- Init ----------------------------------------------------------------
-
-const chance = new Chance();
+const UnitHooksHelper = require('./UnitHooksHelper');
 
 // ------- Helpers -------------------------------------------------------------
 
@@ -43,33 +36,15 @@ class HooksHelper {
   }
 
   static async createRandomQueue(t) {
-    await HooksHelper.createRandomQueueInMemory(t);
-    await t.context.queue.setup();
+    await UnitHooksHelper.createRandomQueueInMemory(t);
+    await t.context.broker.connect();
+    await t.context.queue.create();
   }
 
   static async destroyRandomQueue(t) {
     await t.context.queue.delete();
-    t.context.exchange.channel.close();
-    t.context.exchange.connection.close();
-    HooksHelper.destroyRandomQueueInMemory(t);
-  }
-
-  static async createRandomQueueInMemory(t) {
-    const config = require('../../config');
-    const exchange = new Exchange(config);
-    // Todo: make independent.
-    await exchange.setup();
-
-    const queue = new Queue(exchange, `test-autogen-${chance.word()}-${chance.word()}`);
-    queue.messageClass = FreeFormMessage;
-
-    t.context.exchange = exchange;
-    t.context.queue = queue;
-  }
-
-  static destroyRandomQueueInMemory(t) {
-    t.context.queue = false;
-    t.context.exchange = false;
+    await t.context.broker.disconnect();
+    UnitHooksHelper.destroyRandomQueueInMemory(t);
   }
 }
 

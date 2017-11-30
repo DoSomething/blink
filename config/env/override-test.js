@@ -13,8 +13,4 @@ module.exports = (config) => {
   // Port 0 means random port:
   // https://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback
   config.web.bind_port = 0;
-
-  // Test exchange name.
-  // TODO: Randomize exchange name.
-  config.amqp.exchange = 'test-x';
 };

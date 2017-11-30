@@ -30,7 +30,7 @@ class EventsWebController extends WebController {
     try {
       const userMessage = UserMessage.fromCtx(ctx);
       userMessage.validateStrict();
-      this.blink.exchange.publish(
+      this.blink.broker.publishToRoute(
         'create.user.event',
         userMessage,
       );
@@ -44,7 +44,7 @@ class EventsWebController extends WebController {
     try {
       const message = CampaignSignupMessage.fromCtx(ctx);
       message.validateStrict();
-      this.blink.exchange.publish(
+      this.blink.broker.publishToRoute(
         'signup.user.event',
         message,
       );
@@ -58,7 +58,7 @@ class EventsWebController extends WebController {
     try {
       const message = CampaignSignupPostMessage.fromCtx(ctx);
       message.validateStrict();
-      this.blink.exchange.publish(
+      this.blink.broker.publishToRoute(
         'signup-post.user.event',
         message,
       );
@@ -72,7 +72,7 @@ class EventsWebController extends WebController {
     try {
       const message = FreeFormMessage.fromCtx(ctx);
       message.validate();
-      this.blink.exchange.publish(
+      this.blink.broker.publishToRoute(
         'generic-event.quasar',
         message,
       );

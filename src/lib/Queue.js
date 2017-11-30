@@ -6,9 +6,8 @@ const Dequeuer = require('./Dequeuer');
 const RetryManager = require('./RetryManager');
 
 class Queue {
-  constructor(exchange, name = false) {
-    this.exchange = exchange;
-    this.channel = exchange.channel;
+  constructor(broker, name = false) {
+    this.broker = broker;
 
     if (!name) {
       // If name is not explicitly set, generate Queue name from class name:
@@ -26,61 +25,39 @@ class Queue {
     this.routes.push(this.name);
   }
 
-  async setup() {
-    return this.exchange.setupQueue(this);
-  }
-
   /**
    * Send a single message to the queue bypassing routing.
    */
   publish(message) {
-    return this.exchange.publish(this.name, message);
-  }
-
-  nack(message) {
-    this.channel.reject(message, false);
-  }
-
-  ack(message) {
-    this.channel.ack(message);
+    // By convention, queuess are mapped to their names.
+    // @see Queue.constructor().
+    this.broker.publishToRoute(this.name, message);
   }
 
   /**
-   * Purge the queue.
+   * Listen for new messages in this queue, unpack them and send to the callback
    *
-   * @return {Number} The number of messages purged from the queue
-   */
-  async purge() {
-    let result;
-    try {
-      result = await this.channel.purgeQueue(this.name);
-    } catch (error) {
-      // Wrap HTTP exceptions in meaningful response.
-      throw new Error(`Queue.purge(): failed to purge queue "${this.name}": ${error.message}`);
-    }
-    return result.messageCount;
-  }
-
-  /**
-   * Deletes the queue.
+   * 1. Recieve new message
+   * 2. Dequeue it
+   * 3. Unpack it to an instance of Message class
+   * 4. Validate it
+   * 5. Rate limit it
+   * 6. Send it as the first argument to callback
+   * 7. Process callback result: ack it, nack it, or retry it
    *
-   * @return {Number} The number of messages deleted or dead-lettered along with the queue
+   * Work in progress.
+   * TODO:
+   *  - simplify injecting of Dequeuer, Retry manager
+   *  - simplify installing rate limiter
+   *  - make message unpack independent from Queue.messageClass
+   *    @see  Dequeuer.unpack()
+   *
+   * @param  {Function} callback     The function to send messages to
+   * @param  {object}   options      Override rate limit and retry manager
+   * @param  {string}   consumerTag  Optional consumer tag
+   * @return {string}                Registered consumer tag
    */
-  async delete(ifUnused = false, ifEmpty = false) {
-    let result;
-    try {
-      result = await this.channel.deleteQueue(this.name, {
-        ifUnused,
-        ifEmpty,
-      });
-    } catch (error) {
-      // TODO: handle channel closing on unsuccessful delete?
-      throw new Error(`Queue.delete(): failed to delete queue "${this.name}": ${error.message}`);
-    }
-    return result.messageCount;
-  }
-
-  subscribe(callback, options) {
+  async subscribe(callback, options, consumerTag = false) {
     let { rateLimit, retryManager } = options;
 
     if (!retryManager) {
@@ -92,7 +69,44 @@ class Queue {
 
     const dequeuer = new Dequeuer(this, callback, retryManager, rateLimit);
     this.dequeuer = dequeuer;
-    this.channel.consume(this.name, dequeuer.dequeue);
+    return this.broker.subscribe(this.name, dequeuer.dequeue, consumerTag);
+  }
+
+  /**
+   * Proxy method to broker.ack()
+   */
+  ack(message) {
+    this.broker.ack(message);
+  }
+
+  /**
+   * Proxy method to broker.nack()
+   */
+  nack(message) {
+    this.broker.nack(message);
+  }
+
+  /**
+   * Asserts the queue into existence
+   *
+   * @return {bool} Result
+   */
+  async create() {
+    return this.broker.createQueue(this.name, this.routes);
+  }
+
+  /**
+   * Convenience proxy method to broker.purgeQueue()
+   */
+  async purge() {
+    return this.broker.purgeQueue(this.name);
+  }
+
+  /**
+   * Convenience proxy method to broker.deleteQueue()
+   */
+  async delete() {
+    return this.broker.deleteQueue(this.name);
   }
 }
 
