@@ -43,13 +43,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
           .timestamp('unix')
           .raw(),
 
-        sms_status: Joi.valid([
-          'active',
-          'less',
-          'undeliverable',
-          'unknown',
-          null,
-        ]).empty(whenNullOrEmpty).default(undefined),
+        sms_status: Joi.any().empty(whenNullOrEmpty).default(undefined),
 
         // Optional, defaults to undefined when provided as empty string or null.
         last_authenticated_at: optionalTimestampDefaultsToUndefined,

@@ -25,13 +25,7 @@ class UserMessage extends Message {
       // Required:
       updated_at: Joi.string().empty(whenNullOrEmpty).required().isoDate(),
       created_at: Joi.string().empty(whenNullOrEmpty).required().isoDate(),
-      sms_status: Joi.valid([
-        'active',
-        'less',
-        'undeliverable',
-        'unknown',
-        null,
-      ]).default(null),
+      sms_status: Joi.any().default(null),
 
       // Optional, defaults to null when provided as empty string or null.
       last_authenticated_at: optionalDateDefaultsToNull,
