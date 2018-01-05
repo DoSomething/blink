@@ -151,7 +151,7 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
   }
 
   getRequestHeaders(message) {
-    const queryParams = message.getQueryParams();
+    const queryParams = message.getQueryParams() || {};
     const headers = {
       Authorization: `Basic ${this.apiKey}`,
       'X-Request-ID': message.getRequestId(),
