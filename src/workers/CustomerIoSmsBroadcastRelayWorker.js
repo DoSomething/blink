@@ -151,6 +151,7 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
   }
 
   getRequestHeaders(message) {
+    const queryParams = message.getQueryParams() || {};
     const headers = {
       Authorization: `Basic ${this.apiKey}`,
       'X-Request-ID': message.getRequestId(),
@@ -161,6 +162,12 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
       headers['x-blink-retry-count'] = message.getRetryAttempt();
     }
 
+    // Fail injection through query params.
+    // It converts them to headers before sending request to Conversations.
+    if (queryParams.requestFail) {
+      headers['x-request-fail'] = 'true';
+      headers['x-request-fail-count'] = queryParams.requestFailCount || '1';
+    }
     return headers;
   }
 

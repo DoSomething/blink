@@ -37,6 +37,10 @@ class Message {
     return this.payload.meta.request_id;
   }
 
+  getQueryParams() {
+    return this.payload.meta.query;
+  }
+
   getRetryAttempt() {
     return this.payload.meta.retryAttempt || 0;
   }
