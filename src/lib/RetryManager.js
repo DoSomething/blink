@@ -1,19 +1,35 @@
 'use strict';
 
+// ------- Imports -------------------------------------------------------------
+
 const logger = require('winston');
 
-const DelayLogic = require('./DelayLogic');
+// ------- Internal imports ----------------------------------------------------
+
+const DelayLogic = require('./delayers/DelayLogic');
+const InMemoryRetryDelayer = require('./delayers/InMemoryRetryDelayer');
+const RetryDelayer = require('./delayers/RetryDelayer');
+
+// ------- Class ---------------------------------------------------------------
 
 class RetryManager {
-  constructor(queue, republishDelayLogic = false) {
+  constructor(queue, retryDelayer = false, delayLogic = false) {
     this.queue = queue;
 
-    // Retry delay logic.
-    if (!republishDelayLogic || typeof republishDelayLogic !== 'function') {
-      // Default exponential backoff logic
-      this.retryAttemptToDelayTime = DelayLogic.exponentialBackoff;
+    // Retry delay mechanism.
+    if (retryDelayer instanceof RetryDelayer) {
+      this.retryDelayer = retryDelayer;
     } else {
-      this.retryAttemptToDelayTime = republishDelayLogic;
+      // Defaults to in-memory delayer.
+      this.retryDelayer = new InMemoryRetryDelayer();
+    }
+
+    // Retry delay logic.
+    if (typeof delayLogic === 'function') {
+      this.delayLogic = delayLogic;
+    } else {
+      // Default exponential backoff logic
+      this.delayLogic = DelayLogic.exponentialBackoff;
     }
 
     // Retry limit is a hardcoded const now.
@@ -34,7 +50,7 @@ class RetryManager {
     message.incrementRetryAttempt(reason);
 
     // Calculate wait time until the redelivery.
-    const delayMs = this.retryAttemptToDelayTime(message.getRetryAttempt());
+    const delayMs = this.delayLogic(message.getRetryAttempt());
 
     // Log retry information.
     this.log(
@@ -44,19 +60,7 @@ class RetryManager {
       'debug_retry_manager_redeliver_scheduled',
     );
 
-    return this.republishWithDelay(message, delayMs);
-  }
-
-  async republishWithDelay(message, delayMs) {
-    // Delay republish using timeout.
-    // Note: this conflicts with prefetch_count functionality, see issue #70.
-    await new Promise(resolve => setTimeout(resolve, delayMs));
-
-    // Discard original message.
-    this.queue.nack(message);
-    // Republish modified message.
-    this.queue.publish(message);
-    return true;
+    return this.retryDelayer.delayMessageRetry(this.queue, message, delayMs);
   }
 
   retryAllowed(message, reason) {
@@ -86,4 +90,8 @@ class RetryManager {
   }
 }
 
+// ------- Exports -------------------------------------------------------------
+
 module.exports = RetryManager;
+
+// ------- End -----------------------------------------------------------------

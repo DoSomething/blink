@@ -48,11 +48,15 @@ test('Queue.create(): Test RabbitMQ topology assertion', async (t) => {
 
   // Test queue settings with RabbitMQ Management Plugin API.
   const rabbit = new RabbitManagement(t.context.blink.config.amqpManagement);
-  const testBindingQInfo = await rabbit.getQueueInfo(testBindingQ.name);
-  testBindingQInfo.should.have.property('name', 'test-binding');
-  testBindingQInfo.should.have.property('durable', true);
-  testBindingQInfo.should.have.property('auto_delete', false);
-  testBindingQInfo.should.have.property('exclusive', false);
+  const testQInfo = await rabbit.getQueueInfo(testBindingQ.name);
+  testQInfo.should.have.property('name', 'test-binding');
+  testQInfo.should.have.property('durable', true);
+  testQInfo.should.have.property('auto_delete', false);
+  testQInfo.should.have.property('exclusive', false);
+  testQInfo.should.have.property('arguments');
+  testQInfo.arguments.should.eql({
+    'x-max-priority': 2,
+  });
 
   // Test that the queue is binded to the exchange.
   const testBindingQBindings = await rabbit.getQueueBindings(

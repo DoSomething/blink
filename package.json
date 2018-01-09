@@ -1,6 +1,6 @@
 {
   "name": "blink",
-  "version": "2.0.0-beta.3",
+  "version": "2.0.0-beta.6",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
     "node": "8.9.3",
@@ -17,7 +17,8 @@
     "coverage:report:publish": "nyc report --reporter=lcov && codecov",
     "lint": "eslint .",
     "web": "node start.js web",
-    "worker": "node start.js worker"
+    "worker": "node start.js worker",
+    "timer": "node start.js timer"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,7 @@
     "change-case": "^3.0.1",
     "customerio-node": "^0.2.0",
     "dotenv": "^4.0.0",
+    "ioredis": "^3.2.2",
     "joi": "^13.0.2",
     "koa": "^2.4.1",
     "koa-basic-auth": "^2.0.0",

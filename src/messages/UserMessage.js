@@ -3,7 +3,6 @@
 const Joi = require('joi');
 
 const Message = require('./Message');
-const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 
 class UserMessage extends Message {
   constructor(...args) {
@@ -69,34 +68,6 @@ class UserMessage extends Message {
       return true;
     }
     return false;
-  }
-
-  static fromCtx(ctx) {
-    // TODO: save more metadata
-    // TODO: metadata parse helper
-    const userMessage = new UserMessage({
-      data: ctx.request.body,
-      meta: {
-        request_id: ctx.id,
-      },
-    });
-    return userMessage;
-  }
-
-  static fromRabbitMessage(rabbitMessage) {
-    const payload = this.parseIncomingPayload(rabbitMessage);
-    if (!payload.data || !payload.meta) {
-      throw new MessageParsingBlinkError('No data in message', payload);
-    }
-
-    // TODO: save more metadata
-    // TODO: metadata parse helper
-    const userMessage = new UserMessage({
-      data: payload.data,
-      meta: payload.meta,
-    });
-    userMessage.fields = rabbitMessage.fields;
-    return userMessage;
   }
 }
 

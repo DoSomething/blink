@@ -18,18 +18,6 @@ class CustomerIoWebhookMessage extends Message {
       timestamp: Joi.number().integer().required(),
     });
   }
-
-  static fromCtx(ctx) {
-    // TODO: save more metadata
-    // TODO: metadata parse helper
-    const fetchMessage = new CustomerIoWebhookMessage({
-      data: ctx.request.body,
-      meta: {
-        request_id: ctx.id,
-      },
-    });
-    return fetchMessage;
-  }
 }
 
 module.exports = CustomerIoWebhookMessage;

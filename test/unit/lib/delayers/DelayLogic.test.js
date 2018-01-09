@@ -5,7 +5,7 @@
 const test = require('ava');
 const chai = require('chai');
 
-const DelayLogic = require('../../../src/lib/DelayLogic');
+const DelayLogic = require('../../../../src/lib/delayers/DelayLogic');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -18,7 +18,6 @@ chai.should();
  */
 test('DelayLogic.exponentialBackoff(): Check exponentialBackoff behavior', () => {
   // First, delay between retries should be a matter of seconds
-  DelayLogic.exponentialBackoff(0).should.be.equal(1000);
   DelayLogic.exponentialBackoff(1).should.be.equal(1250);
   DelayLogic.exponentialBackoff(2).should.be.equal(2000);
 

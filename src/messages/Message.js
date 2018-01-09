@@ -41,6 +41,14 @@ class Message {
     return this.payload.meta.retryAttempt || 0;
   }
 
+  setRetryReturnToQueue(queueName) {
+    this.payload.meta.retryReturnToQueue = queueName;
+  }
+
+  unsetRetryReturnToQueue() {
+    delete this.payload.meta.retryReturnToQueue;
+  }
+
   incrementRetryAttempt(reason) {
     this.payload.meta.retryAttempt = this.getRetryAttempt() + 1;
     if (reason) {
@@ -76,13 +84,85 @@ class Message {
     return true;
   }
 
-  static parseIncomingPayload(incomingMessage) {
-    let payload = false;
-    const rawPayload = incomingMessage.content.toString();
+  static fromCtx(ctx) {
+    const messageData = {
+      data: ctx.request.body,
+      meta: {
+        // TODO: save more metadata/
+        request_id: ctx.id,
+      },
+    };
+
+    // Save GET params when present.
+    // TODO: only save whitelsited query params?
+    if (ctx.query && Object.keys(ctx.query).length) {
+      messageData.meta.query = ctx.query;
+    }
+
+    return this.heuristicMessageFactory(messageData);
+  }
+
+  static fromRabbitMessage(rabbitMessage) {
+    const payload = this.unpackRabbitMessage(rabbitMessage);
+    if (!payload.data || !payload.meta) {
+      throw new MessageParsingBlinkError('No data in message', payload);
+    }
+
+    const messageData = {
+      data: payload.data,
+      meta: payload.meta,
+    };
+    const message = this.heuristicMessageFactory(messageData);
+    // Required to be compatible with RabbitMQ.
+    // See RabbitMQBroker.ack() note.
+    // TODO: make this method independent from RabbitMQ specifics..
+    message.fields = rabbitMessage.fields;
+    return message;
+  }
+
+  /**
+   * Dynamically create a new instance of the concrete message class.
+   *
+   * This function automatically figures out on what of concrete message
+   * subclasses one of static factory methods has been called and dynamically
+   * creates a new instance of it.
+   *
+   * For example FreeFormMessage.heuristicMessageFactory({}) will return
+   * an instance of FreeFormMessage. Despite the fact that actual
+   * heuristicMessageFactory() method lives in its superclass, Message.
+   *
+   * This feature depends on the property of `this` context
+   * inside of a static method to have `prototype` property
+   * that is the class on which static method is called.
+   * For example:
+   *
+   * ```
+   * class Message {
+   *   static printClassName() {
+   *     console.log(this.prototype.constructor.name);
+   *   }
+   * }
+   * class SpecificMessage extends Message {}
+   * SpecificMessage.printClassName(); // prints 'SpecificMessage'
+   * ```
+   *
+   * @param  {Object} messageData The message data, see constructor()
+   * @return {this.prototype}  A new instance of the concrete message class.
+   */
+  static heuristicMessageFactory(messageData = {}) {
+    return new this.prototype.constructor(messageData);
+  }
+
+  static unpackRabbitMessage(incomingMessage) {
+    return Message.unpackJson(incomingMessage.content.toString());
+  }
+
+  static unpackJson(jsonMessage) {
+    let payload;
     try {
-      payload = JSON.parse(rawPayload);
+      payload = JSON.parse(jsonMessage);
     } catch (error) {
-      throw new MessageParsingBlinkError(error, rawPayload);
+      throw new MessageParsingBlinkError(error, jsonMessage);
     }
     return payload;
   }

@@ -9,6 +9,7 @@ const logger = require('winston');
 
 // Blink Libs.
 const RabbitMQBroker = require('../lib/brokers/RabbitMQ/RabbitMQBroker');
+const RedisConnectionManager = require('../lib/RedisConnectionManager');
 
 // Queues.
 const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
@@ -40,6 +41,9 @@ class BlinkApp {
     // Setup connection to message broker server.
     this.broker = await this.setupBroker();
 
+    // Setup connection to redis.
+    this.redis = await this.setupRedis();
+
     // Assert queues and add them to queue registry.
     // IMPORTANT: if the broker goes away and returns with no queues,
     // we will be able to recover the connection automatically,
@@ -59,6 +63,7 @@ class BlinkApp {
     // Flush queues.
     this.queues = [];
     await this.broker.disconnect();
+    await this.redis.disconnect();
     return true;
   }
 
@@ -82,6 +87,18 @@ class BlinkApp {
     }
     // Return connected broker.
     return broker;
+  }
+
+  async setupRedis() {
+    // Now only RabbitMQ is supported.
+    const redis = new RedisConnectionManager(this.config.redis);
+    // Establish connection or perform authorization.
+    const result = await redis.connect();
+    if (!result) {
+      // TODO: Handle case when redis doesn't connect.
+    }
+    // Return connected redis.
+    return redis;
   }
 
   async setupQueues(queueClasses) {
@@ -116,6 +133,23 @@ class BlinkApp {
     return queueRegistry;
   }
 
+  /**
+   * Returns a queue with a given name from queue registry.
+   *
+   * This method perform search on all queues.
+   * It shouldn't be used in most cases, you can get the queue
+   * from the registry by its mapping key, example
+   *
+   * ```
+   * const { fetchQ } = blink.queues;
+   * ```
+   * @param  {strin} name The name of the queue to search
+   * @return {Queue|undefined} The queue found or undefined
+   */
+  getQueueByName(name) {
+    return Object.values(this.queues).find(queue => queue.name === name);
+  }
+
   // ------- Static helpers  ---------------------------------------------------
 
   static discoverQueueClasses() {
@@ -134,7 +168,11 @@ class BlinkApp {
   }
 
   static generateQueueRegistryKey(queueClass) {
-    return changeCase.camelCase(queueClass.name);
+    return this.getQueueRegistryKey(queueClass.name);
+  }
+
+  static getQueueRegistryKey(queueName) {
+    return changeCase.camelCase(queueName);
   }
 }
 

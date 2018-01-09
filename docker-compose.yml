@@ -11,3 +11,8 @@ services:
     ports:
       - 15672:15672 # Management
       - 5672:5672 # AMQP
+  redis:
+    # Latest version supported by heroku dedicated Redis plan
+    image: redis:3.2.9
+    ports:
+      - 6379:6379 # Telnet

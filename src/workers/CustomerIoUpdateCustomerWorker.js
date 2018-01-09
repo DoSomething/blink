@@ -8,18 +8,12 @@ const CustomerIoUpdateCustomerMessage = require('../messages/CustomerIoUpdateCus
 const Worker = require('./Worker');
 
 class CustomerIoUpdateCustomerWorker extends Worker {
-  constructor(blink) {
-    super(blink);
-    this.blink = blink;
-
-    this.cioConfig = this.blink.config.customerio;
-
-    // Bind process method to queue context
-    this.consume = this.consume.bind(this);
-  }
-
   setup() {
-    this.queue = this.blink.queues.customerIoUpdateCustomerQ;
+    super.setup({
+      queue: this.blink.queues.customerIoUpdateCustomerQ,
+    });
+    // Setup customer.io client.
+    this.cioConfig = this.blink.config.customerio;
     this.cioClient = new CIO(this.cioConfig.apiKey, this.cioConfig.siteId);
   }
 

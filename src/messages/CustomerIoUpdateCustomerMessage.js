@@ -5,6 +5,7 @@ const moment = require('moment');
 
 const Message = require('./Message');
 
+// TODO: Move this to be a Model. See CustomerIoEvent as an example.
 class CustomerIoUpdateCustomerMessage extends Message {
   constructor(...args) {
     super(...args);

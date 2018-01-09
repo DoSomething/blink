@@ -10,6 +10,7 @@ const sinonChai = require('sinon-chai');
 
 // ------- Internal imports ----------------------------------------------------
 
+const Broker = require('../../../../../src/lib/brokers/Broker');
 const RabbitMQBroker = require('../../../../../src/lib/brokers/RabbitMQ/RabbitMQBroker');
 const MessageFactoryHelper = require('../../../../helpers/MessageFactoryHelper');
 const UnitHooksHelper = require('../../../../helpers/UnitHooksHelper');
@@ -33,6 +34,7 @@ test.afterEach.always(UnitHooksHelper.destroyFakeRabbitMQBroker);
  */
 test('RabbitMQBroker: Should implement Broker interface', () => {
   const broker = new RabbitMQBroker({});
+  broker.should.be.an.instanceof(Broker);
   broker.should.respondTo('connect');
   broker.should.respondTo('disconnect');
   broker.should.respondTo('publishToRoute');
@@ -244,6 +246,14 @@ test('RabbitMQBroker.createQueue(): Happy path', async (t) => {
 
   // Ensure queue assertion has been called.
   assertQueueStub.should.have.been.calledOnce;
+  // Would be neat to check actual arguments passed to channel's rpc call.
+  const [queueNameArg, optionsArg] = assertQueueStub.firstCall.args;
+  queueNameArg.should.equal(queueName);
+  optionsArg.should.be.have.property('exclusive', false);
+  optionsArg.should.be.have.property('durable', true);
+  optionsArg.should.be.have.property('autoDelete', false);
+  // It's zero-indexed, so -1.
+  optionsArg.should.be.have.property('maxPriority', broker.priorities.size - 1);
 
   // Ensure the queue has been bound to the topic exchange on expected routes.
   bindQueueStub.should.have.callCount(numberOfRoutes);
@@ -457,7 +467,7 @@ test('RabbitMQBroker.publishToRoute(): Happy path', (t) => {
   const publishStub = sandbox.stub(channel, 'publish').returns(true);
 
   // Execute the function.
-  broker.publishToRoute(routeName, message);
+  broker.publishToRoute(routeName, message, 'non-existent-priority');
 
   // Check that the message publishing has been correctly delegated to amqplib.
   publishStub.should.have.been.calledOnce;
@@ -467,6 +477,70 @@ test('RabbitMQBroker.publishToRoute(): Happy path', (t) => {
   bufferArg.toString().should.be.equal(message.toString());
   optionsArg.should.be.have.property('mandatory', true);
   optionsArg.should.be.have.property('persistent', true);
+  // Should publish with standard priority be default.
+  optionsArg.should.be.have.property('priority', broker.priorities.get('STANDARD'));
+});
+
+/**
+ * RabbitMQBroker: publishToRoute()
+ */
+test('RabbitMQBroker.publishToRoute(): Ensure HIGH priority', (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const routeName = chance.word();
+  const message = MessageFactoryHelper.getRandomMessage(true);
+
+  // Stub amqplib's publish().
+  // Response example take from the docs.
+  // http://www.squaremobius.net/amqp.node/channel_api.html#channel_publish
+  const publishStub = sandbox.stub(channel, 'publish').returns(true);
+
+  // Execute the function.
+  broker.publishToRoute(routeName, message, 'HIGH');
+
+  // Check that the message publishing has been correctly delegated to amqplib.
+  publishStub.should.have.been.calledOnce;
+  const [exchangeArg, routeArg, bufferArg, optionsArg] = publishStub.firstCall.args;
+  exchangeArg.should.be.equal(broker.topicExchange);
+  routeArg.should.be.equal(routeName);
+  bufferArg.toString().should.be.equal(message.toString());
+  optionsArg.should.be.have.property('mandatory', true);
+  optionsArg.should.be.have.property('persistent', true);
+  // Ensure HIGH priority is recognized.
+  optionsArg.should.be.have.property('priority', broker.priorities.get('HIGH'));
+});
+
+/**
+ * RabbitMQBroker: publishToRoute()
+ */
+test('RabbitMQBroker.publishToRoute(): Ensure LOW priority', (t) => {
+  // Set variables from the context.
+  const { sandbox, channel, broker } = t.context;
+
+  // Define test parameters.
+  const routeName = chance.word();
+  const message = MessageFactoryHelper.getRandomMessage(true);
+
+  // Stub amqplib's publish().
+  // Response example take from the docs.
+  // http://www.squaremobius.net/amqp.node/channel_api.html#channel_publish
+  const publishStub = sandbox.stub(channel, 'publish').returns(true);
+
+  // Execute the function.
+  broker.publishToRoute(routeName, message, 'LOW');
+
+  // Check that the message publishing has been correctly delegated to amqplib.
+  publishStub.should.have.been.calledOnce;
+  const [exchangeArg, routeArg, bufferArg, optionsArg] = publishStub.firstCall.args;
+  exchangeArg.should.be.equal(broker.topicExchange);
+  routeArg.should.be.equal(routeName);
+  bufferArg.toString().should.be.equal(message.toString());
+  optionsArg.should.be.have.property('mandatory', true);
+  optionsArg.should.be.have.property('persistent', true);
+  // Ensure LOW priority is recognized.
+  optionsArg.should.be.have.property('priority', broker.priorities.get('LOW'));
 });
 
 /**

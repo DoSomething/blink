@@ -3,7 +3,6 @@
 const Joi = require('joi');
 const moment = require('moment');
 
-const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const CustomerIoEvent = require('../models/CustomerIoEvent');
 const Message = require('./Message');
 
@@ -33,34 +32,6 @@ class CampaignSignupPostMessage extends Message {
         // Time stamp.
         created_at: Joi.string().required().empty(whenNullOrEmpty).isoDate(),
       });
-  }
-
-  static fromCtx(ctx) {
-    // TODO: save more metadata
-    // TODO: metadata parse helper
-    const message = new CampaignSignupPostMessage({
-      data: ctx.request.body,
-      meta: {
-        request_id: ctx.id,
-      },
-    });
-    return message;
-  }
-
-  static fromRabbitMessage(rabbitMessage) {
-    const payload = this.parseIncomingPayload(rabbitMessage);
-    if (!payload.data || !payload.meta) {
-      throw new MessageParsingBlinkError('No data in message', payload);
-    }
-
-    // TODO: save more metadata
-    // TODO: metadata parse helper
-    const message = new CampaignSignupPostMessage({
-      data: payload.data,
-      meta: payload.meta,
-    });
-    message.fields = rabbitMessage.fields;
-    return message;
   }
 
   toCustomerIoEvent() {

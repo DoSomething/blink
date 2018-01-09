@@ -14,6 +14,9 @@ const RabbitMQBroker = require('../../src/lib/brokers/RabbitMQ/RabbitMQBroker');
 const Queue = require('../../src/lib/Queue');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 
+// Logger is configured imperatively, make sure unit tests get nice logs formatting.
+require('../../config');
+
 // ------- Init ----------------------------------------------------------------
 
 const chance = new Chance();

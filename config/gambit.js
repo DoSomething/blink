@@ -5,6 +5,7 @@ const config = {
   apiKey: process.env.GAMBIT_API_KEY || 'totallysecret',
   converationsBaseUrl: process.env.GAMBIT_CONVERSATIONS_BASE_URL || 'http://localhost:5100/api/v1',
   converationsApiKey: process.env.GAMBIT_CONVERSATIONS_API_KEY || 'dG90YWxseXNlY3JldA==',
+  broadcastSpeedLimit: process.env.GAMBIT_BROADCAST_SPEED_LIMIT || 50,
 };
 
 module.exports = config;

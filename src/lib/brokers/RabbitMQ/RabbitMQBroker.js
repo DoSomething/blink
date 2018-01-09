@@ -7,7 +7,7 @@ const logger = require('winston');
 // ------- Internal imports ----------------------------------------------------
 
 const Broker = require('../Broker');
-const DelayLogic = require('../../DelayLogic');
+const DelayLogic = require('../../delayers/DelayLogic');
 const ReconnectManager = require('../../ReconnectManager');
 const RabbitMQConnectionManager = require('./RabbitMQConnectionManager');
 
@@ -33,6 +33,15 @@ class RabbitMQBroker extends Broker {
 
     // RabbitMQ exchange used for standard interfacing with queues.
     this.topicExchange = settings.topicExchange;
+
+    // Supported priorities.
+    this.priorities = new Map();
+    // Process after all other messages are done.
+    this.priorities.set('LOW', 0);
+    // Normal messages.
+    this.priorities.set('STANDARD', 1);
+    // Skip the line pass: put messages directly to the front of the queue.
+    this.priorities.set('HIGH', 2);
   }
 
   // ------- Public API  -------------------------------------------------------
@@ -77,16 +86,31 @@ class RabbitMQBroker extends Broker {
    *
    * @param  {string} route      Routing key
    * @param  {object} message    Message
+   * @param  {string} priority   Set message priority to one of the following:
+   *                             STANDARD, LOW, HIGH, Defaults to STANDARD.
+   *                             Make sure to use uppercase.
    * @return {undefined}         This method is RPC and does not have server response
    */
-  publishToRoute(route, message) {
+  publishToRoute(route, message, priority = 'STANDARD') {
+    // Will return undefined if requested priority is unknown.
+    let priorityId = this.priorities.get(priority);
+    // We explicitly check for undefined to allow 0 as a valid value.
+    if (priorityId === undefined) {
+      // All messages will be published with standard priority: 1.
+      priorityId = this.priorities.get('STANDARD');
+    }
+
     // Explicitly define desired options.
     const options = {
       // The message will be returned if it is not routed to a queue.
       mandatory: true,
       // Always persistent.
       persistent: true,
+      // Priority.
+      // See http://www.rabbitmq.com/priority.html
+      priority: priorityId,
     };
+
 
     // Todo: save additional message metadata?
     // TODO: handle drain and returned messages.
@@ -256,6 +280,7 @@ class RabbitMQBroker extends Broker {
   async assertQueue(queueName) {
     // Explicitly define desired options.
     // See https://www.rabbitmq.com/queues.html
+    // See http://www.squaremobius.net/amqp.node/channel_api.html#channel_assertQueue
     const options = {
       // This option allows only one connection to the queue.
       // The queue will be deleted when that connection closes.
@@ -266,10 +291,14 @@ class RabbitMQBroker extends Broker {
       // The queue will be deleted when last consumer unsubscribes.
       // Nope.
       autoDelete: false,
-      // Used by plugins and broker-specific features such as message TTL,
-      // queue length limit, etc. Also know as "x-arguments".
-      // We may want to use them in the future for
-      // declaring corresponding deadLetterExchange.
+      // See http://www.rabbitmq.com/priority.html
+      // Define 3 priority levels: HIGH, LOW, MEDIUM.
+      // This is a RabbitMQ specific feature. Normally, it's declared through
+      // the `arguments` object (see below), but amqplib exposes this feature
+      // through an option called `maxPriority`.
+      // It'll be transformed to `x-max-priority` argument.
+      maxPriority: 2, // Amounts to 3 levels: 0, 1, 2.
+      // Used by plugins and broker-specific features.
       arguments: {},
     };
 

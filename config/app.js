@@ -12,9 +12,9 @@ const config = {
   version: packageJson.version,
   retrySuppressHeader: 'x-blink-retry-suppress',
   prefetchCount: parseInt(process.env.BLINK_APP_DEFAULT_PREFETCH_COUNT, 10) || 30,
-  rateLimit: parseInt(process.env.BLINK_APP_DEFAULT_RATE_LIMIT, 10) || 60,
+  rateLimit: parseInt(process.env.BLINK_APP_DEFAULT_RATE_LIMIT, 10) || 100,
   // @todo: remove temporary limit
-  retryLimit: parseInt(process.env.BLINK_APP_DEFAULT_RETRY_LIMIT, 10) || 18000,
+  retryLimit: parseInt(process.env.BLINK_APP_DEFAULT_RETRY_LIMIT, 10) || 100,
 };
 
 module.exports = config;

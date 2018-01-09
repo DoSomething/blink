@@ -15,6 +15,7 @@ const yargs = require('yargs');
 const config = require('./config');
 const BlinkWebApp = require('./src/app/BlinkWebApp.js');
 const BlinkWorkerApp = require('./src/app/BlinkWorkerApp.js');
+const BlinkTimerApp = require('./src/app/BlinkTimerApp.js');
 
 // ------- Args parse ----------------------------------------------------------
 
@@ -24,6 +25,7 @@ const argv = yargs
   .version(config.app.version)
   .command('web', 'Start a web app')
   .command('worker <name>', 'Start worker with the given name')
+  .command('timer  <name>', 'Start timer with the given name')
   .demandCommand(1, 'Please provide a valid command')
   .help()
   .argv;
@@ -52,9 +54,12 @@ switch (command) {
     blinkApp = new BlinkWorkerApp(config, argv.name);
     blinkApp.start();
     break;
+  case 'timer':
+    blinkApp = new BlinkTimerApp(config, argv.name);
+    blinkApp.start();
+    break;
   default:
     throw new Error('Argument parsing integrity violation');
 }
-
 
 // ------- End -----------------------------------------------------------------

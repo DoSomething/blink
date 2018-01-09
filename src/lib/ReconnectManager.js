@@ -14,7 +14,7 @@ const logger = require('winston');
 
 // ------- Internal imports ----------------------------------------------------
 
-const DelayLogic = require('./DelayLogic');
+const DelayLogic = require('./delayers/DelayLogic');
 
 // ------- Class ---------------------------------------------------------------
 

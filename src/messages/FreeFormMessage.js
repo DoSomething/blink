@@ -3,7 +3,6 @@
 const Joi = require('joi');
 
 const Message = require('./Message');
-const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 
 class FreeFormMessage extends Message {
   constructor(...args) {
@@ -12,34 +11,6 @@ class FreeFormMessage extends Message {
     this.schema = Joi.object()
       // Allow presence of all other keys.
       .unknown();
-  }
-
-  static fromCtx(ctx) {
-    // TODO: save more metadata
-    // TODO: metadata parse helper
-    const freeFormMessage = new FreeFormMessage({
-      data: ctx.request.body,
-      meta: {
-        request_id: ctx.id,
-      },
-    });
-    return freeFormMessage;
-  }
-
-  static fromRabbitMessage(rabbitMessage) {
-    const payload = this.parseIncomingPayload(rabbitMessage);
-    if (!payload.data || !payload.meta) {
-      throw new MessageParsingBlinkError('No data in message', payload);
-    }
-
-    // TODO: save more metadata
-    // TODO: metadata parse helper
-    const message = new FreeFormMessage({
-      data: payload.data,
-      meta: payload.meta,
-    });
-    message.fields = rabbitMessage.fields;
-    return message;
   }
 }
 

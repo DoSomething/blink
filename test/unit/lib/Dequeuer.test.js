@@ -186,7 +186,7 @@ test('Dequeuer.extractOrDiscard(): ensure nack on incorrect JSON payload', (t) =
   const nackStub = sinon.stub(queue, 'nack').returns(null);
 
   // Ensure Message.fromRabbitMessage throws MessageParsingBlinkError
-  const blinkParsingErrorSpy = sinon.spy(queue.messageClass, 'parseIncomingPayload');
+  const blinkParsingErrorSpy = sinon.spy(queue.messageClass, 'unpackRabbitMessage');
 
   // Create deliberaly incorrect JSON and feed it to extractOrDiscard.
   const rabbitMessage = MessageFactoryHelper.getFakeRabbitMessage('{incorrect-json}');

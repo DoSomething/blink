@@ -6,16 +6,10 @@ const logger = require('winston');
 const Worker = require('./Worker');
 
 class FetchWorker extends Worker {
-  constructor(blink) {
-    super(blink);
-    this.blink = blink;
-
-    // Bind process method to queue context
-    this.consume = this.consume.bind(this);
-  }
-
   setup() {
-    this.queue = this.blink.queues.fetchQ;
+    super.setup({
+      queue: this.blink.queues.fetchQ,
+    });
   }
 
   async consume(fetchMessage) {
