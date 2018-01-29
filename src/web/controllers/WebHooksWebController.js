@@ -1,5 +1,6 @@
 'use strict';
 
+const CustomerioGambitBroadcastMessage = require('../../messages/CustomerioGambitBroadcastMessage');
 const CustomerioSmsBroadcastMessage = require('../../messages/CustomerioSmsBroadcastMessage');
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
@@ -12,14 +13,17 @@ class WebHooksWebController extends WebController {
     // Bind web methods to object context so they can be passed to router.
     this.index = this.index.bind(this);
     this.customerioEmailActivity = this.customerioEmailActivity.bind(this);
+    this.customerioGambitBroadcast = this.customerioGambitBroadcast.bind(this);
+    this.twilioSmsInbound = this.twilioSmsInbound.bind(this);
+    // To be / currently deprecated
     this.customerioSmsBroadcast = this.customerioSmsBroadcast.bind(this);
     this.twilioSmsBroadcast = this.twilioSmsBroadcast.bind(this);
-    this.twilioSmsInbound = this.twilioSmsInbound.bind(this);
   }
 
   async index(ctx) {
     ctx.body = {
       'customerio-email-activity': this.fullUrl('api.v1.webhooks.customerio-email-activity'),
+      'customerio-gambit-broadcast': this.fullUrl('api.v1.webhooks.customerio-gambit-broadcast'),
       'customerio-sms-broadcast': this.fullUrl('api.v1.webhooks.customerio-sms-broadcast'),
       'twilio-sms-broadcast': this.fullUrl('api.v1.webhooks.twilio-sms-broadcast'),
       'twilio-sms-inbound': this.fullUrl('api.v1.webhooks.twilio-sms-inbound'),
@@ -33,6 +37,18 @@ class WebHooksWebController extends WebController {
       const { quasarCustomerIoEmailActivityQ } = this.blink.queues;
       quasarCustomerIoEmailActivityQ.publish(customerIoWebhookMessage);
       this.sendOK(ctx, customerIoWebhookMessage);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
+  }
+
+  async customerioGambitBroadcast(ctx) {
+    try {
+      const message = CustomerioGambitBroadcastMessage.fromCtx(ctx);
+      message.validate();
+      const { customerioGambitBroadcastQ } = this.blink.queues;
+      customerioGambitBroadcastQ.publish(message);
+      this.sendOK(ctx, message, 201);
     } catch (error) {
       this.sendError(ctx, error);
     }

@@ -14,6 +14,7 @@ const RedisConnectionManager = require('../lib/RedisConnectionManager');
 // Queues.
 const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
 const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ');
+const CustomerioGambitBroadcastQ = require('../queues/CustomerioGambitBroadcastQ');
 const CustomerioSmsBroadcastRelayQ = require('../queues/CustomerioSmsBroadcastRelayQ');
 const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const FetchQ = require('../queues/FetchQ');
@@ -157,6 +158,7 @@ class BlinkApp {
     return [
       CustomerIoCampaignSignupPostQ,
       CustomerIoCampaignSignupQ,
+      CustomerioGambitBroadcastQ,
       CustomerioSmsBroadcastRelayQ,
       CustomerIoUpdateCustomerQ,
       FetchQ,

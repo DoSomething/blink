@@ -20,7 +20,7 @@ const chance = new Chance();
 
 class MessageFactoryHelper {
   static getValidUser() {
-    const fakeId = chance.hash({ length: 24 });
+    const fakeId = MessageFactoryHelper.getFakeUserId();
     const createdAt = chance.date({ year: chance.year({ min: 2000, max: 2010 }) }).toISOString();
     return new UserMessage({
       data: {
@@ -71,7 +71,7 @@ class MessageFactoryHelper {
   }
 
   static getValidCustomerIoIdentify() {
-    const fakeId = chance.hash({ length: 24 });
+    const fakeId = MessageFactoryHelper.getFakeUserId();
     return new CustomerIoUpdateCustomerMessage({
       data: {
         id: fakeId,
@@ -253,11 +253,29 @@ class MessageFactoryHelper {
     return rabbitMessage;
   }
 
+  static getFakeMobileNumber() {
+    const result = `+1555${chance.string({ length: 7, pool: '1234567890' })}`;
+    return result;
+  }
+
+  static getFakeUserId() {
+    const result = chance.hash({ length: 24 });
+    return result;
+  }
+
   static getValidCustomerBroadcastData(broadcastId) {
     const data = {
-      To: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+      To: MessageFactoryHelper.getFakeMobileNumber(),
       Body: chance.sentence(),
       StatusCallback: `http://blink:password@blink.dosomething.org/api/v1/webhooks/twilio-sms-broadcast?broadcastId=${broadcastId}`,
+    };
+    return data;
+  }
+
+  static getValidGambitBroadcastData(broadcastId) {
+    const data = {
+      northstarId: MessageFactoryHelper.getFakeUserId(),
+      broadcastId,
     };
     return data;
   }

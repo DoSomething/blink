@@ -38,12 +38,17 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
   res.body.should.have.property('customerio-email-activity')
     .and.have.string('/api/v1/webhooks/customerio-email-activity');
 
+  // Should be deprecated:
   res.body.should.have.property('twilio-sms-broadcast')
     .and.have.string('/api/v1/webhooks/twilio-sms-broadcast');
 
   res.body.should.have.property('twilio-sms-inbound')
     .and.have.string('/api/v1/webhooks/twilio-sms-inbound');
 
+  res.body.should.have.property('customerio-gambit-broadcast')
+    .and.have.string('/api/v1/webhooks/customerio-gambit-broadcast');
+
+  // To be deprecated
   res.body.should.have.property('customerio-sms-broadcast')
     .and.have.string('/api/v1/webhooks/customerio-sms-broadcast');
 });
@@ -142,6 +147,25 @@ test('POST /api/v1/webhooks/customerio-sms-broadcast validates incoming payload'
   res.body.should.have.property('ok', false);
   res.body.should.have.property('message')
     .and.have.string('"To" is required');
+});
+
+/**
+ * POST /api/v1/webhooks/customerio-gambit-broadcast
+ */
+test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming payload', async (t) => {
+  const broadcastId = chance.word();
+  const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId);
+  delete data.northstarId;
+
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(422);
+  res.body.should.have.property('ok', false);
+  res.body.should.have.property('message')
+    .and.have.string('"northstarId" is required');
 });
 
 // ------- End -----------------------------------------------------------------
