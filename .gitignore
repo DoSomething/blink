@@ -38,3 +38,6 @@ jspm_packages
 
 # Dot env
 .env
+
+# wercker files
+.wercker
