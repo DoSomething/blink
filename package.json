@@ -1,6 +1,10 @@
 {
   "name": "blink",
+<<<<<<< HEAD
   "version": "v2.0.0",
+=======
+  "version": "2.0.1",
+>>>>>>> master
   "description": "The DoSomething.org Message Bus.",
   "engines": {
     "node": "8.9.3",
