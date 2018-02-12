@@ -39,9 +39,5 @@ jspm_packages
 # Dot env
 .env
 
-<<<<<<< HEAD
 # wercker files
-=======
-# wercker
->>>>>>> master
 .wercker
