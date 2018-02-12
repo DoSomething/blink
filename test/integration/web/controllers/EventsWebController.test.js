@@ -235,23 +235,9 @@ test('POST /api/v1/events/user-signup-post should publish message to user-signup
   // Required.
   messageData.data.id.should.be.eql(data.id);
   messageData.data.campaign_id.should.be.eql(data.campaign_id);
-  messageData.data.campaign_run_id.should.be.eql(data.campaign_run_id);
   messageData.data.northstar_id.should.be.eql(data.northstar_id);
   messageData.data.signup_id.should.be.eql(data.signup_id);
   messageData.data.created_at.should.be.eql(data.created_at);
-
-  // Optional.
-  const optionalFields = [
-    'source',
-    'caption',
-    'why_participated',
-    'url',
-  ];
-  optionalFields.forEach((key) => {
-    if (messageData.data[key]) {
-      messageData.data[key].should.be.eql(data[key]);
-    }
-  });
 });
 
 

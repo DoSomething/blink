@@ -2,6 +2,7 @@
 
 const Joi = require('joi');
 const uuidV4 = require('uuid/v4');
+const underscore = require('underscore');
 
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
@@ -61,27 +62,36 @@ class Message {
     return JSON.stringify(this.payload);
   }
 
-  validate() {
-    const { error } = Joi.validate(this.getData(), this.schema || {});
-    if (error) {
-      throw new MessageValidationBlinkError(error.message, this.toString());
-    }
-    return true;
-  }
+  validate(strict = false) {
+    const options = {};
+    let filtered;
 
-  validateStrict() {
-    const { error, value } = Joi.validate(
+    if (strict) {
+      options.stripUnknown = true;
+    } else {
+      options.allowUnknown = true;
+    }
+
+    const { error, value: data } = Joi.validate(
       this.getData(),
       this.schema || {},
-      {
-        stripUnknown: true,
-      },
+      options,
     );
     if (error) {
       throw new MessageValidationBlinkError(error.message, this.toString());
     }
-    this.payload.data = value;
+
+    // If unknown keys are allowed, some might include null values
+    if (!strict) {
+      filtered = underscore.pick(data, value => !underscore.isNull(value));
+    }
+
+    this.payload.data = filtered || data;
     return true;
+  }
+
+  validateStrict() {
+    return this.validate(true);
   }
 
   static fromCtx(ctx) {

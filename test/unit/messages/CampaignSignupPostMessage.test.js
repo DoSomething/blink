@@ -40,32 +40,19 @@ test('Campaign signup post message should be correctly transformed to CustomerIo
 
     // Event data.
     const eventData = cioEvent.getData();
-    eventData.version.should.equal(2);
+    eventData.version.should.equal(3);
 
-    eventData.type.should.equal('photo');
     eventData.signup_post_id.should.equal(String(data.id));
     eventData.signup_id.should.equal(String(data.signup_id));
     eventData.campaign_id.should.equal(data.campaign_id);
-    eventData.campaign_run_id.should.equal(data.campaign_run_id);
-    eventData.quantity.should.equal(Number(data.quantity));
+
+    // If we want to test nullable properties, we need to check existence first
+    if (data.quantity) eventData.quantity.should.equal(Number(data.quantity));
 
     // Todo: make sure TZ is corrected
     const originalCreatedAt = moment(data.created_at).milliseconds(0);
     const eventCreatedAt = moment.unix(eventData.created_at);
     eventCreatedAt.toISOString().should.be.equal(originalCreatedAt.toISOString());
-
-    // Optional fields.
-    const optionalFields = [
-      'source',
-      'caption',
-      'url',
-      'why_participated',
-    ];
-    optionalFields.forEach((field) => {
-      if (data[field]) {
-        eventData[field].should.to.be.equal(data[field]);
-      }
-    });
 
     count -= 1;
   }

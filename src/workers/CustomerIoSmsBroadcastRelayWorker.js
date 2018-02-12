@@ -20,8 +20,8 @@ class CustomerIoSmsBroadcastRelayWorker extends Worker {
       this.blink.config.twilio.authToken,
     );
     // Setup Gambit.
-    this.baseURL = this.blink.config.gambit.converationsBaseUrl;
-    this.apiKey = this.blink.config.gambit.converationsApiKey;
+    this.baseURL = this.blink.config.gambit.conversations.v1BaseURL;
+    this.apiKey = this.blink.config.gambit.conversations.apiKey;
   }
 
   async consume(message) {

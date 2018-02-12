@@ -13,8 +13,8 @@ class CustomerIoGambitBroadcastWorker extends Worker {
       rateLimit: this.blink.config.gambit.broadcastSpeedLimit,
     });
     // Setup Gambit.
-    this.baseURI = this.blink.config.gambit.conversationsBaseUri;
-    this.apiKey = this.blink.config.gambit.converationsApiKey;
+    this.baseURL = this.blink.config.gambit.conversations.baseURL;
+    this.apiKey = this.blink.config.gambit.conversations.apiKey;
   }
 
   async consume(message) {
@@ -28,7 +28,7 @@ class CustomerIoGambitBroadcastWorker extends Worker {
     const body = JSON.stringify(data);
     const headers = this.getRequestHeaders(message);
     const response = await fetch(
-      `${this.baseURI}/messages?origin=broadcast`,
+      `${this.baseURL}/messages?origin=broadcast`,
       {
         method: 'POST',
         headers,

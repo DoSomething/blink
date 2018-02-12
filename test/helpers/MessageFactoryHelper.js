@@ -162,40 +162,36 @@ class MessageFactoryHelper {
   static getValidCampaignSignupPost() {
     const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
     const updatedAt = moment(createdAt).add(1, 'days').toISOString();
+    const deletedAt = moment(createdAt).add(2, 'days').toISOString();
 
     const data = {
-      // Required
+      // Required minimum
       id: chance.integer({ min: 0 }),
       signup_id: chance.integer({ min: 0 }),
       northstar_id: chance.hash({ length: 24 }),
       campaign_id: chance.string({ length: 4, pool: '1234567890' }),
-      campaign_run_id: chance.string({ length: 4, pool: '1234567890' }),
-      quantity: chance.integer({ min: 0 }),
-
-      // Optional
-      source: chance.pickone(['campaigns', 'phoenix-web']),
-      caption: chance.sentence({ words: 5 }),
-      why_participated: chance.sentence(),
-      url: chance.avatar({ protocol: 'https' }),
-
-      // Timestamps
+      type: chance.pickone(['photo', 'voter-reg']),
+      action: chance.pickone(['january2018-turbovote', 'january-submit-photo']),
       created_at: createdAt,
-      updatead_at: updatedAt,
-      deleted_at: null,
-    };
 
-    // Optional, may be empty.
-    const optionalFields = [
-      'source',
-      'caption',
-      'why_participated',
-      'url',
-    ];
-    optionalFields.forEach((key) => {
-      if (chance.bool({ likelihood: 40 })) {
-        delete data[key];
-      }
-    });
+      // Optional / nullable
+      campaign_run_id: chance.pickone([null, chance.integer({ min: 0 })]),
+      source: chance.pickone([null, 'campaigns', 'phoenix-web']),
+      media: chance.pickone([null, {
+        url: chance.avatar({ protocol: 'https' }),
+        caption: chance.sentence({ words: 5 }),
+      }]),
+      why_participated: chance.pickone([null, chance.sentence()]),
+      updated_at: chance.pickone([null, updatedAt]),
+      deleted_at: chance.pickone([null, deletedAt]),
+      details: chance.pickone([null, { random: 'stuff' }]),
+      remote_addr: chance.pickone([null, chance.ip()]),
+      tags: chance.pickone([null, [], ['stuff', 'more-stuff']]),
+      status: chance.pickone([null, 'pending']),
+      quantity: chance.pickone([null, chance.integer({
+        min: 1, max: 10,
+      })]),
+    };
 
     return new CampaignSignupPostMessage({
       data,

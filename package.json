@@ -1,6 +1,10 @@
 {
   "name": "blink",
+<<<<<<< HEAD
   "version": "v2.0.1",
+=======
+  "version": "2.0.2",
+>>>>>>> master
   "description": "The DoSomething.org Message Bus.",
   "engines": {
     "node": "8.9.3",
@@ -48,6 +52,7 @@
     "promise-throttle": "^0.3.1",
     "throng": "^4.0.0",
     "twilio": "^3.10.1",
+    "underscore": "^1.8.3",
     "uuid": "^3.1.0",
     "winston": "^2.4.0",
     "yargs": "^10.0.3"

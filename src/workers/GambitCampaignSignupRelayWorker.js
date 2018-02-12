@@ -12,8 +12,8 @@ class GambitCampaignSignupRelayWorker extends Worker {
       queue: this.blink.queues.gambitCampaignSignupRelayQ,
     });
     // Setup Gambit configuration.
-    this.baseURL = this.blink.config.gambit.converationsBaseUrl;
-    this.apiKey = this.blink.config.gambit.converationsApiKey;
+    this.baseURL = this.blink.config.gambit.conversations.baseURL;
+    this.apiKey = this.blink.config.gambit.conversations.apiKey;
   }
 
   async consume(message) {
@@ -35,15 +35,14 @@ class GambitCampaignSignupRelayWorker extends Worker {
     const fields = {
       northstarId: data.northstar_id,
       campaignId: data.campaign_id,
-      // Rogue signups are consdered external for Gambit.
-      template: 'externalSignupMenu',
+      source: data.source,
     };
     const body = JSON.stringify(fields);
 
     const headers = this.getRequestHeaders(message);
 
     const response = await fetch(
-      `${this.baseURL}/send-message`,
+      `${this.baseURL}/messages?origin=signup`,
       {
         method: 'POST',
         headers,

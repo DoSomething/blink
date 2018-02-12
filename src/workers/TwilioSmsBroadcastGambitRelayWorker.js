@@ -12,8 +12,8 @@ class TwilioSmsBroadcastGambitRelayWorker extends Worker {
       queue: this.blink.queues.twilioSmsBroadcastGambitRelayQ,
     });
     // Setup Gambit.
-    this.baseURL = this.blink.config.gambit.converationsBaseUrl;
-    this.apiKey = this.blink.config.gambit.converationsApiKey;
+    this.baseURL = this.blink.config.gambit.conversations.v1BaseURL;
+    this.apiKey = this.blink.config.gambit.conversations.apiKey;
   }
 
   async consume(message) {
