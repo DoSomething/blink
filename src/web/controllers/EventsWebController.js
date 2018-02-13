@@ -29,7 +29,7 @@ class EventsWebController extends WebController {
   async userCreate(ctx) {
     try {
       const userMessage = UserMessage.fromCtx(ctx);
-      userMessage.validateStrict();
+      userMessage.validate();
       this.blink.broker.publishToRoute(
         'create.user.event',
         userMessage,

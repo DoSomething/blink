@@ -51,6 +51,7 @@ class CampaignSignupPostMessage extends Message {
       if (key === 'id' || key === 'signup_id') return String(value);
       if (key === 'quantity') return Number(value);
       if (key === 'created_at') return moment(value).unix();
+      if (key === 'updated_at') return moment(value).unix();
       return value;
     });
 

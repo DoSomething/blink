@@ -62,6 +62,17 @@ class Message {
     return JSON.stringify(this.payload);
   }
 
+  /**
+   * validate - It validates the message's schema. If the minimum set of keys defined in the schema
+   * is not met, the validation fails, throwing a MessageValidationBlinkError error. By default, it
+   * allows all other non null keys to pass validation. In strict mode, it strips all
+   * unknown keys -- Keys not defined explicitly in the validation schema itself.
+   *
+   * This method should be overridden in children classes if the default
+   * doesn't fit the desired functionality. Example: FreeFormMessage
+   *
+   * @param  {type} strict = false - Use strict mode
+   */
   validate(strict = false) {
     const options = {};
     let filtered;
@@ -81,7 +92,7 @@ class Message {
       throw new MessageValidationBlinkError(error.message, this.toString());
     }
 
-    // If unknown keys are allowed, some might include null values
+    // If unknown keys are allowed, some might include null values, remove them
     if (!strict) {
       filtered = underscore.pick(data, value => !underscore.isNull(value));
     }

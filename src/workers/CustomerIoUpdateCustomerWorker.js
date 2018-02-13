@@ -22,7 +22,6 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     let customerIoUpdateCustomerMessage;
     try {
       customerIoUpdateCustomerMessage = CustomerIoUpdateCustomerMessage.fromUser(userMessage);
-      customerIoUpdateCustomerMessage.validateStrict();
     } catch (error) {
       meta = {
         env: this.blink.config.app.env,

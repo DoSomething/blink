@@ -1,83 +1,30 @@
 'use strict';
 
-const Joi = require('joi');
 const moment = require('moment');
 
 const Message = require('./Message');
 
 // TODO: Move this to be a Model. See CustomerIoEvent as an example.
 class CustomerIoUpdateCustomerMessage extends Message {
-  constructor(...args) {
-    super(...args);
-    // Data validation rules.
-    // TODO: move to helpers.
-    const whenNullOrEmpty = Joi.valid(['', null]);
-    const optionalStringDefaultsToUndefined = Joi
-      .string()
-      .empty(whenNullOrEmpty)
-      .default(undefined);
-
-    const optionalTimestampDefaultsToUndefined = Joi
-      .date()
-      .timestamp('unix')
-      .raw()
-      .empty(whenNullOrEmpty)
-      .default(undefined);
-
-    this.schema = Joi.object().keys({
-      id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
-      data: Joi.object().required().keys({
-        // Remove field when provided as empty string or null.
-        email: Joi.string().empty(whenNullOrEmpty).default(undefined),
-
-        phone: Joi.string().empty(whenNullOrEmpty).default(undefined),
-
-        // Required:
-        updated_at: Joi.date()
-          .required()
-          .empty(whenNullOrEmpty)
-          .timestamp('unix')
-          .raw(),
-        created_at: Joi.date()
-          .required()
-          .empty(whenNullOrEmpty)
-          .timestamp('unix')
-          .raw(),
-
-        sms_status: Joi.any().empty(whenNullOrEmpty).default(undefined),
-
-        // Optional, defaults to undefined when provided as empty string or null.
-        last_authenticated_at: optionalTimestampDefaultsToUndefined,
-        // Exception: kept as an isodate
-        birthdate: Joi.string()
-          .empty(whenNullOrEmpty)
-          .regex(/^(\d{4})-(\d{2})-(\d{2})$/, 'valid birthdate')
-          .default(undefined),
-        first_name: optionalStringDefaultsToUndefined,
-        last_name: optionalStringDefaultsToUndefined,
-        addr_city: optionalStringDefaultsToUndefined,
-        addr_state: optionalStringDefaultsToUndefined,
-        addr_zip: optionalStringDefaultsToUndefined,
-        source: optionalStringDefaultsToUndefined,
-        source_detail: optionalStringDefaultsToUndefined,
-        language: optionalStringDefaultsToUndefined,
-        country: optionalStringDefaultsToUndefined,
-        facebook_id: optionalStringDefaultsToUndefined,
-        unsubscribed: Joi.boolean().empty(whenNullOrEmpty).default(undefined),
-
-        // Allow anything as a role, but default to user.
-        role: Joi.string().empty(whenNullOrEmpty).default('user'),
-
-        // When interests not present, make them an empty array.
-        interests: Joi.array().items(Joi.string()).empty(null).default(undefined),
-
-        // TODO: add more cio specific fields, like unsubscribed_at
-      }).or('email', 'phone'),
-    });
-  }
-
+  /**
+   * TODO: This message should have a toCustomerIoEvent method like CampaignSignupPostMessage
+   * and return a CustomerIoEvent instance for consistency.
+   *
+   * @static fromUser - C.io segmentation filters distinguish
+   * between String, Number, and Date types. Because of this,
+   * we need to make sure the event properties, when passed,
+   * should be casted to the appropriate type for successful
+   * segmenting in C.io.
+   *
+   * @param  {UserMessage} userMessage
+   * @return {CustomerIoUpdateCustomerMessage}
+   */
   static fromUser(userMessage) {
     const user = userMessage.getData();
+
+    // last_messaged_at is not included because it's already being sent as an unix timestamp
+    const dates = ['created_at', 'updated_at', 'last_authenticated_at'];
+
     // Copy user fields.
     const customerData = Object.assign({}, user);
     // Remove id from data, as it's available on the top level.
@@ -89,18 +36,25 @@ class CustomerIoUpdateCustomerMessage extends Message {
       delete customerData.mobile;
     }
 
-    customerData.created_at = moment(customerData.created_at, moment.ISO_8601).unix();
-    customerData.updated_at = moment(customerData.updated_at, moment.ISO_8601).unix();
+    // Cast dates into unix timestamp if the value is a ISO_8601 string, otherwise cast to Number.
+    dates.forEach((dateKey) => {
+      const dateValue = customerData[dateKey];
+      // value exists
+      if (dateValue) {
+        customerData[dateKey] = !Number(dateValue) ?
+          moment(dateValue, moment.ISO_8601).unix() :
+          Number(dateValue);
+      }
+    });
 
-    if (customerData.last_authenticated_at) {
-      customerData.last_authenticated_at = moment(
-        customerData.last_authenticated_at,
-        moment.ISO_8601,
-      ).unix();
-    }
-
-    // If a user is newly created (created_at & updated_at are the same)
-    // then set them as "subscribed" to emails in Customer.io!
+    /**
+     * TODO: Blink shouldn't have to figure out if the user is unsubscribed or not.
+     * This should come from the source, in this case Northstar.
+     * @see https://github.com/DoSomething/northstar/pull/706
+     *
+     * If a user is newly created (created_at & updated_at are the same)
+     * then set them as "subscribed" to emails in Customer.io!
+     */
     const isNew = customerData.created_at === customerData.updated_at;
     if (customerData.email && isNew) {
       customerData.unsubscribed = false;

@@ -45,6 +45,7 @@ class MessageFactoryHelper {
         slack_id: chance.natural().toString(),
         mobilecommons_id: chance.natural().toString(),
         parse_installation_ids: chance.n(chance.guid, 2),
+        sms_paused: chance.bool(),
         sms_status: chance.pickone([
           'undeliverable',
           'less',
@@ -58,8 +59,9 @@ class MessageFactoryHelper {
         country: chance.country(),
         drupal_id: chance.natural().toString(),
         role: chance.pickone(['user', 'admin', 'staff']),
-        // Dates are arbitrary, but it's make more sense when they are within
+        // Dates are arbitrary, but it makes more sense when they are within
         // different ranges.
+        last_messaged_at: chance.timestamp(),
         last_authenticated_at: chance.date({
           year: chance.year({ min: 2013, max: 2015 }),
         }).toISOString(),
@@ -77,8 +79,9 @@ class MessageFactoryHelper {
         id: fakeId,
         data: {
           email: chance.email(),
-          updated_at: chance.timestamp(),
-          created_at: chance.timestamp(),
+          updated_at: chance.pickone([moment().toISOString(), chance.timestamp()]),
+          created_at: chance.pickone([moment().toISOString(), chance.timestamp()]),
+          sms_paused: chance.bool(),
           sms_status: chance.pickone([
             'undeliverable',
             'active',
@@ -87,7 +90,8 @@ class MessageFactoryHelper {
             'stop',
             null,
           ]),
-          last_authenticated_at: chance.timestamp(),
+          last_authenticated_at: chance.pickone([moment().toISOString(), chance.timestamp()]),
+          last_messaged_at: chance.timestamp(),
           birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
           facebook_id: chance.fbid().toString(),
           first_name: chance.first(),
