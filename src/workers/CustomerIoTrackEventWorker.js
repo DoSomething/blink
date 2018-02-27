@@ -9,7 +9,14 @@ const Worker = require('./Worker');
 class CustomerIoTrackEventWorker extends Worker {
   setup({ queue, eventName }) {
     super.setup({ queue });
-    // Event name: track_campaign_signup or track_campaign_signup_post.
+    /**
+     * Worker event name for internal tracking (logging), example:
+     * track_campaign_signup, track_campaign_signup_post, etc.
+     * Not to be confused with the eventName property found in some Message classes like
+     * CampaignSignupPostReviewMessage, which is the eventName used in C.io.
+     *
+     * TODO: This is somewhat confusing. We should use the CustomerIoEvent's eventName property.
+     */
     this.eventName = eventName;
     // Setup customer.io client.
     this.cioConfig = this.blink.config.customerio;
@@ -21,19 +28,19 @@ class CustomerIoTrackEventWorker extends Worker {
     const msgData = transformableMessage.getData();
     let meta;
 
-    // Convert campaign signup to customer.io event.
+    // Convert message to customer.io event.
     let customerIoEvent;
     try {
       customerIoEvent = transformableMessage.toCustomerIoEvent();
     } catch (error) {
       meta = {
         env: this.blink.config.app.env,
-        code: 'error_cio_update_cant_convert_campaign_signup',
+        code: 'error_cant_convert_message_to_cio_event',
         worker: this.constructor.name,
         request_id: transformableMessage.getRequestId(),
       };
       logger.warning(
-        `Can't convert signup event to cio event: ${msgData.id} error ${error}`,
+        `Can't convert message to cio event: ${msgData.id} error ${error}`,
         meta,
       );
     }
@@ -59,7 +66,7 @@ class CustomerIoTrackEventWorker extends Worker {
     this.log(
       'debug',
       transformableMessage,
-      'Customer.io campaign signup tracked',
+      'Customer.io event tracked',
       `success_cio_${this.eventName}`,
     );
 

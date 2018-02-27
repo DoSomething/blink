@@ -71,6 +71,11 @@ class BlinkWebApp extends BlinkApp {
       eventsWebController.userSignupPost,
     );
     router.post(
+      'api.v1.events.user-signup-post-review',
+      '/api/v1/events/user-signup-post-review',
+      eventsWebController.userSignupPostReview,
+    );
+    router.post(
       'api.v1.events.quasar-relay',
       '/api/v1/events/quasar-relay',
       eventsWebController.quasarRelay,
@@ -111,7 +116,12 @@ class BlinkWebApp extends BlinkApp {
     controllerClasses.forEach((controllerClass, i) => {
       // Construct new controller.
       const controller = new controllerClasses[i](this);
-      // Use camelcased controller name as a map key.
+
+      /**
+       * Use camelcased controller class name as a map key.
+       * NOTE: Classes use camelCase but are capitalized, example: SuperClass.
+       * This step normalizes the name to standard camelCase syntax: superClass.
+       */
       const mappingKey = changeCase.camelCase(controllerClass.name);
       // Add worker to mapping
       controllerMapping[mappingKey] = controller;

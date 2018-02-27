@@ -12,6 +12,7 @@ class CampaignSignupPostMessage extends Message {
     super(...args);
     // Data validation rules.
     this.schema = schema;
+    this.eventName = 'campaign_signup_post';
   }
 
   /**
@@ -67,7 +68,7 @@ class CampaignSignupPostMessage extends Message {
 
     const event = new CustomerIoEvent(
       data.northstar_id,
-      'campaign_signup_post',
+      this.eventName,
       eventData,
     );
     // Signup post -> customer.io event transformation would only happen in this class.

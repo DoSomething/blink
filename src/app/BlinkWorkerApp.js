@@ -2,6 +2,7 @@
 
 const BlinkError = require('../errors/BlinkError');
 const CustomerIoCampaignSignupPostWorker = require('../workers/CustomerIoCampaignSignupPostWorker');
+const CustomerIoCampaignSignupPostReviewWorker = require('../workers/CustomerIoCampaignSignupPostReviewWorker');
 const CustomerIoCampaignSignupWorker = require('../workers/CustomerIoCampaignSignupWorker');
 const CustomerIoGambitBroadcastWorker = require('../workers/CustomerIoGambitBroadcastWorker');
 const CustomerIoSmsBroadcastRelayWorker = require('../workers/CustomerIoSmsBroadcastRelayWorker');
@@ -44,6 +45,7 @@ class BlinkWorkerApp extends BlinkApp {
       fetch: FetchWorker,
       'customer-io-campaign-signup': CustomerIoCampaignSignupWorker,
       'customer-io-campaign-signup-post': CustomerIoCampaignSignupPostWorker,
+      'customer-io-campaign-signup-post-review': CustomerIoCampaignSignupPostReviewWorker,
       'customer-io-gambit-broadcast': CustomerIoGambitBroadcastWorker,
       'customer-io-sms-broadcast-relay': CustomerIoSmsBroadcastRelayWorker,
       'customer-io-update-customer': CustomerIoUpdateCustomerWorker,

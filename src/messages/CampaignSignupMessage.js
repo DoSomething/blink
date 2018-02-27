@@ -10,7 +10,7 @@ class CampaignSignupMessage extends Message {
   constructor(...args) {
     super(...args);
     // Data validation rules.
-    // TODO: move to helpers.
+    // TODO: move to /validations/campaignSignup
     const whenNullOrEmpty = Joi.valid(['', null]);
 
     this.schema = Joi.object()
@@ -22,6 +22,8 @@ class CampaignSignupMessage extends Message {
         source: Joi.string().empty(whenNullOrEmpty).default(undefined),
         created_at: Joi.string().required().empty(whenNullOrEmpty).isoDate(),
       });
+
+    this.eventName = 'campaign_signup';
   }
 
   toCustomerIoEvent() {
@@ -41,7 +43,7 @@ class CampaignSignupMessage extends Message {
 
     const event = new CustomerIoEvent(
       data.northstar_id,
-      'campaign_signup',
+      this.eventName,
       eventData,
     );
 

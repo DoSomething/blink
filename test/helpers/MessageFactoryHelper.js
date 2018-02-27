@@ -7,6 +7,7 @@ const moment = require('moment');
 
 const CampaignSignupMessage = require('../../src/messages/CampaignSignupMessage');
 const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPostMessage');
+const CampaignSignupPostReviewMessage = require('../../src/messages/CampaignSignupPostReviewMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const TwilioStatusCallbackMessage = require('../../src/messages/TwilioStatusCallbackMessage');
@@ -163,7 +164,7 @@ class MessageFactoryHelper {
     });
   }
 
-  static getValidCampaignSignupPost() {
+  static getValidCampaignSignupPostData() {
     const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
     const updatedAt = moment(createdAt).add(1, 'days').toISOString();
     const deletedAt = moment(createdAt).add(2, 'days').toISOString();
@@ -197,7 +198,22 @@ class MessageFactoryHelper {
       })]),
     };
 
+    return data;
+  }
+
+  static getValidCampaignSignupPost() {
+    const data = MessageFactoryHelper.getValidCampaignSignupPostData();
+
     return new CampaignSignupPostMessage({
+      data,
+      meta: {},
+    });
+  }
+
+  static getValidCampaignSignupPostReview() {
+    const data = MessageFactoryHelper.getValidCampaignSignupPostData();
+
+    return new CampaignSignupPostReviewMessage({
       data,
       meta: {},
     });

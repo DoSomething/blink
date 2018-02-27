@@ -1,6 +1,7 @@
 web: npm run web
 fetch: npm run worker fetch
 customer-io-campaign-signup-post: npm run worker customer-io-campaign-signup-post
+customer-io-campaign-signup-post-review: npm run worker customer-io-campaign-signup-post-review
 customer-io-campaign-signup: npm run worker customer-io-campaign-signup
 customer-io-gambit-broadcast: npm run worker customer-io-gambit-broadcast
 customer-io-update-customer: npm run worker customer-io-update-customer

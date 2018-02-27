@@ -32,6 +32,9 @@ Install dependencies `yarn install`
 | `GET /api`                  | List available API versions |
 | `GET /api/v1`               | List V1 endpoints           |
 
+### V1 Endpoints
+[Routes](https://github.com/DoSomething/blink/wiki/Routes)
+
 ## Tests
 
 You can run all tests and checks at once:
@@ -53,8 +56,19 @@ with minor [DoSomething](https://github.com/DoSomething/eslint-config) adjustmen
 
 #### BDD Tests
 
+##### Unit tests
 ```
-$ yarn test
+$ yarn test:unit
+```
+
+##### Integration tests
+```
+$ yarn test:integration
+```
+
+##### Lint, Unit, Coverage, and Integration
+```
+$ yarn test:full
 ```
 
 BDD test uses the following utilities:
@@ -62,10 +76,13 @@ BDD test uses the following utilities:
 - [Chai](http://chaijs.com/), BDD/should flavor
 - [Supertest](https://github.com/visionmedia/supertest)
 
+> When running integration/full tests locally. Run `docker-compose down && docker-compose up -d` between
+runs to prevent collision with messages stored in the RabbitMQ Docker image.
+
 #### Code coverage
 
 ```
-$ yarn coverage
+$ yarn unit:coverage
 ```
 
 - [NYC](https://github.com/istanbul/nyc)

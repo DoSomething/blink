@@ -2,6 +2,7 @@
 
 const CampaignSignupMessage = require('../../messages/CampaignSignupMessage');
 const CampaignSignupPostMessage = require('../../messages/CampaignSignupPostMessage');
+const CampaignSignupPostReviewMessage = require('../../messages/CampaignSignupPostReviewMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const UserMessage = require('../../messages/UserMessage');
 const WebController = require('./WebController');
@@ -14,6 +15,7 @@ class EventsWebController extends WebController {
     this.userCreate = this.userCreate.bind(this);
     this.userSignup = this.userSignup.bind(this);
     this.userSignupPost = this.userSignupPost.bind(this);
+    this.userSignupPostReview = this.userSignupPostReview.bind(this);
     this.quasarRelay = this.quasarRelay.bind(this);
   }
 
@@ -22,6 +24,7 @@ class EventsWebController extends WebController {
       'user-create': this.fullUrl('api.v1.events.user-create'),
       'user-signup': this.fullUrl('api.v1.events.user-signup'),
       'user-signup-post': this.fullUrl('api.v1.events.user-signup-post'),
+      'user-signup-post-review': this.fullUrl('api.v1.events.user-signup-post-review'),
       'quasar-relay': this.fullUrl('api.v1.events.quasar-relay'),
     };
   }
@@ -60,6 +63,20 @@ class EventsWebController extends WebController {
       message.validate();
       this.blink.broker.publishToRoute(
         'signup-post.user.event',
+        message,
+      );
+      this.sendOK(ctx, message);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
+  }
+
+  async userSignupPostReview(ctx) {
+    try {
+      const message = CampaignSignupPostReviewMessage.fromCtx(ctx);
+      message.validate();
+      this.blink.broker.publishToRoute(
+        'signup-post-review.user.event',
         message,
       );
       this.sendOK(ctx, message);
