@@ -6,6 +6,7 @@ const envPrefix = useTestCreds ? 'TWILIO_API_TEST_' : 'TWILIO_API_';
 const config = {
   useTestCreds,
   accountSid: process.env[`${envPrefix}ACCOUNT_SID`] || 'AC-account_sid',
+  // overrided by `config/env/override-test` while testing
   authToken: process.env[`${envPrefix}AUTH_TOKEN`] || 'totallysecret',
   from: process.env[`${envPrefix}FROM`] || '+15005550006',
 };

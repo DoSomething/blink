@@ -16,17 +16,6 @@ test.afterEach(HooksHelper.stopBlinkWebApp);
 // ------- Tests ---------------------------------------------------------------
 
 /**
- * GET /
- */
-test('GET / should be polite', async (t) => {
-  const res = await t.context.supertest.get('/')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password);
-
-  res.status.should.be.equal(200);
-  res.text.should.be.equal('Hi, I\'m Blink!');
-});
-
-/**
  * GET /api
  */
 test('GET /api should respond with JSON list of API versions', async (t) => {

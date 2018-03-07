@@ -8,8 +8,8 @@ const Chance = require('chance');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
-const CustomerioSmsBroadcastMessage = require('../../../src/messages/CustomerioSmsBroadcastMessage');
-const CustomerIoSmsBroadcastRelayWorker = require('../../../src/workers/CustomerIoSmsBroadcastRelayWorker');
+const CustomerioGambitBroadcastMessage = require('../../../src/messages/CustomerioGambitBroadcastMessage');
+const CustomerIoGambitBroadcastWorker = require('../../../src/workers/CustomerIoGambitBroadcastWorker');
 const HooksHelper = require('../../helpers/HooksHelper');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 const RabbitManagement = require('../../helpers/RabbitManagement');
@@ -27,24 +27,24 @@ test.serial('Gambit Broadcast relay should be consume close to 50 messages per s
   // Turn off extra logs for this tests, as it genertes thouthands of messages.
   await HooksHelper.startBlinkWebApp(t);
   const blink = t.context.blink;
-  const { customerioSmsBroadcastRelayQ } = blink.queues;
+  const { customerioGambitBroadcastQ } = blink.queues;
 
   // Publish 2x rate limit messages to the queue
   for (let i = 0; i < 120; i++) {
-    const data = MessageFactoryHelper.getValidCustomerBroadcastData();
+    const data = MessageFactoryHelper.getValidGambitBroadcastData();
     const meta = {
       request_id: chance.guid({ version: 4 }),
       broadcastId: chance.word(),
     };
-    const message = new CustomerioSmsBroadcastMessage({ data, meta });
-    customerioSmsBroadcastRelayQ.publish(message);
+    const message = new CustomerioGambitBroadcastMessage({ data, meta });
+    customerioGambitBroadcastQ.publish(message);
   }
 
   // Wait for all messages to sync into rabbit.
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   // Spy on worker's consume();
-  const worker = new CustomerIoSmsBroadcastRelayWorker(blink);
+  const worker = new CustomerIoGambitBroadcastWorker(blink);
   const consumeStub = sinon.stub(worker, 'consume').resolves(true);
 
   // Kick off message consuming;
@@ -69,15 +69,15 @@ test.serial('Gambit Broadcast relay should be consume close to 50 messages per s
 });
 
 /**
- * POST /api/v1/webhooks/customerio-sms-broadcast
+ * POST /api/v1/webhooks/customerio-gambit-broadcast
  */
-test.serial('POST /api/v1/webhooks/customerio-sms-broadcast should publish message to customerio-sms-broadcast-relay queue', async (t) => {
+test.serial('POST /api/v1/webhooks/customerio-gambit-broadcast should publish message to customerio-gambit-broadcast queue', async (t) => {
   await HooksHelper.startBlinkWebApp(t);
 
   const broadcastId = chance.word();
-  const data = MessageFactoryHelper.getValidCustomerBroadcastData(broadcastId);
+  const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId);
 
-  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-sms-broadcast')
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
     .set('Content-Type', 'application/json')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
@@ -94,7 +94,7 @@ test.serial('POST /api/v1/webhooks/customerio-sms-broadcast should publish messa
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('customerio-sms-broadcast-relay', 1, false);
+  const messages = await rabbit.getMessagesFrom('customerio-gambit-broadcast', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');

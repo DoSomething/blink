@@ -9,6 +9,7 @@ const test = require('ava');
 const RabbitManagement = require('../../../helpers/RabbitManagement');
 const HooksHelper = require('../../../helpers/HooksHelper');
 const MessageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
+const twilioHelper = require('../../../helpers/twilio');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -47,10 +48,6 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
 
   res.body.should.have.property('customerio-gambit-broadcast')
     .and.have.string('/api/v1/webhooks/customerio-gambit-broadcast');
-
-  // To be deprecated
-  res.body.should.have.property('customerio-sms-broadcast')
-    .and.have.string('/api/v1/webhooks/customerio-sms-broadcast');
 });
 
 /**
@@ -100,7 +97,7 @@ test.serial('POST /api/v1/webhooks/customerio-email-activity should publish mess
 /**
  * POST /api/v1/webhooks/twilio-sms-inbound
  */
-test('POST /api/v1/webhooks/twilio-sms-inbound should publish message to twilio-sms-inbound-gambit-relay queue', async (t) => {
+test('POST /api/v1/webhooks/twilio-sms-inbound should fail with 403 forbidden for invalid Twilio requests', async (t) => {
   const data = {
     random: 'key',
     nested: {
@@ -109,14 +106,34 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should publish message to twilio-
   };
 
   const res = await t.context.supertest.post('/api/v1/webhooks/twilio-sms-inbound')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(403);
+});
+
+/**
+ * POST /api/v1/webhooks/twilio-sms-inbound
+ */
+test('POST /api/v1/webhooks/twilio-sms-inbound should be queued when a valid x-twilio-signature is received', async (t) => {
+  const message = MessageFactoryHelper.getValidTwilioInboundData();
+  const data = message.getData();
+
+  const serverAddress = t.context.blink.web.server.address();
+  const readableUrl = `http://${serverAddress.address}`;
+  const path = '/api/v1/webhooks/twilio-sms-inbound';
+
+  const twilioSignature = twilioHelper.getTwilioSignature(
+    t.context.config.twilio.authToken,
+    `${readableUrl}${path}`,
+    data);
+
+  const res = await t.context.supertest.post(path)
+    .set('x-twilio-signature', twilioSignature)
     .send(data);
 
   // Ensure TwiML compatible response.
   res.status.should.be.equal(204);
   res.res.statusMessage.toLowerCase().should.equal('no content');
-  res.header.should.not.have.property('content-type');
-  res.text.should.equal('');
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
@@ -128,25 +145,6 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should publish message to twilio-
   const messageData = JSON.parse(payload);
   messageData.should.have.property('data');
   messageData.data.should.be.eql(data);
-});
-
-/**
- * POST /api/v1/webhooks/customerio-sms-broadcast
- */
-test('POST /api/v1/webhooks/customerio-sms-broadcast validates incoming payload', async (t) => {
-  const broadcastId = chance.word();
-  const data = MessageFactoryHelper.getValidCustomerBroadcastData(broadcastId);
-  delete data.To;
-
-  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-sms-broadcast')
-    .set('Content-Type', 'application/x-www-form-urlencoded')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
-    .send(data);
-
-  res.status.should.be.equal(422);
-  res.body.should.have.property('ok', false);
-  res.body.should.have.property('message')
-    .and.have.string('"To" is required');
 });
 
 /**

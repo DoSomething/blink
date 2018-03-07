@@ -1,18 +1,21 @@
 'use strict';
 
 const WebController = require('./WebController');
+const basicAuthStrategy = require('../middleware/auth/strategies/basicAuth');
 
 class ApiWebController extends WebController {
   constructor(...args) {
     super(...args);
-    // Bind web methods to object context so they can be passed to router.
-    this.index = this.index.bind(this);
-    this.v1 = this.v1.bind(this);
-    this.welcome = this.welcome.bind(this);
+    this.initRouter();
   }
 
-  async welcome(ctx) {
-    ctx.body = 'Hi, I\'m Blink!';
+  initRouter() {
+    this.router.get('api.index', '/api',
+      basicAuthStrategy(this.blink.config.app.auth),
+      this.index.bind(this));
+    this.router.get('api.v1', '/api/v1',
+      basicAuthStrategy(this.blink.config.app.auth),
+      this.v1.bind(this));
   }
 
   async index(ctx) {
@@ -23,9 +26,9 @@ class ApiWebController extends WebController {
 
   async v1(ctx) {
     ctx.body = {
-      tools: this.fullUrl('api.v1.tools'),
-      events: this.fullUrl('api.v1.events'),
-      webhooks: this.fullUrl('api.v1.webhooks'),
+      tools: this.fullUrl('v1.tools'),
+      events: this.fullUrl('v1.events'),
+      webhooks: this.fullUrl('v1.webhooks'),
     };
   }
 }

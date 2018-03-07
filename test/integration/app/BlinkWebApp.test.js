@@ -19,10 +19,10 @@ test.afterEach(HooksHelper.stopBlinkWebApp);
 /**
  * GET /
  */
-test('GET / should turn down anonymous requests', async (t) => {
+test('GET / should redirect to /api', async (t) => {
   const res = await t.context.supertest.get('/');
-  res.status.should.be.equal(401);
-  res.text.should.be.have.string('Don\'t blink');
+  res.status.should.be.equal(301);
+  res.header.location.should.be.equal('/api');
 });
 
 // ------- End -----------------------------------------------------------------

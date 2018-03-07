@@ -1,4 +1,4 @@
-box: node:8.9.3
+box: node:8.9.4
 services:
   - id: rabbitmq:3.6.9-management
     env:

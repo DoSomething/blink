@@ -3,16 +3,17 @@
 const changeCase = require('change-case');
 const http = require('http');
 const Koa = require('koa');
-const auth = require('koa-basic-auth');
 const bodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
 const logger = require('winston');
+const Promise = require('bluebird');
 
 const ApiWebController = require('../web/controllers/ApiWebController');
 const EventsWebController = require('../web/controllers/EventsWebController');
 const ToolsWebController = require('../web/controllers/ToolsWebController');
 const WebHooksWebController = require('../web/controllers/WebHooksWebController');
-const basicAuthCustom401 = require('../web/middleware/basicAuthCustom401');
+const unauthorized401Handler = require('../web/middleware/errorHandlers/401');
+const forbidden403Handler = require('../web/middleware/errorHandlers/403');
 const generateRequestId = require('../web/middleware/generateRequestId');
 const BlinkApp = require('./BlinkApp');
 
@@ -37,85 +38,36 @@ class BlinkWebApp extends BlinkApp {
   }
 
   initRouter() {
-    // Define controller shortcuts for convenience.
-    const {
-      apiWebController,
-      toolsWebController,
-      webHooksWebController,
-      eventsWebController,
-    } = this.web.controllers;
-
     const router = new Router();
-    router.get('root', '/', apiWebController.welcome);
-    router.get('api.v1', '/api/v1', apiWebController.v1);
-    router.get('api.index', '/api', apiWebController.index);
-    router.get('api.v1', '/api/v1', apiWebController.v1);
-    router.get('api.v1.tools', '/api/v1/tools', toolsWebController.index);
-    router.post('api.v1.tools.fetch', '/api/v1/tools/fetch', toolsWebController.fetch);
 
-    // Events
-    router.get('api.v1.events', '/api/v1/events', eventsWebController.index);
-    router.post(
-      'api.v1.events.user-create',
-      '/api/v1/events/user-create',
-      eventsWebController.userCreate,
-    );
-    router.post(
-      'api.v1.events.user-signup',
-      '/api/v1/events/user-signup',
-      eventsWebController.userSignup,
-    );
-    router.post(
-      'api.v1.events.user-signup-post',
-      '/api/v1/events/user-signup-post',
-      eventsWebController.userSignupPost,
-    );
-    router.post(
-      'api.v1.events.user-signup-post-review',
-      '/api/v1/events/user-signup-post-review',
-      eventsWebController.userSignupPostReview,
-    );
-    router.post(
-      'api.v1.events.quasar-relay',
-      '/api/v1/events/quasar-relay',
-      eventsWebController.quasarRelay,
-    );
+    // ApiWeb router
+    const apiWebRouter = this.web.controllers.apiWebController.getRouter();
+    router.use(apiWebRouter.routes());
 
-    // Webhooks
-    router.get('api.v1.webhooks', '/api/v1/webhooks', webHooksWebController.index);
-    router.post(
-      'api.v1.webhooks.customerio-email-activity',
-      '/api/v1/webhooks/customerio-email-activity',
-      webHooksWebController.customerioEmailActivity,
-    );
-    router.post(
-      'api.v1.webhooks.customerio-gambit-broadcast',
-      '/api/v1/webhooks/customerio-gambit-broadcast',
-      webHooksWebController.customerioGambitBroadcast,
-    );
-    router.post(
-      'api.v1.webhooks.customerio-sms-broadcast',
-      '/api/v1/webhooks/customerio-sms-broadcast',
-      webHooksWebController.customerioSmsBroadcast,
-    );
-    router.post(
-      'api.v1.webhooks.twilio-sms-broadcast',
-      '/api/v1/webhooks/twilio-sms-broadcast',
-      webHooksWebController.twilioSmsBroadcast,
-    );
-    router.post(
-      'api.v1.webhooks.twilio-sms-inbound',
-      '/api/v1/webhooks/twilio-sms-inbound',
-      webHooksWebController.twilioSmsInbound,
-    );
+    // Tools router
+    const toolsRouter = this.web.controllers.toolsWebController.getRouter();
+    router.use(toolsRouter.routes());
+
+    // Events router
+    const eventsRouter = this.web.controllers.eventsWebController.getRouter();
+    router.use(eventsRouter.routes());
+
+    // Webhooks router
+    const webhooksRouter = this.web.controllers.webHooksWebController.getRouter();
+    router.use(webhooksRouter.routes());
+
+    router.redirect('/', 'api.index');
+
     return router;
   }
 
   initControllers(controllerClasses) {
     const controllerMapping = {};
     controllerClasses.forEach((controllerClass, i) => {
+      const router = new Router();
+
       // Construct new controller.
-      const controller = new controllerClasses[i](this);
+      const controller = new controllerClasses[i](this, router);
 
       /**
        * Use camelcased controller class name as a map key.
@@ -169,12 +121,9 @@ class BlinkWebApp extends BlinkApp {
     // Basic Authentication:
     // Custom 401 handling.
     // https://github.com/koajs/basic-auth#example
-    app.use(basicAuthCustom401);
-    // Enable auth.
-    app.use(auth({
-      name: this.config.app.auth.name,
-      pass: this.config.app.auth.password,
-    }));
+    app.use(unauthorized401Handler);
+    // Custom 403 handling.
+    app.use(forbidden403Handler);
 
     // Inject Koa Router routes and allowed methods.
     app.use(this.web.router.routes());
@@ -186,27 +135,37 @@ class BlinkWebApp extends BlinkApp {
     await super.start();
     // Start HTTP server
     this.web.server = http.createServer(this.web.app.callback());
-    this.web.server.listen(
-      this.config.web.bind_port,
-      this.config.web.bind_address,
-      () => {
-        const address = this.web.server.address();
-        // TODO: Make sure random port setting gets overriden with actual resolved port.
 
-        // TODO: log process name
-        const meta = {
-          env: this.config.app.env,
-          code: 'web_started',
-          host: this.config.web.hostname,
-          protocol: 'http',
-          port: address.port,
-        };
+    return new Promise((resolve) => {
+      // @see https://nodejs.org/docs/latest-v8.x/api/net.html#net_server_listen
+      this.web.server.listen(
+        this.config.web.bind_port,
+        this.config.web.bind_address,
+        () => {
+          const address = this.web.server.address();
+          // TODO: Make sure random port setting gets overriden with actual resolved port.
 
-        const readableUrl = `http://${this.config.web.hostname}:${address.port}`;
-        logger.debug(`Blink Web is listening on ${readableUrl}`, meta);
-      },
-    );
-    // TODO: HTTPS?
+          // TODO: log process name
+          const meta = {
+            env: this.config.app.env,
+            code: 'web_started',
+            host: this.config.web.hostname,
+            protocol: 'http',
+            port: address.port,
+          };
+
+          const readableUrl = `http://${this.config.web.hostname}:${address.port}`;
+          logger.debug(`Blink Web is listening on ${readableUrl}`, meta);
+
+          /**
+           * Wait for listening event
+           * @see https://groups.google.com/forum/#!topic/nodejs/8huGEo1cWxg
+           */
+          return resolve(true);
+        },
+        // TODO: HTTPS?
+      );
+    });
   }
 
   async stop() {

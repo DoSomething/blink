@@ -16,7 +16,6 @@ const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignu
 const CustomerIoCampaignSignupPostReviewQ = require('../queues/CustomerIoCampaignSignupPostReviewQ');
 const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ');
 const CustomerioGambitBroadcastQ = require('../queues/CustomerioGambitBroadcastQ');
-const CustomerioSmsBroadcastRelayQ = require('../queues/CustomerioSmsBroadcastRelayQ');
 const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const FetchQ = require('../queues/FetchQ');
 const GambitCampaignSignupRelayQ = require('../queues/GambitCampaignSignupRelayQ');
@@ -161,7 +160,6 @@ class BlinkApp {
       CustomerIoCampaignSignupPostReviewQ,
       CustomerIoCampaignSignupQ,
       CustomerioGambitBroadcastQ,
-      CustomerioSmsBroadcastRelayQ,
       CustomerIoUpdateCustomerQ,
       FetchQ,
       GambitCampaignSignupRelayQ,

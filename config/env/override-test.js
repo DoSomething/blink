@@ -13,4 +13,6 @@ module.exports = (config) => {
   // Port 0 means random port:
   // https://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback
   config.web.bind_port = 0;
+  config.web.bind_address = '127.0.0.1';
+  config.twilio.authToken = 'testtoken';
 };

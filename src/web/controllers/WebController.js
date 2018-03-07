@@ -7,9 +7,14 @@ const BlinkError = require('../../errors/BlinkError');
 const MessageValidationBlinkError = require('../../errors/MessageValidationBlinkError');
 
 class WebController {
-  constructor(blink) {
+  constructor(blink, router) {
     this.web = blink.config.web;
     this.blink = blink;
+    this.router = router;
+  }
+
+  getRouter() {
+    return this.router;
   }
 
   /**

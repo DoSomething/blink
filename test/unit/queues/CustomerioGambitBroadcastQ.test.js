@@ -16,7 +16,7 @@ chai.should();
 // ------- Tests ---------------------------------------------------------------
 
 /**
- * Test CustomerioSmsBroadcastRelayQ
+ * Test CustomerioGambitBroadcastQ
  */
 test('CustomerioGambitBroadcastQ', () => {
   const queue = new CustomerioGambitBroadcastQ(new Broker());

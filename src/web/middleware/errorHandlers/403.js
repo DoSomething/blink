@@ -1,12 +1,11 @@
 'use strict';
 
-const basicAuthCustom401 = async function (ctx, next) {
+async function forbidden(ctx, next) {
   try {
     await next();
   } catch (err) {
-    if (err.status === 401) {
-      ctx.status = 401;
-      ctx.set('WWW-Authenticate', 'Basic');
+    if (err.status === 403) {
+      ctx.status = 403;
       // Doctor Who Easter Egg
       // Copyright info: http://tardis.wikia.com/wiki/File:Angel_bares_fangs.jpg
       ctx.set('Content-type', 'text/html');
@@ -15,6 +14,6 @@ const basicAuthCustom401 = async function (ctx, next) {
       throw err;
     }
   }
-};
+}
 
-module.exports = basicAuthCustom401;
+module.exports = forbidden;
