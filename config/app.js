@@ -11,6 +11,8 @@ const config = {
   },
   version: packageJson.version,
   retrySuppressHeader: 'x-blink-retry-suppress',
+  // http status codes that will not trigger a retry
+  allowedStatuses: [200, 204, 422],
   prefetchCount: parseInt(process.env.BLINK_APP_DEFAULT_PREFETCH_COUNT, 10) || 30,
   rateLimit: parseInt(process.env.BLINK_APP_DEFAULT_RATE_LIMIT, 10) || 100,
   // @todo: remove temporary limit

@@ -4,6 +4,10 @@ const Joi = require('joi');
 
 const Message = require('./Message');
 
+/**
+ * DEPRECATED
+ * TODO: Remove this message class
+ */
 class TwilioStatusCallbackMessage extends Message {
   constructor(...args) {
     super(...args);

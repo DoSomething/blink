@@ -2,7 +2,7 @@
 version: '2'
 services:
   rabbitmq:
-    image: rabbitmq:3.6.9-management
+    image: rabbitmq:3.6.14-management
     environment:
       RABBITMQ_DEFAULT_USER: 'blink'
       RABBITMQ_DEFAULT_VHOST: 'blink'

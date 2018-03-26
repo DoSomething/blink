@@ -5,7 +5,6 @@ const logger = require('winston');
 
 const ForbiddenBlinkError = require('../../../../errors/ForbiddenBlinkError');
 
-
 /**
  * twilioSignature - middleware that authenticates requests from Twilio.
  * @see https://www.twilio.com/docs/api/security#validating-requests

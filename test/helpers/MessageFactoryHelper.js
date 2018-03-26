@@ -11,6 +11,7 @@ const CampaignSignupPostReviewMessage = require('../../src/messages/CampaignSign
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const TwilioStatusCallbackMessage = require('../../src/messages/TwilioStatusCallbackMessage');
+const TwilioOutboundStatusCallbackMessage = require('../../src/messages/TwilioOutboundStatusCallbackMessage');
 const UserMessage = require('../../src/messages/UserMessage');
 
 // ------- Init ----------------------------------------------------------------
@@ -142,9 +143,55 @@ class MessageFactoryHelper {
     });
   }
 
+  static getValidTwilioOutboundStatusData(deliveredAt) {
+    const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
+    const msg = new TwilioOutboundStatusCallbackMessage({
+      data: {
+        SmsSid: sid,
+        SmsStatus: 'delivered',
+        MessageStatus: 'delivered',
+        To: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        MessageSid: sid,
+        AccountSid: sid,
+        From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        ApiVersion: '2010-04-01',
+      },
+      meta: {},
+    });
+    if (deliveredAt) {
+      msg.setDeliveredAt(deliveredAt);
+    }
+    return msg;
+  }
+
+  static getValidTwilioOutboundErrorStatusData(failedAt) {
+    const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
+    const msg = new TwilioOutboundStatusCallbackMessage({
+      data: {
+        SmsSid: sid,
+        SmsStatus: 'delivered',
+        MessageStatus: 'delivered',
+        To: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        MessageSid: sid,
+        AccountSid: sid,
+        From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        ApiVersion: '2010-04-01',
+        ErrorCode: 30006,
+        ErrorMessage: 'Landline or unreachable carrier',
+      },
+      meta: {},
+    });
+    if (failedAt) {
+      msg.setFailedAt(failedAt);
+    }
+    return msg;
+  }
+
   static getValidMessageData() {
     // TODO: randomize
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
+    // TODO: This is not a StatusCallbackMessage payload, but an actual message resource payload
+    // This message is deprecated. Remove this.
     return new TwilioStatusCallbackMessage({
       data: {
         ToCountry: 'US',

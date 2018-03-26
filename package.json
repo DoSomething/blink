@@ -1,6 +1,6 @@
 {
   "name": "blink",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
     "node": "8.9.4",
@@ -36,6 +36,7 @@
     "chance": "^1.0.12",
     "change-case": "^3.0.1",
     "customerio-node": "^0.2.0",
+    "deep-extend": "^0.5.0",
     "dotenv": "^4.0.0",
     "ioredis": "^3.2.2",
     "joi": "^13.0.2",
