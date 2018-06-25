@@ -8,6 +8,5 @@ customer-io-update-customer: npm run worker customer-io-update-customer
 gambit-campaign-signup-relay: npm run worker gambit-campaign-signup-relay
 twilio-sms-inbound-gambit-relay: npm run worker twilio-sms-inbound-gambit-relay
 redis-retries-republish: npm run timer redis-retries-republish
-twilio-sms-broadcast-gambit-relay: npm run worker twilio-sms-broadcast-gambit-relay
 twilio-sms-outbound-status-relay: npm run worker twilio-sms-outbound-status-relay
 twilio-sms-outbound-error-relay: npm run worker twilio-sms-outbound-error-relay

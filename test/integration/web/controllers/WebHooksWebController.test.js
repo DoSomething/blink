@@ -39,10 +39,6 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
   res.body.should.have.property('customerio-email-activity')
     .and.have.string('/api/v1/webhooks/customerio-email-activity');
 
-  // Should be deprecated:
-  res.body.should.have.property('twilio-sms-broadcast')
-    .and.have.string('/api/v1/webhooks/twilio-sms-broadcast');
-
   res.body.should.have.property('twilio-sms-inbound')
     .and.have.string('/api/v1/webhooks/twilio-sms-inbound');
 

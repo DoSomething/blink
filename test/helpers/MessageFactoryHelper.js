@@ -10,7 +10,6 @@ const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPost
 const CampaignSignupPostReviewMessage = require('../../src/messages/CampaignSignupPostReviewMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
-const TwilioStatusCallbackMessage = require('../../src/messages/TwilioStatusCallbackMessage');
 const TwilioOutboundStatusCallbackMessage = require('../../src/messages/TwilioOutboundStatusCallbackMessage');
 const UserMessage = require('../../src/messages/UserMessage');
 
@@ -187,12 +186,9 @@ class MessageFactoryHelper {
     return msg;
   }
 
-  static getValidMessageData() {
-    // TODO: randomize
+  static getValidInboundMessageData() {
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
-    // TODO: This is not a StatusCallbackMessage payload, but an actual message resource payload
-    // This message is deprecated. Remove this.
-    return new TwilioStatusCallbackMessage({
+    return new FreeFormMessage({
       data: {
         ToCountry: 'US',
         MediaContentType0: 'image/png',

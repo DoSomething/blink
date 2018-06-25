@@ -40,7 +40,7 @@ Install dependencies `yarn install`
 You can run all tests and checks at once:
 
 ```
-$ yarn all-tests
+$ yarn test:full
 ```
 
 Or execute them individually:
@@ -58,7 +58,7 @@ with minor [DoSomething](https://github.com/DoSomething/eslint-config) adjustmen
 
 ##### Unit tests
 ```
-$ yarn test:unit
+$ yarn test
 ```
 
 ##### Integration tests
@@ -82,7 +82,7 @@ runs to prevent collision with messages stored in the RabbitMQ Docker image.
 #### Code coverage
 
 ```
-$ yarn unit:coverage
+$ yarn unit:coverage && yarn coverage:report:html
 ```
 
 - [NYC](https://github.com/istanbul/nyc)

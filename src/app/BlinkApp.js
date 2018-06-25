@@ -20,8 +20,6 @@ const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ')
 const FetchQ = require('../queues/FetchQ');
 const GambitCampaignSignupRelayQ = require('../queues/GambitCampaignSignupRelayQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
-// TODO: Deprecate and remove
-const TwilioSmsBroadcastGambitRelayQ = require('../queues/TwilioSmsBroadcastGambitRelayQ');
 const TwilioSmsInboundGambitRelayQ = require('../queues/TwilioSmsInboundGambitRelayQ');
 const TwilioSmsOutboundErrorRelayQ = require('../queues/TwilioSmsOutboundErrorRelayQ');
 const TwilioSmsOutboundStatusRelayQ = require('../queues/TwilioSmsOutboundStatusRelayQ');
@@ -167,7 +165,6 @@ class BlinkApp {
       FetchQ,
       GambitCampaignSignupRelayQ,
       QuasarCustomerIoEmailActivityQ,
-      TwilioSmsBroadcastGambitRelayQ,
       TwilioSmsInboundGambitRelayQ,
       TwilioSmsOutboundErrorRelayQ,
       TwilioSmsOutboundStatusRelayQ,

@@ -1,5 +1,6 @@
 'use strict';
 
+// TODO (maintenance): Update to 3.0.0 which has breaking changes.
 const winston = require('winston');
 
 // Setup winston default instance

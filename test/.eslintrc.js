@@ -1,5 +1,5 @@
 module.exports = {
-  extends: '@dosomething/eslint-config/nodejs/ava',
+  extends: '@dosomething/eslint-config/server/ava',
   rules: {
     // Allow all common iterator names as well as `t` for tests
     'id-length': ['error', { exceptions: ['t', 'i', 'j', 'k'] }],

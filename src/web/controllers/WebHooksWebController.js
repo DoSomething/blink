@@ -6,7 +6,6 @@ const CustomerioGambitBroadcastMessage = require('../../messages/CustomerioGambi
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const TwilioOutboundStatusCallbackMessage = require('../../messages/TwilioOutboundStatusCallbackMessage');
-const TwilioStatusCallbackMessage = require('../../messages/TwilioStatusCallbackMessage');
 const WebController = require('./WebController');
 const basicAuthStrategy = require('../middleware/auth/strategies/basicAuth');
 const twilioSignatureStrategy = require('../middleware/auth/strategies/twilioSignature');
@@ -32,12 +31,6 @@ class WebHooksWebController extends WebController {
       this.customerioGambitBroadcast.bind(this),
     );
     this.router.post(
-      'v1.webhooks.twilio-sms-broadcast',
-      '/api/v1/webhooks/twilio-sms-broadcast',
-      basicAuthStrategy(this.blink.config.app.auth),
-      this.twilioSmsBroadcast.bind(this),
-    );
-    this.router.post(
       'v1.webhooks.twilio-sms-inbound',
       '/api/v1/webhooks/twilio-sms-inbound',
       twilioSignatureStrategy(this.blink.config.twilio),
@@ -55,7 +48,6 @@ class WebHooksWebController extends WebController {
     ctx.body = {
       'customerio-email-activity': this.fullUrl('v1.webhooks.customerio-email-activity'),
       'customerio-gambit-broadcast': this.fullUrl('v1.webhooks.customerio-gambit-broadcast'),
-      'twilio-sms-broadcast': this.fullUrl('v1.webhooks.twilio-sms-broadcast'),
       'twilio-sms-inbound': this.fullUrl('v1.webhooks.twilio-sms-inbound'),
       'twilio-sms-outbound-status': this.fullUrl('v1.webhooks.twilio-sms-outbound-status'),
     };
@@ -121,21 +113,6 @@ class WebHooksWebController extends WebController {
       message.validate();
       this.blink.broker.publishToRoute(
         'sms-inbound.twilio.webhook',
-        message,
-      );
-      // See https://www.twilio.com/docs/api/twiml/sms/your_response.
-      this.sendOKNoContent(ctx, message);
-    } catch (error) {
-      this.sendError(ctx, error);
-    }
-  }
-
-  async twilioSmsBroadcast(ctx) {
-    try {
-      const message = TwilioStatusCallbackMessage.fromCtx(ctx);
-      message.validate();
-      this.blink.broker.publishToRoute(
-        'sms-broadcast.status-callback.twilio.webhook',
         message,
       );
       // See https://www.twilio.com/docs/api/twiml/sms/your_response.
