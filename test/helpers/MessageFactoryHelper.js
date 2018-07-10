@@ -7,8 +7,10 @@ const moment = require('moment');
 
 const CampaignSignupMessage = require('../../src/messages/CampaignSignupMessage');
 const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPostMessage');
+const CustomerIoSmsStatusActiveMessage = require('../../src/messages/CustomerIoSmsStatusActiveMessage');
 const CampaignSignupPostReviewMessage = require('../../src/messages/CampaignSignupPostReviewMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
+const CustomerIoGambitBroadcastMessage = require('../../src/messages/CustomerIoGambitBroadcastMessage');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const TwilioOutboundStatusCallbackMessage = require('../../src/messages/TwilioOutboundStatusCallbackMessage');
 const UserMessage = require('../../src/messages/UserMessage');
@@ -53,6 +55,7 @@ class MessageFactoryHelper {
           'active',
           'unknown',
           'stop',
+          'pending',
           null,
           undefined,
         ]),
@@ -89,6 +92,7 @@ class MessageFactoryHelper {
             'less',
             'unknown',
             'stop',
+            'pending',
             null,
           ]),
           last_authenticated_at: chance.pickone([moment().toISOString(), chance.timestamp()]),
@@ -352,11 +356,22 @@ class MessageFactoryHelper {
   }
 
   static getValidGambitBroadcastData(broadcastId) {
-    const data = {
-      northstarId: MessageFactoryHelper.getFakeUserId(),
-      broadcastId,
-    };
-    return data;
+    return new CustomerIoGambitBroadcastMessage({
+      data: {
+        northstarId: MessageFactoryHelper.getFakeUserId(),
+        broadcastId,
+      },
+      meta: {},
+    });
+  }
+
+  static getValidSmsActiveData() {
+    return new CustomerIoSmsStatusActiveMessage({
+      data: {
+        northstarId: MessageFactoryHelper.getFakeUserId(),
+      },
+      meta: {},
+    });
   }
 }
 

@@ -4,7 +4,7 @@ const Joi = require('joi');
 
 const Message = require('./Message');
 
-class CustomerioGambitBroadcastMessage extends Message {
+class CustomerIoSmsStatusActiveMessage extends Message {
   constructor(...args) {
     super(...args);
 
@@ -12,12 +12,7 @@ class CustomerioGambitBroadcastMessage extends Message {
     this.schema = Joi.object()
       .keys({
         northstarId: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
-        broadcastId: Joi.string().required().empty(whenNullOrEmpty),
       });
-  }
-
-  getBroadcastId() {
-    return this.getData().broadcastId;
   }
 
   getNorthstarId() {
@@ -25,4 +20,4 @@ class CustomerioGambitBroadcastMessage extends Message {
   }
 }
 
-module.exports = CustomerioGambitBroadcastMessage;
+module.exports = CustomerIoSmsStatusActiveMessage;

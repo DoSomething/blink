@@ -5,78 +5,49 @@
 const test = require('ava');
 const chai = require('chai');
 const Chance = require('chance');
-const fetch = require('node-fetch');
 
-const BlinkWorkerApp = require('../../../src/app/BlinkWorkerApp');
+const gambitHelper = require('../../../src/lib/helpers/gambit');
 const GambitCampaignSignupRelayWorker = require('../../../src/workers/GambitCampaignSignupRelayWorker');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
-chai.should();
-const { Response } = fetch;
+const should = chai.should();
 const chance = new Chance();
 
 // ------- Tests ---------------------------------------------------------------
 
-test('Gambit should recieve correct retry count if message has been retried', () => {
-  const config = require('../../../config');
-  const gambitWorkerApp = new BlinkWorkerApp(config, 'gambit-campaign-signup-relay');
-  const gambitWorker = gambitWorkerApp.worker;
+test('getLogCode should be setup and have correct logs', () => {
+  const logNames = ['retry', 'success', 'suppress', 'unprocessable', 'skip'];
 
+  logNames.forEach((name) => {
+    const code = GambitCampaignSignupRelayWorker.getLogCode(name);
+    should.exist(code);
+
+    if (code) {
+      code.should.contain('gambit_campaign_signup');
+    }
+  });
+});
+
+test('Gambit should receive correct retry count if message has been retried', () => {
   // No retry property:
-  gambitWorker.getRequestHeaders(MessageFactoryHelper.getValidCampaignSignup())
+  gambitHelper.getRequestHeaders(MessageFactoryHelper.getValidCampaignSignup())
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 0
   const retriedZero = MessageFactoryHelper.getValidCampaignSignup();
-  gambitWorker.getRequestHeaders(retriedZero)
+  gambitHelper.getRequestHeaders(retriedZero)
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 1
   const retriedOnce = MessageFactoryHelper.getValidCampaignSignup();
   retriedOnce.incrementRetryAttempt();
-  gambitWorker.getRequestHeaders(retriedOnce)
+  gambitHelper.getRequestHeaders(retriedOnce)
     .should.have.property('x-blink-retry-count').and.equal(1);
 });
 
-
-test('Test Gambit response with x-blink-retry-suppress header', () => {
-  const config = require('../../../config');
-  const gambitWorkerApp = new BlinkWorkerApp(config, 'gambit-campaign-signup-relay');
-  const gambitWorker = gambitWorkerApp.worker;
-
-  // Gambit order retry suppression
-  const retrySuppressResponse = new Response(
-    'Unknown Gambit error',
-    {
-      status: 422,
-      statusText: 'Unknown Gambit error',
-      headers: {
-        // Also make sure that blink recongnizes non standart header case
-        'X-BlInK-RetRY-SuPPRESS': 'TRUE',
-      },
-    },
-  );
-
-  gambitWorker.checkRetrySuppress(retrySuppressResponse).should.be.true;
-
-
-  // Normal Gambit 422 response
-  const normalFailedResponse = new Response(
-    'Unknown Gambit error',
-    {
-      status: 422,
-      statusText: 'Unknown Gambit error',
-      headers: {
-        'x-taco-count': 'infinity',
-      },
-    },
-  );
-  gambitWorker.checkRetrySuppress(normalFailedResponse).should.be.false;
-});
-
-test('Gambit should recieve signups not created by Gambit', () => {
+test('Gambit should receive signups not created by Gambit', () => {
   // Helper specifically will not return sms-related signup source.
   const message = MessageFactoryHelper.getValidCampaignSignup();
   GambitCampaignSignupRelayWorker.shouldSkip(message).should.be.false;

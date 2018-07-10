@@ -45,6 +45,9 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
   res.body.should.have.property('customerio-gambit-broadcast')
     .and.have.string('/api/v1/webhooks/customerio-gambit-broadcast');
 
+  res.body.should.have.property('customerio-sms-status-active')
+    .and.have.string('/api/v1/webhooks/customerio-sms-status-active');
+
   res.body.should.have.property('twilio-sms-outbound-status')
     .and.have.string('/api/v1/webhooks/twilio-sms-outbound-status');
 });
@@ -151,10 +154,28 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should be queued when a valid x-t
  */
 test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming payload', async (t) => {
   const broadcastId = chance.word();
-  const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId);
+  const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId).getData();
   delete data.northstarId;
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(422);
+  res.body.should.have.property('ok', false);
+  res.body.should.have.property('message')
+    .and.have.string('"northstarId" is required');
+});
+
+/**
+ * POST /api/v1/webhooks/customerio-sms-status-active
+ */
+test('POST /api/v1/webhooks/customerio-sms-status-active validates incoming payload', async (t) => {
+  const data = MessageFactoryHelper.getValidSmsActiveData().getData();
+  delete data.northstarId;
+
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-sms-status-active')
     .set('Content-Type', 'application/x-www-form-urlencoded')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);

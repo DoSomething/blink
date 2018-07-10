@@ -7,20 +7,15 @@ const { STATUS_CODES } = require('http');
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 const workerHelper = require('../lib/helpers/worker');
+const gambitHelper = require('../lib/helpers/gambit');
 
 /**
  * Represents a GambitConversationsRelay type of worker.
  * Workers that intend to relay messages to G-Conversations should inherit from this Worker.
  */
-class GambitConversationsRelayWorker extends Worker {
-  setup({ queue }) {
-    super.setup({ queue });
-    this.logCodes = {
-      retry: 'error_gambit_conversations_response_not_200_retry',
-      success: 'success_gambit_conversations_response_200',
-      suppress: 'success_gambit_conversations_retry_suppress',
-      unprocessable: 'error_gambit_conversations_response_422',
-    };
+class GambitConversationsRelayBaseWorker extends Worker {
+  setup({ queue, rateLimit }) {
+    super.setup({ queue, rateLimit });
   }
 
   /**
@@ -36,10 +31,15 @@ class GambitConversationsRelayWorker extends Worker {
       return this.logAndRetry(message, response.status);
     }
 
+    /**
+     * We should only go past this line if the response's status code does not trigger a retry.
+     * Example: 200, 204, and 422
+     * @see /config/app.js
+     */
+
     if (workerHelper.checkRetrySuppress(response)) {
       return this.logSuppressedRetry(message, response.status);
     }
-
     return this.logResponse(message, response.status);
   }
 
@@ -56,7 +56,16 @@ class GambitConversationsRelayWorker extends Worker {
     } else if (statusCode === 422) {
       return this.logUnprocessableEntity(message, statusCode);
     }
-    return true;
+    return false;
+  }
+
+  logUnreachableGambitConversationsAndRetry(error, message) {
+    gambitHelper.logFetchFailureAndRetry(
+      error.toString(),
+      message,
+      this.workerName,
+      this.constructor.getLogCode('retry'),
+    );
   }
 
   logAndRetry(message, statusCode, text) {
@@ -64,7 +73,7 @@ class GambitConversationsRelayWorker extends Worker {
       'warning',
       message,
       statusCode,
-      this.logCodes.retry,
+      this.constructor.getLogCode('retry'),
       text,
     );
 
@@ -86,7 +95,7 @@ class GambitConversationsRelayWorker extends Worker {
       'debug',
       message,
       statusCode,
-      this.logCodes.success,
+      this.constructor.getLogCode('success'),
       text,
     );
     return true;
@@ -104,10 +113,10 @@ class GambitConversationsRelayWorker extends Worker {
       'debug',
       message,
       statusCode,
-      this.logCodes.suppress,
+      this.constructor.getLogCode('suppress'),
       text,
     );
-    return true;
+    return false;
   }
 
   /**
@@ -122,7 +131,7 @@ class GambitConversationsRelayWorker extends Worker {
       'warning',
       message,
       statusCode,
-      this.logCodes.unprocessable,
+      this.constructor.getLogCode('unprocessable'),
       text,
     );
     return false;
@@ -141,7 +150,7 @@ class GambitConversationsRelayWorker extends Worker {
     const meta = {
       env: this.blink.config.app.env,
       code,
-      worker: this.constructor.name,
+      worker: this.workerName,
       request_id: message ? message.getRequestId() : 'not_parsed',
       response_status: statusCode,
       response_status_text: `"${STATUS_CODES[statusCode]}"`,
@@ -149,6 +158,16 @@ class GambitConversationsRelayWorker extends Worker {
     // Todo: log error?
     logger.log(level, logText, meta);
   }
+
+  static getLogCode(name) {
+    const logCodes = {
+      retry: 'error_gambit_conversations_response_not_200_retry',
+      success: 'success_gambit_conversations_response_200',
+      suppress: 'success_gambit_conversations_retry_suppress',
+      unprocessable: 'error_gambit_conversations_response_422',
+    };
+    return logCodes[name];
+  }
 }
 
-module.exports = GambitConversationsRelayWorker;
+module.exports = GambitConversationsRelayBaseWorker;

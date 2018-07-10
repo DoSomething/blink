@@ -24,6 +24,8 @@ class Worker {
   }
 
   setup({ queue, rateLimit = false }) {
+    const intRateLimit = parseInt(rateLimit, 10);
+
     if (!queue) {
       throw new BlinkError('Queue must be provided to Worker.setup()');
     }
@@ -37,10 +39,10 @@ class Worker {
     this.consume = this.consume.bind(this);
 
     // Allow overriding rateLimit.
-    if (Number.isInteger(rateLimit) && rateLimit > 0) {
-      this.rateLimit = rateLimit;
+    if (Number.isInteger(intRateLimit) && intRateLimit > 0) {
+      this.rateLimit = intRateLimit;
     }
-    this.logInternal('debug', `Rate limit set to ${rateLimit}`, 'debug_rate_limit_set');
+    this.logInternal('debug', `Rate limit set to ${this.rateLimit}`, 'debug_rate_limit_set');
 
     // Initialize ioredis for the delay infrastructure.
     this.retryDelayer = new RedisRetryDelayer(

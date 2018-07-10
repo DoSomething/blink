@@ -8,7 +8,6 @@ const Chance = require('chance');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 
-const CustomerioGambitBroadcastMessage = require('../../../src/messages/CustomerioGambitBroadcastMessage');
 const CustomerIoGambitBroadcastWorker = require('../../../src/workers/CustomerIoGambitBroadcastWorker');
 const HooksHelper = require('../../helpers/HooksHelper');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
@@ -23,21 +22,21 @@ const chance = new Chance();
 
 // ------- Tests ---------------------------------------------------------------
 
+/**
+ * TODO: This test should not be hard coded to 50 rps since that setting should be dynamically set
+ * by the GAMBIT_BROADCAST_SPEED_LIMIT env variable
+ */
 test.serial('Gambit Broadcast relay should be consume close to 50 messages per second', async (t) => {
   // Turn off extra logs for this tests, as it genertes thouthands of messages.
   await HooksHelper.startBlinkWebApp(t);
   const blink = t.context.blink;
-  const { customerioGambitBroadcastQ } = blink.queues;
+  const { customerIoGambitBroadcastQ } = blink.queues;
 
   // Publish 2x rate limit messages to the queue
   for (let i = 0; i < 120; i++) {
-    const data = MessageFactoryHelper.getValidGambitBroadcastData();
-    const meta = {
-      request_id: chance.guid({ version: 4 }),
-      broadcastId: chance.word(),
-    };
-    const message = new CustomerioGambitBroadcastMessage({ data, meta });
-    customerioGambitBroadcastQ.publish(message);
+    const message = MessageFactoryHelper.getValidGambitBroadcastData();
+    message.payload.meta.request_id = chance.guid({ version: 4 });
+    customerIoGambitBroadcastQ.publish(message);
   }
 
   // Wait for all messages to sync into rabbit.
@@ -75,7 +74,7 @@ test.serial('POST /api/v1/webhooks/customerio-gambit-broadcast should publish me
   await HooksHelper.startBlinkWebApp(t);
 
   const broadcastId = chance.word();
-  const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId);
+  const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId).getData();
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
     .set('Content-Type', 'application/json')
@@ -94,7 +93,7 @@ test.serial('POST /api/v1/webhooks/customerio-gambit-broadcast should publish me
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('customerio-gambit-broadcast', 1, false);
+  const messages = await rabbit.getMessagesFrom('customer-io-gambit-broadcast', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');

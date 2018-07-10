@@ -7,7 +7,7 @@ const chai = require('chai');
 
 const Broker = require('../../../src/lib/brokers/Broker');
 const Queue = require('../../../src/lib/Queue');
-const CustomerIoGambitBroadcastQ = require('../../../src/queues/CustomerIoGambitBroadcastQ');
+const CustomerIoSmsStatusActiveQ = require('../../../src/queues/CustomerIoSmsStatusActiveQ');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -16,12 +16,12 @@ chai.should();
 // ------- Tests ---------------------------------------------------------------
 
 /**
- * Test CustomerIoGambitBroadcastQ
+ * Test CustomerIoSmsStatusActiveQ
  */
-test('CustomerIoGambitBroadcastQ', () => {
-  const queue = new CustomerIoGambitBroadcastQ(new Broker());
+test('CustomerIoSmsStatusActiveQ', () => {
+  const queue = new CustomerIoSmsStatusActiveQ(new Broker());
   queue.should.be.an.instanceof(Queue);
-  queue.routes.should.include('customer-io-gambit-broadcast');
+  queue.routes.should.include('sms-status-active.customer-io.webhook');
 });
 
 // ------- End -----------------------------------------------------------------

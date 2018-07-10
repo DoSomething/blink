@@ -962,9 +962,11 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-basic-auth@^1.0.3:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/basic-auth/-/basic-auth-1.1.0.tgz#45221ee429f7ee1e5035be3f51533f1cdfd29884"
+basic-auth@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/basic-auth/-/basic-auth-2.0.0.tgz#015db3f353e02e56377755f962742e8981e7bbba"
+  dependencies:
+    safe-buffer "5.1.1"
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.1"
@@ -3316,11 +3318,11 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
 
-koa-basic-auth@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/koa-basic-auth/-/koa-basic-auth-2.0.0.tgz#5760473e5196e5cfcf5f1d6d548f4b4893aca867"
+koa-basic-auth@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/koa-basic-auth/-/koa-basic-auth-3.0.0.tgz#05967f2320735264d193e37806634615206a710b"
   dependencies:
-    basic-auth "^1.0.3"
+    basic-auth "^2.0.0"
 
 koa-bodyparser@^4.2.0:
   version "4.2.0"
@@ -4711,7 +4713,7 @@ rx-lite@*, rx-lite@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/rx-lite/-/rx-lite-4.0.8.tgz#0b1e11af8bc44836f04a6407e92da42467b79444"
 
-safe-buffer@^5.0.1, safe-buffer@^5.1.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
+safe-buffer@5.1.1, safe-buffer@^5.0.1, safe-buffer@^5.1.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
 

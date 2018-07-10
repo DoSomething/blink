@@ -2,7 +2,8 @@
 
 const moment = require('moment');
 
-const CustomerioGambitBroadcastMessage = require('../../messages/CustomerioGambitBroadcastMessage');
+const CustomerIoGambitBroadcastMessage = require('../../messages/CustomerIoGambitBroadcastMessage');
+const CustomerIoSmsStatusActiveMessage = require('../../messages/CustomerIoSmsStatusActiveMessage');
 const CustomerIoWebhookMessage = require('../../messages/CustomerIoWebhookMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const TwilioOutboundStatusCallbackMessage = require('../../messages/TwilioOutboundStatusCallbackMessage');
@@ -31,6 +32,12 @@ class WebHooksWebController extends WebController {
       this.customerioGambitBroadcast.bind(this),
     );
     this.router.post(
+      'v1.webhooks.customerio-sms-status-active',
+      '/api/v1/webhooks/customerio-sms-status-active',
+      basicAuthStrategy(this.blink.config.app.auth),
+      this.customerioSmsStatusActive.bind(this),
+    );
+    this.router.post(
       'v1.webhooks.twilio-sms-inbound',
       '/api/v1/webhooks/twilio-sms-inbound',
       twilioSignatureStrategy(this.blink.config.twilio),
@@ -48,6 +55,7 @@ class WebHooksWebController extends WebController {
     ctx.body = {
       'customerio-email-activity': this.fullUrl('v1.webhooks.customerio-email-activity'),
       'customerio-gambit-broadcast': this.fullUrl('v1.webhooks.customerio-gambit-broadcast'),
+      'customerio-sms-status-active': this.fullUrl('v1.webhooks.customerio-sms-status-active'),
       'twilio-sms-inbound': this.fullUrl('v1.webhooks.twilio-sms-inbound'),
       'twilio-sms-outbound-status': this.fullUrl('v1.webhooks.twilio-sms-outbound-status'),
     };
@@ -67,10 +75,24 @@ class WebHooksWebController extends WebController {
 
   async customerioGambitBroadcast(ctx) {
     try {
-      const message = CustomerioGambitBroadcastMessage.fromCtx(ctx);
+      const message = CustomerIoGambitBroadcastMessage.fromCtx(ctx);
       message.validate();
-      const { customerioGambitBroadcastQ } = this.blink.queues;
-      customerioGambitBroadcastQ.publish(message);
+      const { customerIoGambitBroadcastQ } = this.blink.queues;
+      customerIoGambitBroadcastQ.publish(message);
+      this.sendOK(ctx, message, 201);
+    } catch (error) {
+      this.sendError(ctx, error);
+    }
+  }
+
+  async customerioSmsStatusActive(ctx) {
+    try {
+      const message = CustomerIoSmsStatusActiveMessage.fromCtx(ctx);
+      message.validate();
+      this.blink.broker.publishToRoute(
+        'sms-status-active.customer-io.webhook',
+        message,
+      );
       this.sendOK(ctx, message, 201);
     } catch (error) {
       this.sendError(ctx, error);
