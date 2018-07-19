@@ -22,7 +22,12 @@ class GambitCampaignSignupRelayWorker extends GambitConversationsRelayBaseWorker
     const body = JSON.stringify({
       northstarId: data.northstar_id,
       campaignId: data.campaign_id,
-      platform: data.source,
+      /**
+       * The docs mention this parameter should be named `platform`, but what we really want is to
+       * force this message to be treated as platform `sms`. For this reason, we will send it as
+       * `source`. This was G-conversations will ignore its value and treat it as a platform `sms`.
+       */
+      source: data.source,
     });
 
     try {
