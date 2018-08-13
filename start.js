@@ -4,8 +4,7 @@
 // Load enviroment vars.
 require('dotenv').config();
 
-// New Relic. ALMOST first line.
-// TODO: check if it actually breaks anything.
+// New Relic.
 require('newrelic');
 
 // ------- Imports -------------------------------------------------------------

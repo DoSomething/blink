@@ -15,8 +15,10 @@ const config = {
   allowedStatuses: [200, 204, 422],
   prefetchCount: parseInt(process.env.BLINK_APP_DEFAULT_PREFETCH_COUNT, 10) || 30,
   rateLimit: parseInt(process.env.BLINK_APP_DEFAULT_RATE_LIMIT, 10) || 100,
-  // @todo: remove temporary limit
+  // TODO: remove temporary limit
   retryLimit: parseInt(process.env.BLINK_APP_DEFAULT_RETRY_LIMIT, 10) || 100,
+  // overridden in production to true
+  forceHttps: false,
 };
 
 module.exports = config;

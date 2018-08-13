@@ -15,6 +15,7 @@ const WebHooksWebController = require('../web/controllers/WebHooksWebController'
 const unauthorized401Handler = require('../web/middleware/errorHandlers/401');
 const forbidden403Handler = require('../web/middleware/errorHandlers/403');
 const generateRequestId = require('../web/middleware/generateRequestId');
+const enforceHttpsMiddleware = require('../web/middleware/enforce-https');
 const BlinkApp = require('./BlinkApp');
 
 class BlinkWebApp extends BlinkApp {
@@ -93,6 +94,10 @@ class BlinkWebApp extends BlinkApp {
     app.proxy = this.config.web.proxy;
 
     // -------- Setup web middleware --------
+
+    // Enforce https
+    app.use(enforceHttpsMiddleware(this.config.app.forceHttps));
+
     // Generate unique request id.
     app.use(generateRequestId);
 

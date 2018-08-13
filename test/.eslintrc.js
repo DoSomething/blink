@@ -21,5 +21,15 @@ module.exports = {
         message: '`with` is disallowed in strict mode because it makes code impossible to predict and optimize.',
       },
     ],
+    // Allow for rewire to work properly
+    'no-underscore-dangle': [
+      'error',
+      {
+        allow: [
+          '__set__',
+          '__get__'
+        ],
+      }
+    ]
   },
 };
