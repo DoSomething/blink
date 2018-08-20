@@ -47,17 +47,16 @@ class CustomerIoUpdateCustomerMessage extends Message {
       }
     });
 
-    /**
-     * TODO: Blink shouldn't have to figure out if the user is unsubscribed or not.
-     * This should come from the source, in this case Northstar.
-     * @see https://github.com/DoSomething/northstar/pull/706
-     *
-     * If a user is newly created (created_at & updated_at are the same)
-     * then set them as "subscribed" to emails in Customer.io!
-     */
-    const isNew = customerData.created_at === customerData.updated_at;
-    if (customerData.email && isNew) {
-      customerData.unsubscribed = false;
+    if (typeof customerData.unsubscribed === 'undefined') {
+      const isNew = customerData.created_at === customerData.updated_at;
+      /**
+       * If a user is newly created (created_at & updated_at are the same)
+       * and unsubscribed is not included in the payload, then set them as "subscribed"
+       * to emails in Customer.io!
+       */
+      if (customerData.email && isNew) {
+        customerData.unsubscribed = false;
+      }
     }
 
     const customerIoUpdateCustomerMessage = new CustomerIoUpdateCustomerMessage({
