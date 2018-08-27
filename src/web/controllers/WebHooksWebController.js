@@ -65,8 +65,10 @@ class WebHooksWebController extends WebController {
     try {
       const customerIoWebhookMessage = CustomerIoWebhookMessage.fromCtx(ctx);
       customerIoWebhookMessage.validate();
-      const { quasarCustomerIoEmailActivityQ } = this.blink.queues;
-      quasarCustomerIoEmailActivityQ.publish(customerIoWebhookMessage);
+      this.blink.broker.publishToRoute(
+        customerIoWebhookMessage.getEventRoutingKey(),
+        customerIoWebhookMessage,
+      );
       this.sendOK(ctx, customerIoWebhookMessage);
     } catch (error) {
       this.sendError(ctx, error);

@@ -3,9 +3,8 @@
 const Joi = require('joi');
 
 const Message = require('./Message');
+const config = require('../../config/messages/CustomerIoWebhookMessage');
 
-// TODO: url whitelist
-// TODO: authentication
 class CustomerIoWebhookMessage extends Message {
   constructor(...args) {
     super(...args);
@@ -17,6 +16,15 @@ class CustomerIoWebhookMessage extends Message {
       event_type: Joi.string().required(),
       timestamp: Joi.number().integer().required(),
     });
+  }
+
+  getEventType() {
+    return this.getData().event_type;
+  }
+
+  getEventRoutingKey(eventType = this.getEventType()) {
+    const eventConfig = config.events[eventType] || config.events.generic;
+    return eventConfig.routingKey;
   }
 }
 

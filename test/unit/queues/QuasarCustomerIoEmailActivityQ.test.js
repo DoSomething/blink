@@ -22,7 +22,7 @@ test('QuasarCustomerIoEmailActivityQ', () => {
   const queue = new QuasarCustomerIoEmailActivityQ(new Broker());
   queue.should.be.an.instanceof(Queue);
   queue.routes.should.include('quasar-customer-io-email-activity');
-  queue.routes.should.include('generic-event.quasar');
+  queue.routes.should.include('*.event.quasar');
 });
 
 // ------- End -----------------------------------------------------------------

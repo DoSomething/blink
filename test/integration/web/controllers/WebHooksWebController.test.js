@@ -96,6 +96,53 @@ test.serial('POST /api/v1/webhooks/customerio-email-activity should publish mess
   messageData.data.should.be.eql(data);
 });
 
+test.serial('POST /api/v1/webhooks/customerio-email-activity should publish email_unsubscribed events to the quasar-customer-io-email-activity and quasar-customer-io-email-unsubscribed queues', async (t) => {
+  // TODO: DRY this up!
+  const data = {
+    data: {
+      campaign_id: '0',
+      customer_id: 'example_customer',
+      email_address: 'example@customer.io',
+      email_id: 'example_email',
+      subject: 'Example Email',
+      template_id: '0',
+    },
+    event_id: 'abc123',
+    event_type: 'email_unsubscribed',
+    timestamp: 1491337360,
+  };
+
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-email-activity')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(202);
+
+  // Check response to be json
+  res.header.should.have.property('content-type');
+  res.header['content-type'].should.match(/json/);
+
+  // Check response.
+  res.body.should.have.property('ok', true);
+
+  // Check that the message is queued.
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+  // Note: might be in conflict with POST /api/v1/events/quasar-relay test
+  const results = [];
+  results.push(await rabbit.getMessagesFrom('quasar-customer-io-email-activity', 1, false));
+  results.push(await rabbit.getMessagesFrom('quasar-customer-io-email-unsubscribed', 1, false));
+
+  results.forEach((result) => {
+    result.should.be.an('array').and.to.have.lengthOf(1);
+    result[0].should.have.property('payload');
+    const payload = result[0].payload;
+    const messageData = JSON.parse(payload);
+    messageData.should.have.property('data');
+    messageData.data.should.be.eql(data);
+  });
+});
+
+
 /**
  * POST /api/v1/webhooks/twilio-sms-inbound
  */

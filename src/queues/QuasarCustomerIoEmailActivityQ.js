@@ -5,7 +5,7 @@ const Queue = require('../lib/Queue');
 class QuasarCustomerIoEmailActivityQ extends Queue {
   constructor(...args) {
     super(...args);
-    this.routes.push('generic-event.quasar');
+    this.routes.push('*.event.quasar');
   }
 }
 

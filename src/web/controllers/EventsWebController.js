@@ -122,7 +122,7 @@ class EventsWebController extends WebController {
       const message = FreeFormMessage.fromCtx(ctx);
       message.validate();
       this.blink.broker.publishToRoute(
-        'generic-event.quasar',
+        '*.event.quasar',
         message,
       );
       this.sendOK(ctx, message);
