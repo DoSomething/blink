@@ -1,6 +1,6 @@
 {
   "name": "blink",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
     "node": "8.11.3",
@@ -36,6 +36,7 @@
     "chance": "^1.0.12",
     "change-case": "^3.0.1",
     "customerio-node": "^0.4.0",
+    "date-fns": "^1.29.0",
     "deep-extend": "^0.6.0",
     "dotenv": "^6.0.0",
     "ioredis": "^3.2.2",
@@ -49,6 +50,7 @@
     "newrelic": "^4.1.5",
     "node-fetch": "^2.1.2",
     "promise-throttle": "^1.0.0",
+    "simple-oauth2": "^2.2.1",
     "throng": "^4.0.0",
     "twilio": "^3.12.0",
     "underscore": "^1.8.3",

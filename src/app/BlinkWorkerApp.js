@@ -7,6 +7,7 @@ const CustomerIoCampaignSignupWorker = require('../workers/CustomerIoCampaignSig
 const CustomerIoGambitBroadcastWorker = require('../workers/CustomerIoGambitBroadcastWorker');
 const CustomerIoSmsStatusActiveWorker = require('../workers/CustomerIoSmsStatusActiveWorker');
 const CustomerIoUpdateCustomerWorker = require('../workers/CustomerIoUpdateCustomerWorker');
+const CustomerIoEmailUnsubscribedNorthstarWorker = require('../workers/CustomerIoEmailUnsubscribedNorthstarWorker');
 const FetchWorker = require('../workers/FetchWorker');
 const GambitCampaignSignupRelayWorker = require('../workers/GambitCampaignSignupRelayWorker');
 const TwilioSmsInboundGambitRelayWorker = require('../workers/TwilioSmsInboundGambitRelayWorker');
@@ -50,6 +51,7 @@ class BlinkWorkerApp extends BlinkApp {
       'customer-io-gambit-broadcast': CustomerIoGambitBroadcastWorker,
       'customer-io-sms-status-active': CustomerIoSmsStatusActiveWorker,
       'customer-io-update-customer': CustomerIoUpdateCustomerWorker,
+      'customer-io-email-unsubscribed-northstar': CustomerIoEmailUnsubscribedNorthstarWorker,
       'gambit-campaign-signup-relay': GambitCampaignSignupRelayWorker,
       'twilio-sms-inbound-gambit-relay': TwilioSmsInboundGambitRelayWorker,
       'twilio-sms-outbound-status-relay': TwilioSmsOutboundStatusRelayWorker,

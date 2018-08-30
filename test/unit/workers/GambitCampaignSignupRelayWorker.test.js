@@ -6,7 +6,7 @@ const test = require('ava');
 const chai = require('chai');
 const Chance = require('chance');
 
-const gambitHelper = require('../../../src/lib/helpers/gambit');
+const gambitHelper = require('../../../src/workers/lib/helpers/gambit-conversations');
 const GambitCampaignSignupRelayWorker = require('../../../src/workers/GambitCampaignSignupRelayWorker');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 

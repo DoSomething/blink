@@ -35,6 +35,7 @@ class FetchWorker extends Worker {
     return false;
   }
 
+  // TODO: All other workers have moved on from async "cleaning the Body". Let's clean this up!
   async log(level, message, response, code = 'unexpected_code') {
     const cleanedBody = (await response.text()).replace(/\n/g, '\\n');
 

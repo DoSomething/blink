@@ -62,7 +62,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     return true;
   }
 
-  async log(level, message, text, code = 'unexpected_code') {
+  log(level, message, text, code = 'unexpected_code') {
     const meta = {
       env: this.blink.config.app.env,
       code,

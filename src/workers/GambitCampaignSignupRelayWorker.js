@@ -3,7 +3,15 @@
 const logger = require('winston');
 
 const GambitConversationsRelayBaseWorker = require('./GambitConversationsRelayBaseWorker');
-const gambitHelper = require('../lib/helpers/gambit');
+const gambitHelper = require('./lib/helpers/gambit-conversations');
+
+const logCodes = {
+  retry: 'error_gambit_campaign_signup_relay_response_not_200_retry',
+  success: 'success_gambit_campaign_signup_relay_response_200',
+  suppress: 'success_gambit_campaign_signup_relay_retry_suppress',
+  unprocessable: 'error_gambit_campaign_signup_relay_response_422',
+  skip: 'success_gambit_campaign_signup_relay_expected_skip',
+};
 
 class GambitCampaignSignupRelayWorker extends GambitConversationsRelayBaseWorker {
   setup() {
@@ -60,13 +68,6 @@ class GambitCampaignSignupRelayWorker extends GambitConversationsRelayBaseWorker
   }
 
   static getLogCode(name) {
-    const logCodes = {
-      retry: 'error_gambit_campaign_signup_relay_response_not_200_retry',
-      success: 'success_gambit_campaign_signup_relay_response_200',
-      suppress: 'success_gambit_campaign_signup_relay_retry_suppress',
-      unprocessable: 'error_gambit_campaign_signup_relay_response_422',
-      skip: 'success_gambit_campaign_signup_relay_expected_skip',
-    };
     return logCodes[name];
   }
 }

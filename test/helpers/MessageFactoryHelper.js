@@ -13,6 +13,7 @@ const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUp
 const CustomerIoGambitBroadcastMessage = require('../../src/messages/CustomerIoGambitBroadcastMessage');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const TwilioOutboundStatusCallbackMessage = require('../../src/messages/TwilioOutboundStatusCallbackMessage');
+const CustomerIoWebhookMessage = require('../../src/messages/CustomerIoWebhookMessage');
 const UserMessage = require('../../src/messages/UserMessage');
 
 // ------- Init ----------------------------------------------------------------
@@ -346,13 +347,11 @@ class MessageFactoryHelper {
   }
 
   static getFakeMobileNumber() {
-    const result = `+1555${chance.string({ length: 7, pool: '1234567890' })}`;
-    return result;
+    return `+1555${chance.string({ length: 7, pool: '1234567890' })}`;
   }
 
   static getFakeUserId() {
-    const result = chance.hash({ length: 24 });
-    return result;
+    return chance.hash({ length: 24 });
   }
 
   static getValidGambitBroadcastData(broadcastId) {
@@ -370,6 +369,31 @@ class MessageFactoryHelper {
       data: {
         northstarId: MessageFactoryHelper.getFakeUserId(),
       },
+      meta: {},
+    });
+  }
+
+  static getValidCustomerIoWebhookData() {
+    return {
+      data: {
+        campaign_id: chance.integer({ min: 0 }),
+        customer_id: MessageFactoryHelper.getFakeUserId(),
+        email_address: chance.email(),
+        email_id: chance.string({ length: 10 }),
+        subject: chance.sentence({ words: 5 }),
+        template_id: chance.integer({ min: 0 }),
+      },
+      event_id: chance.string({ length: 10 }),
+      event_type: chance.word(),
+      timestamp: chance.timestamp(),
+    };
+  }
+
+  static getValidCustomerIoWebhookMessage(eventType) {
+    const data = MessageFactoryHelper.getValidCustomerIoWebhookData();
+    data.event_type = eventType || chance.word();
+    return new CustomerIoWebhookMessage({
+      data,
       meta: {},
     });
   }

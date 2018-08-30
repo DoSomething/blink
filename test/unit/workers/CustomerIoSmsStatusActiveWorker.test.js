@@ -5,7 +5,7 @@
 const chai = require('chai');
 const test = require('ava');
 
-const gambitHelper = require('../../../src/lib/helpers/gambit');
+const gambitHelper = require('../../../src/workers/lib/helpers/gambit-conversations');
 const CustomerIoSmsStatusActiveWorker = require('../../../src/workers/CustomerIoSmsStatusActiveWorker');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 

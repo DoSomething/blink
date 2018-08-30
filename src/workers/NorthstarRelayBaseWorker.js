@@ -3,23 +3,22 @@
 const logger = require('winston');
 const { STATUS_CODES } = require('http');
 
-
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const Worker = require('./Worker');
 const workerHelper = require('../lib/helpers/worker');
 
 const logCodes = {
-  retry: 'error_gambit_conversations_response_not_200_retry',
-  success: 'success_gambit_conversations_response_200',
-  suppress: 'success_gambit_conversations_retry_suppress',
-  unprocessable: 'error_gambit_conversations_response_422',
+  retry: 'error_northstar_response_not_200_retry',
+  success: 'success_northstar_response_200',
+  suppress: 'success_northstar_retry_suppress',
+  unprocessable: 'error_northstar_response_422',
 };
 
 /**
- * Represents a GambitConversationsRelay type of worker.
+ * Represents a NorthstarRelay type of worker.
  * Workers that intend to relay messages to G-Conversations should inherit from this Worker.
  */
-class GambitConversationsRelayBaseWorker extends Worker {
+class NorthstarRelayBaseWorker extends Worker {
   setup({ queue, rateLimit }) {
     super.setup({ queue, rateLimit });
   }
@@ -65,7 +64,7 @@ class GambitConversationsRelayBaseWorker extends Worker {
     return false;
   }
 
-  logUnreachableGambitConversationsAndRetry(error, message) {
+  logUnreachableNorthstarAndRetry(error, message) {
     workerHelper.logFetchFailureAndRetry(
       error.toString(),
       message,
@@ -169,4 +168,4 @@ class GambitConversationsRelayBaseWorker extends Worker {
   }
 }
 
-module.exports = GambitConversationsRelayBaseWorker;
+module.exports = NorthstarRelayBaseWorker;

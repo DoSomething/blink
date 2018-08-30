@@ -11,14 +11,12 @@ const moment = require('moment');
 
 // ------- Internal imports ----------------------------------------------------
 
-const gambitHelper = require('../../../../src/lib/helpers/gambit');
-const messageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
-const BlinkRetryError = require('../../../../src/errors/BlinkRetryError');
+const gambitHelper = require('../../../../../src/workers/lib/helpers/gambit-conversations');
+const messageFactoryHelper = require('../../../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
 const should = chai.should();
-const expect = chai.expect;
 chai.use(sinonChai);
 const sandbox = sinon.sandbox.create();
 
@@ -101,12 +99,6 @@ test('getRequestHeaders should return valid headers', () => {
   should.exist(headers.Authorization);
   should.exist(headers['X-Request-ID']);
   should.exist(headers['Content-type']);
-});
-
-// logFetchFailureAndRetry
-test('logFetchFailureAndRetry should log and throw a BlinkRetryError error', () => {
-  const message = messageFactoryHelper.getValidSmsActiveData();
-  expect(() => gambitHelper.logFetchFailureAndRetry('msg', message, 'worker1')).to.throw(BlinkRetryError);
 });
 
 // relaySmsStatusActiveMessage

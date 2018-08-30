@@ -3,7 +3,9 @@
 const fs = require('fs');
 
 // Settings.
-const config = {};
+const config = {
+  workers: {},
+};
 
 // Setup global logger instance.
 require('./logger');
@@ -14,7 +16,9 @@ config.web = require('./web');
 config.amqp = require('./amqp');
 config.amqpManagement = require('./amqpManagement');
 config.customerio = require('./customerio');
-config.gambit = require('./gambit');
+config.workers.gambitConversations = require('./workers/lib/helpers/gambit-conversations');
+config.workers.northstar = require('./workers/lib/helpers/northstar');
+config.workers.identity = require('./workers/lib/identity-service');
 config.twilio = require('./twilio');
 config.redis = require('./redis');
 

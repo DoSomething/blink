@@ -56,19 +56,7 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
  * POST /api/v1/webhooks/customerio
  */
 test.serial('POST /api/v1/webhooks/customerio-email-activity should publish message to customer-io queue', async (t) => {
-  const data = {
-    data: {
-      campaign_id: '0',
-      customer_id: 'example_customer',
-      email_address: 'example@customer.io',
-      email_id: 'example_email',
-      subject: 'Example Email',
-      template_id: '0',
-    },
-    event_id: 'abc123',
-    event_type: 'example_webhook',
-    timestamp: 1491337360,
-  };
+  const data = MessageFactoryHelper.getValidCustomerIoWebhookData();
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-email-activity')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
@@ -97,20 +85,8 @@ test.serial('POST /api/v1/webhooks/customerio-email-activity should publish mess
 });
 
 test.serial('POST /api/v1/webhooks/customerio-email-activity should publish email_unsubscribed events to the quasar-customer-io-email-activity and quasar-customer-io-email-unsubscribed queues', async (t) => {
-  // TODO: DRY this up!
-  const data = {
-    data: {
-      campaign_id: '0',
-      customer_id: 'example_customer',
-      email_address: 'example@customer.io',
-      email_id: 'example_email',
-      subject: 'Example Email',
-      template_id: '0',
-    },
-    event_id: 'abc123',
-    event_type: 'email_unsubscribed',
-    timestamp: 1491337360,
-  };
+  const data = MessageFactoryHelper.getValidCustomerIoWebhookData();
+  data.event_type = 'email_unsubscribed';
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-email-activity')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)

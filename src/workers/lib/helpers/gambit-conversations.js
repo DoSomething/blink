@@ -1,15 +1,13 @@
 'use strict';
 
 const fetch = require('node-fetch');
-const logger = require('winston');
 /**
  * Deep Extend is used because Object.assign does shallow-copy only. Nested objects are
  * referenced instead of copied which can bring unintended consequences.
  */
 const deepExtend = require('deep-extend');
 
-const gambitConfig = require('../../../config/gambit');
-const BlinkRetryError = require('../../errors/BlinkRetryError');
+const gambitConfig = require('../../../../config/workers/lib/helpers/gambit-conversations');
 
 // TODO: This helper is becoming too big, needs to be split into more defined responsibilities
 
@@ -24,7 +22,7 @@ module.exports.executeGet = function executeGet(path, opts = {}) {
   const options = deepExtend({}, opts, {
     method: 'GET',
   });
-  return fetch(`${gambitConfig.conversations.v1MessagesBaseURL}/${path}`, options);
+  return fetch(`${gambitConfig.v1MessagesBaseURL}/${path}`, options);
 };
 
 /**
@@ -38,7 +36,7 @@ module.exports.executeUpdate = function executeUpdate(path, opts = {}) {
   const options = deepExtend({}, opts, {
     method: 'PATCH',
   });
-  return fetch(`${gambitConfig.conversations.baseURL}/${path}`, options);
+  return fetch(`${gambitConfig.baseURL}/${path}`, options);
 };
 
 /**
@@ -52,7 +50,7 @@ module.exports.executePost = function executePost(path, opts = {}) {
   const options = deepExtend({}, opts, {
     method: 'POST',
   });
-  return fetch(`${gambitConfig.conversations.baseURL}/${path}`, options);
+  return fetch(`${gambitConfig.baseURL}/${path}`, options);
 };
 
 /**
@@ -278,7 +276,7 @@ module.exports.parseMessageIdFromBody = function parseMessageIdFromBody(body) {
  */
 module.exports.getRequestHeaders = function getRequestHeaders(message) {
   const headers = {
-    Authorization: `Basic ${gambitConfig.conversations.apiKey}`,
+    Authorization: `Basic ${gambitConfig.apiKey}`,
     'X-Request-ID': message.getRequestId(),
     'Content-type': 'application/json',
   };
@@ -286,27 +284,4 @@ module.exports.getRequestHeaders = function getRequestHeaders(message) {
     headers['x-blink-retry-count'] = message.getRetryAttempt();
   }
   return headers;
-};
-
-/**
- * logFetchFailure
- *
- * @param {String} logMessage
- * @param {Object} message
- * @param {String} queueName
- * @param {String} code
- */
-module.exports.logFetchFailureAndRetry = function logFetchFailureAndRetry(logMessage,
-  message = {}, workerName, code = 'unexpected_code') {
-  const meta = {
-    code,
-    worker: workerName,
-    request_id: message ? message.getRequestId() : 'not_parsed',
-  };
-  logger.log('error', logMessage, meta);
-
-  throw new BlinkRetryError(
-    logMessage,
-    message,
-  );
 };

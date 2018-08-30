@@ -5,7 +5,7 @@
 const chai = require('chai');
 const test = require('ava');
 
-const gambitHelper = require('../../../src/lib/helpers/gambit');
+const gambitHelper = require('../../../src/workers/lib/helpers/gambit-conversations');
 const TwilioSmsInboundGambitRelayWorker = require('../../../src/workers/TwilioSmsInboundGambitRelayWorker');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 

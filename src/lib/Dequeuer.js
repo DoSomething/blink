@@ -96,7 +96,12 @@ class Dequeuer {
 
     // Transform raw to Message object.
     try {
-      // TODO: store message type in message itself.
+      /**
+       * TODO: store message type in message itself.
+       * If a queue is declared without the messageClass instance property,
+       * the worker will fail to parse this message w/ following error:
+       * TypeError: Cannot read property 'fromRabbitMessage' of undefined
+       */
       message = this.queue.messageClass.fromRabbitMessage(rabbitMessage);
     } catch (error) {
       if (error instanceof MessageParsingBlinkError) {

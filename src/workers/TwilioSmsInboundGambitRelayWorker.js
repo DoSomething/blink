@@ -1,7 +1,14 @@
 'use strict';
 
 const GambitConversationsRelayBaseWorker = require('./GambitConversationsRelayBaseWorker');
-const gambitHelper = require('../lib/helpers/gambit');
+const gambitHelper = require('./lib/helpers/gambit-conversations');
+
+const logCodes = {
+  retry: 'error_gambit_inbound_relay_response_not_200_retry',
+  success: 'success_gambit_inbound_relay_response_200',
+  suppress: 'success_gambit_inbound_relay_retry_suppress',
+  unprocessable: 'error_gambit_inbound_relay_response_422',
+};
 
 class TwilioSmsInboundGambitRelayWorker extends GambitConversationsRelayBaseWorker {
   setup() {
@@ -24,12 +31,6 @@ class TwilioSmsInboundGambitRelayWorker extends GambitConversationsRelayBaseWork
   }
 
   static getLogCode(name) {
-    const logCodes = {
-      retry: 'error_gambit_inbound_relay_response_not_200_retry',
-      success: 'success_gambit_inbound_relay_response_200',
-      suppress: 'success_gambit_inbound_relay_retry_suppress',
-      unprocessable: 'error_gambit_inbound_relay_response_422',
-    };
     return logCodes[name];
   }
 }

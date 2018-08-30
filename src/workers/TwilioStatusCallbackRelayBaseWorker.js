@@ -1,8 +1,7 @@
 'use strict';
 
 const GambitConversationsRelayBaseWorker = require('./GambitConversationsRelayBaseWorker');
-const gambitHelper = require('../lib/helpers/gambit');
-
+const gambitHelper = require('./lib/helpers/gambit-conversations');
 
 /**
  * TwilioStatusCallbackRelayBaseWorker
