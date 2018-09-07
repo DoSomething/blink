@@ -1,9 +1,9 @@
 'use strict';
 
 const URL = require('url');
-const logger = require('winston');
 
 const BlinkError = require('../../errors/BlinkError');
+const logger = require('../../../config/logger');
 const MessageValidationBlinkError = require('../../errors/MessageValidationBlinkError');
 
 class WebController {
@@ -107,7 +107,7 @@ class WebController {
       fwd: ctx.request.ip,
       protocol: ctx.request.protocol,
     };
-    logger.log(level, text, meta);
+    logger.log(level, text, { meta });
   }
 }
 

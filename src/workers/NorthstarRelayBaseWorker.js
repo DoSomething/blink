@@ -1,9 +1,9 @@
 'use strict';
 
-const logger = require('winston');
 const { STATUS_CODES } = require('http');
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
+const logger = require('../../config/logger');
 const Worker = require('./Worker');
 const workerHelper = require('../lib/helpers/worker');
 
@@ -160,7 +160,7 @@ class NorthstarRelayBaseWorker extends Worker {
       response_status_text: `"${STATUS_CODES[statusCode]}"`,
     };
     // Todo: log error?
-    logger.log(level, logText, meta);
+    logger.log(level, logText, { meta });
   }
 
   static getLogCode(name) {

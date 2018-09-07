@@ -1,13 +1,10 @@
 'use strict';
 
-// ------- Imports -------------------------------------------------------------
-
-const logger = require('winston');
-
 // ------- Internal imports ----------------------------------------------------
 
 const DelayLogic = require('./delayers/DelayLogic');
 const InMemoryRetryDelayer = require('./delayers/InMemoryRetryDelayer');
+const logger = require('../../config/logger');
 const RetryDelayer = require('./delayers/RetryDelayer');
 
 // ------- Class ---------------------------------------------------------------
@@ -86,7 +83,7 @@ class RetryManager {
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
 
-    logger.log(level, logMessage, meta);
+    logger.log(level, logMessage, { meta });
   }
 }
 

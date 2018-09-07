@@ -1,9 +1,9 @@
 'use strict';
 
-const logger = require('winston');
-
 const PromiseThrottle = require('promise-throttle');
+
 const BlinkRetryError = require('../errors/BlinkRetryError');
+const logger = require('../../config/logger');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 
@@ -156,6 +156,11 @@ class Dequeuer {
     return true;
   }
 
+  /**
+   * TODO: We should inject a logger in each class that needs it.
+   * Implementing a log function per class is an anti-pattern that is making it hard to
+   * propagate changes to all classes that log stuff. It also makes it hard to test.
+   */
   log(level, logMessage, message = {}, code = 'unexpected_code') {
     const meta = {
       // Todo: log env
@@ -164,7 +169,7 @@ class Dequeuer {
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
 
-    logger.log(level, logMessage, meta);
+    logger.log(level, logMessage, { meta });
   }
 }
 

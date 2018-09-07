@@ -7,7 +7,7 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const logger = require('winston');
+const logger = require('../../../config/logger');
 const moment = require('moment');
 
 // ------- Internal imports ----------------------------------------------------
@@ -65,7 +65,9 @@ class RedisRetryDelayer extends RetryDelayer {
       );
     } catch (error) {
       logger.error(`Redis zadd error: ${error}.`, {
-        code: 'error_redis_retry_delayer_zadd',
+        meta: {
+          code: 'error_redis_retry_delayer_zadd',
+        },
       });
       return false;
     }
@@ -75,12 +77,16 @@ class RedisRetryDelayer extends RetryDelayer {
     // considered successful. Just watch out for this situations.
     if (result !== 1) {
       logger.debug(`Redis message already present: ${packedMessage}.`, {
-        code: 'sucess_redis_retry_delayer_message_saved',
+        meta: {
+          code: 'sucess_redis_retry_delayer_message_saved',
+        },
       });
     }
 
     logger.debug(`Redis message saved: ${packedMessage}.`, {
-      code: 'sucess_redis_retry_delayer_message_saved',
+      meta: {
+        code: 'sucess_redis_retry_delayer_message_saved',
+      },
     });
     return true;
   }

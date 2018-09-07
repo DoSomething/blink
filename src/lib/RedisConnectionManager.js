@@ -3,12 +3,12 @@
 // ------- Imports -------------------------------------------------------------
 
 const Redis = require('ioredis');
-const logger = require('winston');
 
 // ------- Internal imports ----------------------------------------------------
 
-const DelayLogic = require('./delayers/DelayLogic');
 const BlinkConnectionError = require('../errors/BlinkConnectionError');
+const DelayLogic = require('./delayers/DelayLogic');
+const logger = require('../../config/logger');
 
 // ------- Class ---------------------------------------------------------------
 
@@ -88,25 +88,30 @@ class RedisConnectionManager {
   logSuccess() {
     const networkData = RedisConnectionManager.getNetworkData(this.client);
     logger.info('Redis connection created', {
-      code: 'success_redis_connection_manager_connection_created',
-      redis_local: `${networkData.localAddress}:${networkData.localPort}`,
-      redis_remote: `${networkData.remoteAddress}:${networkData.remotePort}`,
+      meta: {
+        code: 'success_redis_connection_manager_connection_created',
+        redis_local: `${networkData.localAddress}:${networkData.localPort}`,
+        redis_remote: `${networkData.remoteAddress}:${networkData.remotePort}`,
+      },
     });
   }
 
   logRetryAttempt() {
     // Log retry information.
     logger.debug(
-      `Redis reconnect scheduled, attempt ${this.client.retryAttempts}`,
-      {
-        code: 'debug_redis_connection_manager_reconnect_scheduled',
+      `Redis reconnect scheduled, attempt ${this.client.retryAttempts}`, {
+        meta: {
+          code: 'debug_redis_connection_manager_reconnect_scheduled',
+        },
       },
     );
   }
 
   static logFailure(error) {
     logger.error(`Redis connection error: ${error}`, {
-      code: 'error_redis_connection_manager_connection_failure',
+      meta: {
+        code: 'error_redis_connection_manager_connection_failure',
+      },
     });
   }
 

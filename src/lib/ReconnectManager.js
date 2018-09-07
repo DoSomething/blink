@@ -10,7 +10,7 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const logger = require('winston');
+const logger = require('../../config/logger');
 
 // ------- Internal imports ----------------------------------------------------
 
@@ -94,9 +94,10 @@ class ReconnectManager {
   static logAttempt(attempt, delayMs) {
     // Log retry information.
     logger.debug(
-      `Reconnect scheduled in ${delayMs}ms, attempt ${attempt}`,
-      {
-        code: 'debug_reconnect_manager_reconnect_scheduled',
+      `Reconnect scheduled in ${delayMs}ms, attempt ${attempt}`, {
+        meta: {
+          code: 'debug_reconnect_manager_reconnect_scheduled',
+        },
       },
     );
   }

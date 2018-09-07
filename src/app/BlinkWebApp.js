@@ -5,7 +5,7 @@ const http = require('http');
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
-const logger = require('winston');
+const logger = require('../../config/logger');
 const Promise = require('bluebird');
 
 const ApiWebController = require('../web/controllers/ApiWebController');
@@ -160,7 +160,7 @@ class BlinkWebApp extends BlinkApp {
           };
 
           const readableUrl = `http://${this.config.web.hostname}:${address.port}`;
-          logger.debug(`Blink Web is listening on ${readableUrl}`, meta);
+          logger.debug(`Blink Web is listening on ${readableUrl}`, { meta });
 
           /**
            * Wait for listening event
@@ -186,7 +186,7 @@ class BlinkWebApp extends BlinkApp {
         port: address.port,
       };
 
-      logger.debug('Blink Web is stopped', meta);
+      logger.debug('Blink Web is stopped', { meta });
     });
   }
 }

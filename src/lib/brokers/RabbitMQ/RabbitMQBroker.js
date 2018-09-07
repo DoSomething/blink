@@ -2,7 +2,7 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const logger = require('winston');
+const logger = require('../../../../config/logger');
 
 // ------- Internal imports ----------------------------------------------------
 
@@ -207,7 +207,9 @@ class RabbitMQBroker extends Broker {
     }
 
     logger.info(`Queue ${queueName} is ready.`, {
-      code: 'success_rabbitmq_broker_create_queue_topic',
+      meta: {
+        code: 'success_rabbitmq_broker_create_queue_topic',
+      },
     });
 
     // TODO: create technical queues: retry and dead-letters.
@@ -265,13 +267,17 @@ class RabbitMQBroker extends Broker {
     try {
       await this.getChannel().assertExchange(this.topicExchange, 'topic');
       logger.info(`Topic exchange ${this.topicExchange} asserted`, {
-        code: 'success_rabbitmq_broker_topic_assert_exchange',
+        meta: {
+          code: 'success_rabbitmq_broker_topic_assert_exchange',
+        },
       });
       // TODO: create other exchanges.
       return true;
     } catch (error) {
       logger.error(`Couldn't assert neccessary exchanges: ${error}`, {
-        code: 'error_rabbitmq_broker_assert_exchange_failed',
+        meta: {
+          code: 'error_rabbitmq_broker_assert_exchange_failed',
+        },
       });
     }
     return false;
@@ -308,13 +314,17 @@ class RabbitMQBroker extends Broker {
       // Will throw an exception when queue exists with the same name,
       // but different settings.
       logger.error(`Error asserting queue ${queueName}: ${error}`, {
-        code: 'error_rabbitmq_broker_assert_queue_failed',
+        meta: {
+          code: 'error_rabbitmq_broker_assert_queue_failed',
+        },
       });
       return false;
     }
 
     logger.debug(`Queue ${queueName} created or already present in expected state`, {
-      code: 'success_rabbitmq_broker_assert_queue',
+      meta: {
+        code: 'success_rabbitmq_broker_assert_queue',
+      },
     });
     return true;
   }
@@ -326,13 +336,17 @@ class RabbitMQBroker extends Broker {
       // Should never happen, but log this, just in case.
       // @see http://www.squaremobius.net/amqp.node/channel_api.html#channel_bindQueue
       logger.error(`Error binding queue ${queueName} to ${exhangeName} on ${route}: ${error}`, {
-        code: 'error_rabbitmq_broker_bind_queue_unexpected',
+        meta: {
+          code: 'error_rabbitmq_broker_bind_queue_unexpected',
+        },
       });
       return false;
     }
 
     logger.debug(`Queue ${queueName} bound to ${exhangeName} on ${route}`, {
-      code: 'success_rabbitmq_broker_bind_queue',
+      meta: {
+        code: 'success_rabbitmq_broker_bind_queue',
+      },
     });
     return true;
   }

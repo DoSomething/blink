@@ -1,9 +1,9 @@
 'use strict';
 
 const twilioClient = require('twilio');
-const logger = require('winston');
 
 const ForbiddenBlinkError = require('../../../../errors/ForbiddenBlinkError');
+const logger = require('../../../../../config/logger');
 
 /**
  * twilioSignature - middleware that authenticates requests from Twilio.
@@ -44,7 +44,7 @@ function twilioSignature(twilioConfig) {
         protocol: ctx.request.protocol,
       };
 
-      logger.log('error', errorMessage, meta);
+      logger.log('error', errorMessage, { meta });
       throw new ForbiddenBlinkError(errorMessage);
     }
 

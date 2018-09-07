@@ -1,9 +1,8 @@
 'use strict';
 
-const logger = require('winston');
-
 const blinkAppConfig = require('../../../config/app');
 const BlinkRetryError = require('../../errors/BlinkRetryError');
+const logger = require('../../../config/logger');
 
 /**
  * checkRetrySuppress - Looks for the suppress headers in the node-fetch response
@@ -62,7 +61,7 @@ function logFetchFailureAndRetry(logMessage,
     worker: workerName,
     request_id: message ? message.getRequestId() : 'not_parsed',
   };
-  logger.log('error', logMessage, meta);
+  logger.log('error', logMessage, { meta });
 
   throw new BlinkRetryError(
     logMessage,

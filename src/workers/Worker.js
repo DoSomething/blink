@@ -3,13 +3,13 @@
 // ------- Imports -------------------------------------------------------------
 
 const uuidV4 = require('uuid/v4');
-const logger = require('winston');
 
 // ------- Internal imports ----------------------------------------------------
 
+const BlinkError = require('../errors/BlinkError');
+const logger = require('../../config/logger');
 const RedisRetryDelayer = require('../lib/delayers/RedisRetryDelayer');
 const RetryManager = require('../lib/RetryManager');
-const BlinkError = require('../errors/BlinkError');
 
 // ------- Class ---------------------------------------------------------------
 
@@ -102,7 +102,7 @@ class Worker {
       code,
       worker: this.constructor.name,
     };
-    logger.log(level, message, meta);
+    logger.log(level, message, { meta });
   }
 }
 

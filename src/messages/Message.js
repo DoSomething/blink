@@ -4,6 +4,7 @@ const Joi = require('joi');
 const uuidV4 = require('uuid/v4');
 const underscore = require('underscore');
 
+const removePIITransformer = require('../lib/helpers/logger/transformers/remove-pii');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 
@@ -58,8 +59,12 @@ class Message {
     return this.payload.meta.retryAttempt;
   }
 
-  toString() {
-    return JSON.stringify(this.payload);
+  toString(transformer = removePIITransformer) {
+    let payload = this.payload;
+    if (typeof transformer === 'function') {
+      payload = transformer(payload);
+    }
+    return JSON.stringify(payload);
   }
 
   /**

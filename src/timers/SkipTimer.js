@@ -1,12 +1,9 @@
 'use strict';
 
-// ------- Imports -------------------------------------------------------------
-
-const logger = require('winston');
-
 // ------- Internal imports ----------------------------------------------------
 
 const BlinkError = require('../errors/BlinkError');
+const logger = require('../../config/logger');
 const Timer = require('./Timer');
 
 // ------- Class ---------------------------------------------------------------
@@ -77,7 +74,7 @@ class SkipTimer extends Timer {
       code,
       timer: this.timerName,
     };
-    logger.log(level, message, meta);
+    logger.log(level, message, { meta });
   }
 }
 

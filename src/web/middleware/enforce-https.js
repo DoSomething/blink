@@ -1,7 +1,7 @@
 'use strict';
 
 const enforceHttps = require('koa-sslify');
-const logger = require('winston');
+const logger = require('../../../config/logger');
 
 const enforceHttpsMiddleware = function (forceHttps) {
   logger.info(`Enforcing HTTPS connections=${forceHttps}`);

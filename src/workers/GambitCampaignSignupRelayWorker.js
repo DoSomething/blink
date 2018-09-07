@@ -1,9 +1,8 @@
 'use strict';
 
-const logger = require('winston');
-
 const GambitConversationsRelayBaseWorker = require('./GambitConversationsRelayBaseWorker');
 const gambitHelper = require('./lib/helpers/gambit-conversations');
+const logger = require('../../config/logger');
 
 const logCodes = {
   retry: 'error_gambit_campaign_signup_relay_response_not_200_retry',
@@ -63,7 +62,7 @@ class GambitCampaignSignupRelayWorker extends GambitConversationsRelayBaseWorker
       worker: this.workerName,
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
-    logger.log('debug', JSON.stringify(message.getData()), meta);
+    logger.log('debug', JSON.stringify(message.getData()), { meta });
     return true;
   }
 

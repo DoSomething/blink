@@ -5,6 +5,7 @@ const fs = require('fs');
 // Settings.
 const config = {
   workers: {},
+  logger: {},
 };
 
 // Setup global logger instance.
@@ -12,15 +13,17 @@ require('./logger');
 
 // Configuration
 config.app = require('./app');
-config.web = require('./web');
 config.amqp = require('./amqp');
 config.amqpManagement = require('./amqpManagement');
 config.customerio = require('./customerio');
+config.logger.transformers = require('./lib/helpers/logger/transformers');
+config.redis = require('./redis');
+config.twilio = require('./twilio');
+config.web = require('./web');
 config.workers.gambitConversations = require('./workers/lib/helpers/gambit-conversations');
 config.workers.northstar = require('./workers/lib/helpers/northstar');
 config.workers.identity = require('./workers/lib/identity-service');
-config.twilio = require('./twilio');
-config.redis = require('./redis');
+
 
 // Require env-dependent configs
 const envConfigPath = `${__dirname}/env/override-${config.app.env}.js`;

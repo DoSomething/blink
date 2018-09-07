@@ -9,7 +9,5 @@
 /* eslint-disable no-param-reassign */
 
 module.exports = (config) => {
-  config.app.forceHttps = true;
-  // logger transformers
-  config.logger.transformers.removePII.enabled = true;
+  config.logger.transformers.removePII.enabled = false;
 };

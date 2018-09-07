@@ -15,4 +15,6 @@ module.exports = (config) => {
   config.web.bind_port = 0;
   config.web.bind_address = '127.0.0.1';
   config.twilio.authToken = 'testtoken';
+  // logger transformers
+  config.logger.transformers.removePII.enabled = false;
 };

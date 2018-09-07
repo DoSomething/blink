@@ -1,9 +1,9 @@
 'use strict';
 
 const CIO = require('customerio-node');
-const logger = require('winston');
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
+const logger = require('../../config/logger');
 const Worker = require('./Worker');
 
 class CustomerIoTrackEventWorker extends Worker {
@@ -81,7 +81,7 @@ class CustomerIoTrackEventWorker extends Worker {
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
     // Todo: log error?
-    logger.log(level, `${text}, message ${message.toString()}`, meta);
+    logger.log(level, `${text}, message ${message.toString()}`, { meta });
   }
 }
 

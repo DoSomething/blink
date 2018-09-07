@@ -1,8 +1,8 @@
 'use strict';
 
 const fetch = require('node-fetch');
-const logger = require('winston');
 
+const logger = require('../../config/logger');
 const Worker = require('./Worker');
 
 class FetchWorker extends Worker {
@@ -49,7 +49,7 @@ class FetchWorker extends Worker {
     };
     // Todo: log error?
 
-    logger.log(level, cleanedBody, meta);
+    logger.log(level, cleanedBody, { meta });
   }
 }
 

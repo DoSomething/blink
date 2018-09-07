@@ -1,7 +1,7 @@
 'use strict';
 
 const oauth2 = require('simple-oauth2');
-const logger = require('winston');
+const logger = require('../../../../../config/logger');
 const EventEmitter = require('events');
 const differenceInSeconds = require('date-fns/difference_in_seconds');
 

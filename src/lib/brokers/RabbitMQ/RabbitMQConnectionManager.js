@@ -2,7 +2,7 @@
 
 // ------- Imports -------------------------------------------------------------
 
-const logger = require('winston');
+const logger = require('../../../../config/logger');
 const amqp = require('amqplib');
 
 // ------- Internal imports ----------------------------------------------------
@@ -61,7 +61,9 @@ class RabbitMQConnectionManager {
   async disconnect() {
     // Log request for disconnect.
     logger.debug('AMQP disconnect requested', {
-      code: 'debug_rabbitmq_connection_manager_disconnect_requested',
+      meta: {
+        code: 'debug_rabbitmq_connection_manager_disconnect_requested',
+      },
     });
 
     // Lock auto recovery to prevent auto-reconnect during disconnection.
@@ -235,7 +237,9 @@ class RabbitMQConnectionManager {
 
     // Log recovery start.
     logger.debug('AMQP automatic recovery in progress', {
-      code: 'debug_rabbitmq_connection_manager_recovering_active_channel_started',
+      meta: {
+        code: 'debug_rabbitmq_connection_manager_recovering_active_channel_started',
+      },
     });
 
     // Attempt to close what's left of connection and channel.
@@ -246,7 +250,9 @@ class RabbitMQConnectionManager {
 
     // Success.
     logger.debug('AMQP automatic recovery successful', {
-      code: 'success_rabbitmq_connection_manager_recovering_active_channel_finished',
+      meta: {
+        code: 'success_rabbitmq_connection_manager_recovering_active_channel_finished',
+      },
     });
     return true;
   }
@@ -281,22 +287,28 @@ class RabbitMQConnectionManager {
   static logSuccess(channel) {
     const networkData = RabbitMQConnectionManager.getNetworkData(channel);
     logger.info('AMQP channel created', {
-      code: 'success_rabbitmq_connection_manager_channel_created',
-      amqp_local: `${networkData.localAddress}:${networkData.localPort}`,
-      amqp_remote: `${networkData.remoteAddress}:${networkData.remotePort}`,
-      // TODO: dyno?
+      meta: {
+        code: 'success_rabbitmq_connection_manager_channel_created',
+        amqp_local: `${networkData.localAddress}:${networkData.localPort}`,
+        amqp_remote: `${networkData.remoteAddress}:${networkData.remotePort}`,
+        // TODO: dyno?
+      },
     });
   }
 
   static logFailure(error) {
     logger.error(`RabbitMQ connection error: ${error.message}`, {
-      code: 'error_rabbitmq_connection_manager_server_failure',
+      meta: {
+        code: 'error_rabbitmq_connection_manager_server_failure',
+      },
     });
   }
 
   static logDebug(error) {
     logger.debug(`RabbitMQ connection notice: ${error.message}`, {
-      code: 'debug_rabbitmq_connection_manager_notice',
+      meta: {
+        code: 'debug_rabbitmq_connection_manager_notice',
+      },
     });
   }
 

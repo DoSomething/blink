@@ -1,15 +1,12 @@
 'use strict';
 
-// ------- Imports -------------------------------------------------------------
-
-const logger = require('winston');
-
 // ------- Internal imports ----------------------------------------------------
 
+const logger = require('../../config/logger');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
-const RedisRetryDelayer = require('../lib/delayers/RedisRetryDelayer');
 const Message = require('../messages/Message');
+const RedisRetryDelayer = require('../lib/delayers/RedisRetryDelayer');
 const SkipTimer = require('./SkipTimer');
 
 // ------- Class ---------------------------------------------------------------
@@ -165,7 +162,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
 
-    logger.log(level, logMessage, meta);
+    logger.log(level, logMessage, { meta });
   }
 }
 
