@@ -4,6 +4,7 @@ const CIO = require('customerio-node');
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const logger = require('../../config/logger');
+const removePIITransformer = require('../lib/helpers/logger/transformers/remove-pii');
 const Worker = require('./Worker');
 
 class CustomerIoTrackEventWorker extends Worker {
@@ -41,7 +42,7 @@ class CustomerIoTrackEventWorker extends Worker {
       };
       logger.warning(
         `Can't convert message to cio event: ${msgData.id} error ${error}`,
-        meta,
+        { meta },
       );
     }
 
@@ -81,7 +82,7 @@ class CustomerIoTrackEventWorker extends Worker {
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
     // Todo: log error?
-    logger.log(level, `${text}, message ${message.toString()}`, { meta });
+    logger.log(level, `${text}, message ${message.toString(removePIITransformer)}`, { meta });
   }
 }
 

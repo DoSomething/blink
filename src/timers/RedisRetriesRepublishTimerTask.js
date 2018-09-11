@@ -7,6 +7,7 @@ const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 const Message = require('../messages/Message');
 const RedisRetryDelayer = require('../lib/delayers/RedisRetryDelayer');
+const removePIITransformer = require('../lib/helpers/logger/transformers/remove-pii');
 const SkipTimer = require('./SkipTimer');
 
 // ------- Class ---------------------------------------------------------------
@@ -71,7 +72,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
     queue.publish(message, 'HIGH');
     this.log(
       'debug',
-      `Message sucesfully returned to queue ${queue.name}, ${message.toString()}`,
+      `Message sucesfully returned to queue ${queue.name}, ${message.toString(removePIITransformer)}`,
       message,
       'success_redis_republisher_message_republished',
     );
@@ -148,7 +149,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
 
     this.log(
       'debug',
-      `Message valid ${message.toString()}`,
+      `Message valid ${message.toString(removePIITransformer)}`,
       message,
       'success_redis_republisher_message_valid',
     );

@@ -6,6 +6,7 @@ const BlinkRetryError = require('../errors/BlinkRetryError');
 const logger = require('../../config/logger');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
+const removePIITransformer = require('./helpers/logger/transformers/remove-pii');
 
 class Dequeuer {
   constructor(queue, callback, retryManager, rateLimit = 100) {
@@ -149,7 +150,7 @@ class Dequeuer {
 
     this.log(
       'debug',
-      `Message valid ${message.toString()}`,
+      `Message valid ${message.toString(removePIITransformer)}`,
       message,
       'success_dequeue_message_valid',
     );

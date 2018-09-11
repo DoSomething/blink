@@ -5,6 +5,7 @@ const CIO = require('customerio-node');
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const CustomerIoUpdateCustomerMessage = require('../messages/CustomerIoUpdateCustomerMessage');
 const logger = require('../../config/logger');
+const removePIITransformer = require('../lib/helpers/logger/transformers/remove-pii');
 const Worker = require('./Worker');
 
 class CustomerIoUpdateCustomerWorker extends Worker {
@@ -31,7 +32,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       };
       logger.warning(
         `Can't convert user to cio customer: ${userMessage.getData().id} error ${error}`,
-        meta,
+        { meta },
       );
     }
 
@@ -70,7 +71,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
     // Todo: log error?
-    logger.log(level, `${text}, message ${message.toString()}`, { meta });
+    logger.log(level, `${text}, message ${message.toString(removePIITransformer)}`, { meta });
   }
 }
 

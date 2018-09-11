@@ -5,6 +5,7 @@ const URL = require('url');
 const BlinkError = require('../../errors/BlinkError');
 const logger = require('../../../config/logger');
 const MessageValidationBlinkError = require('../../errors/MessageValidationBlinkError');
+const removePIITransformer = require('../../lib/helpers/logger/transformers/remove-pii');
 
 class WebController {
   constructor(blink, router) {
@@ -95,7 +96,7 @@ class WebController {
   log(level, ctx, message, code) {
     let text = ctx.body ? ctx.body.message : undefined;
     if (message) {
-      text = `${text}, message ${message.toString()}`;
+      text = `${text}, message ${message.toString(removePIITransformer)}`;
     }
     const meta = {
       env: this.blink.config.app.env,
