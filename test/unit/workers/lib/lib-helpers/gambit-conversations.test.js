@@ -41,7 +41,7 @@ test('parseMessageIdFromBody should not throw when body is a non empty array', (
 
 // getFailedAtUpdateBody
 test('getFailedAtUpdateBody should return a valid payload', () => {
-  const message = messageFactoryHelper.getValidTwilioOutboundErrorStatusData(moment().format());
+  const message = messageFactoryHelper.getTwilioOutboundErrorStatusMessage(moment().format());
   const payload = gambitHelper.getFailedAtUpdateBody(message.getData());
   payload.metadata.delivery.failedAt.should.exist;
   payload.metadata.delivery.failureData.code.exist;
@@ -50,7 +50,7 @@ test('getFailedAtUpdateBody should return a valid payload', () => {
 
 // getDeliveredAtUpdateBody
 test('getDeliveredAtUpdateBody should return a valid payload', () => {
-  const message = messageFactoryHelper.getValidTwilioOutboundStatusData(moment().format());
+  const message = messageFactoryHelper.getTwilioOutboundDeliveredStatusMessage(moment().format());
   const payload = gambitHelper.getDeliveredAtUpdateBody(message.getData());
   payload.metadata.delivery.deliveredAt.should.exist;
 });
@@ -71,7 +71,7 @@ test.serial('updateMessage should call executeUpdate', async () => {
 test.serial('getMessageToUpdate should call getMessageIdBySid', async () => {
   sandbox.stub(gambitHelper, 'getMessageIdBySid')
     .returns(Promise.resolve(true));
-  const message = messageFactoryHelper.getValidTwilioOutboundStatusData(moment().format());
+  const message = messageFactoryHelper.getTwilioOutboundDeliveredStatusMessage(moment().format());
   const messageSid = message.getData().MessageSid;
   const headers = gambitHelper.getRequestHeaders(message);
 
@@ -93,7 +93,7 @@ test.serial('getMessageIdBySid should call executeGet', async () => {
 
 // getRequestHeaders
 test('getRequestHeaders should return valid headers', () => {
-  const message = messageFactoryHelper.getValidTwilioOutboundStatusData(moment().format());
+  const message = messageFactoryHelper.getTwilioOutboundDeliveredStatusMessage(moment().format());
 
   const headers = gambitHelper.getRequestHeaders(message);
   should.exist(headers.Authorization);
@@ -105,7 +105,7 @@ test('getRequestHeaders should return valid headers', () => {
 test.serial('relaySmsStatusActiveMessage should relay the message to the correct path', async () => {
   sandbox.stub(gambitHelper, 'relayMessage')
     .returns(Promise.resolve(true));
-  const message = messageFactoryHelper.getValidSmsActiveData();
+  const message = messageFactoryHelper.getSmsActiveMessage();
   const path = gambitHelper.getSubscriptionStatusActivePath();
   const opts = {
     body: JSON.stringify({ hello: 'world' }),
@@ -119,7 +119,7 @@ test.serial('relaySmsStatusActiveMessage should relay the message to the correct
 test.serial('relayCampaignSignupMessage should relay the message to the correct path', async () => {
   sandbox.stub(gambitHelper, 'relayMessage')
     .returns(Promise.resolve(true));
-  const message = messageFactoryHelper.getValidCampaignSignup();
+  const message = messageFactoryHelper.getCampaignSignupMessage();
   const path = gambitHelper.getCampaignSignupPath();
   const opts = {
     body: JSON.stringify({ hello: 'world' }),
@@ -133,7 +133,7 @@ test.serial('relayCampaignSignupMessage should relay the message to the correct 
 test.serial('relayBroadcastMessage should relay the message to the correct path', async () => {
   sandbox.stub(gambitHelper, 'relayMessage')
     .returns(Promise.resolve(true));
-  const message = messageFactoryHelper.getValidGambitBroadcastData();
+  const message = messageFactoryHelper.getGambitBroadcastMessage();
   const path = gambitHelper.getBroadcastPath();
   const opts = {
     body: JSON.stringify({ hello: 'world' }),
@@ -147,7 +147,7 @@ test.serial('relayBroadcastMessage should relay the message to the correct path'
 test.serial('relayTwilioInboundMessage should relay the message to the correct path', async () => {
   sandbox.stub(gambitHelper, 'relayMessage')
     .returns(Promise.resolve(true));
-  const message = messageFactoryHelper.getValidInboundMessageData();
+  const message = messageFactoryHelper.getTwilioInboundMessage();
   const path = gambitHelper.getTwilioPath();
   const opts = {
     body: JSON.stringify({ hello: 'world' }),

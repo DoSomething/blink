@@ -13,6 +13,7 @@ class CustomerIoGambitBroadcastMessage extends Message {
       .keys({
         northstarId: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
         broadcastId: Joi.string().required().empty(whenNullOrEmpty),
+        mobile: Joi.string().empty(whenNullOrEmpty),
       });
   }
 
@@ -22,6 +23,10 @@ class CustomerIoGambitBroadcastMessage extends Message {
 
   getNorthstarId() {
     return this.getData().northstarId;
+  }
+
+  getMobileNumber() {
+    return this.getData().mobile;
   }
 }
 

@@ -11,7 +11,7 @@ const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
-const generator = MessageFactoryHelper.getValidCampaignSignupPostReview;
+const generator = MessageFactoryHelper.getCampaignSignupPostMessageReviewMessage;
 
 // ------- Tests ---------------------------------------------------------------
 

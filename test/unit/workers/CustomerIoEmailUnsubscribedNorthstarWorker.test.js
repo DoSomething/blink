@@ -36,16 +36,16 @@ test('getLogCode should be setup and have correct logs', () => {
 test('Northstar should receive correct retry count if message has been retried', async () => {
   // No retry property:
   const headers = await northstarHelper
-    .getRequestHeaders(MessageFactoryHelper.getValidCustomerIoWebhookMessage());
+    .getRequestHeaders(MessageFactoryHelper.getCustomerIoWebhookMessage());
   headers.should.not.have.property('x-blink-retry-count');
 
   // retry = 0
-  const retriedZero = MessageFactoryHelper.getValidCustomerIoWebhookMessage();
+  const retriedZero = MessageFactoryHelper.getCustomerIoWebhookMessage();
   const headersRetry0 = await northstarHelper.getRequestHeaders(retriedZero);
   headersRetry0.should.not.have.property('x-blink-retry-count');
 
   // retry = 1
-  const retriedOnce = MessageFactoryHelper.getValidCustomerIoWebhookMessage();
+  const retriedOnce = MessageFactoryHelper.getCustomerIoWebhookMessage();
   retriedOnce.incrementRetryAttempt();
   const headersRetry1 = await northstarHelper.getRequestHeaders(retriedOnce);
   headersRetry1.should.have.property('x-blink-retry-count').and.equal(1);

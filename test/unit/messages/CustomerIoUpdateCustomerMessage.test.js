@@ -13,7 +13,7 @@ const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
-const generator = MessageFactoryHelper.getValidCustomerIoIdentify;
+const generator = MessageFactoryHelper.getCustomerIoUpdateCustomerMessage;
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -24,7 +24,7 @@ test('User message generator', () => {
 test('Cio identify created from Northstar is correct', () => {
   let count = 100;
   while (count > 0) {
-    const userMessage = MessageFactoryHelper.getValidUser();
+    const userMessage = MessageFactoryHelper.getUserMessage();
     userMessage.validate();
     const userData = userMessage.getData();
     const customerIoUpdateCustomerMessage = CustomerIoUpdateCustomerMessage.fromUser(
@@ -64,7 +64,7 @@ test('Cio identify created from Northstar is correct when unsubscribed is set', 
   let count = 100;
   while (count > 0) {
     const shouldSetUnsubscribed = count % 2 === 0;
-    const userMessage = MessageFactoryHelper.getValidUser();
+    const userMessage = MessageFactoryHelper.getUserMessage();
     userMessage.validate();
     // Set unsubscribed
     userMessage.payload.data.unsubscribed = shouldSetUnsubscribed;

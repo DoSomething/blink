@@ -1,6 +1,6 @@
 {
   "name": "blink",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
     "node": "8.11.3",

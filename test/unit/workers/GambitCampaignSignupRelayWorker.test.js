@@ -32,16 +32,16 @@ test('getLogCode should be setup and have correct logs', () => {
 
 test('Gambit should receive correct retry count if message has been retried', () => {
   // No retry property:
-  gambitHelper.getRequestHeaders(MessageFactoryHelper.getValidCampaignSignup())
+  gambitHelper.getRequestHeaders(MessageFactoryHelper.getCampaignSignupMessage())
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 0
-  const retriedZero = MessageFactoryHelper.getValidCampaignSignup();
+  const retriedZero = MessageFactoryHelper.getCampaignSignupMessage();
   gambitHelper.getRequestHeaders(retriedZero)
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 1
-  const retriedOnce = MessageFactoryHelper.getValidCampaignSignup();
+  const retriedOnce = MessageFactoryHelper.getCampaignSignupMessage();
   retriedOnce.incrementRetryAttempt();
   gambitHelper.getRequestHeaders(retriedOnce)
     .should.have.property('x-blink-retry-count').and.equal(1);
@@ -49,12 +49,12 @@ test('Gambit should receive correct retry count if message has been retried', ()
 
 test('Gambit should receive signups not created by Gambit', () => {
   // Helper specifically will not return sms-related signup source.
-  const message = MessageFactoryHelper.getValidCampaignSignup();
+  const message = MessageFactoryHelper.getCampaignSignupMessage();
   GambitCampaignSignupRelayWorker.shouldSkip(message).should.be.false;
 });
 
 test('Gambit should not recieve signups created by Gambit', () => {
-  const message = MessageFactoryHelper.getValidCampaignSignup();
+  const message = MessageFactoryHelper.getCampaignSignupMessage();
   const smsRelatedSources = [
     'sms',
     `sms${chance.word()}`,

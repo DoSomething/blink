@@ -94,6 +94,16 @@ module.exports.getBroadcastPath = function getBroadcastPath() {
 };
 
 /**
+ * getBroadcastLitePath
+ *
+ * @see https://github.com/DoSomething/gambit-conversations/blob/master/documentation/endpoints/messages.md#broadcast-lite
+ * @return {String}   G-Conversations broadcastLite message path
+ */
+module.exports.getBroadcastLitePath = function getBroadcastLitePath() {
+  return 'messages?origin=broadcastLite';
+};
+
+/**
  * getCampaignSignupPath
  *
  * @see https://github.com/DoSomething/gambit-conversations/blob/master/documentation/endpoints/messages.md#signup
@@ -140,6 +150,7 @@ module.exports.relayTwilioInboundMessage = function relayTwilioInboundMessage(me
 
 /**
  * relayBroadcastMessage - Relays Broadcast messages to G-Conversations
+ *                         /v2/messages?origin=broadcast route
  *
  * @param  {Message} message
  * @param  {Object} opts
@@ -147,6 +158,17 @@ module.exports.relayTwilioInboundMessage = function relayTwilioInboundMessage(me
  */
 module.exports.relayBroadcastMessage = function relayBroadcastMessage(message, opts) {
   return exports.relayMessage(exports.getBroadcastPath(), message, opts);
+};
+
+/**
+ * relayBroadcastLiteMessage - Relays Broadcast message to G-Conversations
+ *                             /v2/messages?origin=broadcastLite route
+ * @param {*} message
+ * @param {*} opts
+ * @return {Promise<Response>}
+ */
+module.exports.relayBroadcastLiteMessage = function relayBroadcastLiteMessage(message, opts) {
+  return exports.relayMessage(exports.getBroadcastLitePath(), message, opts);
 };
 
 /**

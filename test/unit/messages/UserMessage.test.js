@@ -13,7 +13,7 @@ const MessageValidationHelper = require('../../helpers/MessageValidationHelper')
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
-const generator = MessageFactoryHelper.getValidUser;
+const generator = MessageFactoryHelper.getUserMessage;
 const mutator = function ({ remove, change, value, message }) {
   const mutant = message;
   if (remove) {

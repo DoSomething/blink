@@ -12,16 +12,16 @@ const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 // ------- Init ----------------------------------------------------------------
 
 const should = chai.should();
-const generator = MessageFactoryHelper.getValidTwilioOutboundStatusData;
 
 // ------- Tests ---------------------------------------------------------------
 
 test('Twilio outbound status callback message generator', () => {
-  generator().should.be.an.instanceof(TwilioOutboundStatusCallbackMessage);
+  MessageFactoryHelper.getTwilioOutboundDeliveredStatusMessage()
+    .should.be.an.instanceof(TwilioOutboundStatusCallbackMessage);
 });
 
 test('Twilio outbound status callback message should respond to isError, isDelivered, setDeliveredAt, and setFailedAt', () => {
-  const msg = generator();
+  const msg = MessageFactoryHelper.getTwilioOutboundDeliveredStatusMessage();
   msg.should.respondsTo('isError');
   msg.should.respondsTo('isDelivered');
   msg.should.respondsTo('setDeliveredAt');
@@ -29,7 +29,7 @@ test('Twilio outbound status callback message should respond to isError, isDeliv
 });
 
 test('Twilio outbound status callback message should set deliveredAt', () => {
-  const msg = generator();
+  const msg = MessageFactoryHelper.getTwilioOutboundDeliveredStatusMessage();
   should.not.exist(msg.getData().deliveredAt);
 
   msg.setDeliveredAt(moment().format());
@@ -37,7 +37,7 @@ test('Twilio outbound status callback message should set deliveredAt', () => {
 });
 
 test('Twilio outbound status callback message should set failedAt', () => {
-  const msg = MessageFactoryHelper.getValidTwilioOutboundErrorStatusData();
+  const msg = MessageFactoryHelper.getTwilioOutboundErrorStatusMessage();
   should.not.exist(msg.getData().failedAt);
 
   msg.setFailedAt(moment().format());

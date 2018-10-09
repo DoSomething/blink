@@ -19,15 +19,25 @@ class CustomerIoGambitBroadcastWorker extends GambitConversationsRelayBaseWorker
   }
 
   async consume(message) {
-    const body = JSON.stringify({
-      northstarId: message.getNorthstarId(),
-      broadcastId: message.getBroadcastId(),
-    });
+    const mobile = message.getMobileNumber();
+    const payload = {
+      // @see https://github.com/bitinn/node-fetch#post-with-json
+      body: JSON.stringify({
+        northstarId: message.getNorthstarId(),
+        broadcastId: message.getBroadcastId(),
+        mobile,
+      }),
+    };
 
     try {
-      const response = await gambitHelper.relayBroadcastMessage(message, {
-        body,
-      });
+      /**
+       * If it contains a mobile number, let's use the new broadcastLite feature
+       * TODO: Remove in the future when we decide if we are going to only use one
+       * broadcast route.
+       */
+      const response = mobile ?
+        await gambitHelper.relayBroadcastLiteMessage(message, payload) :
+        await gambitHelper.relayBroadcastMessage(message, payload);
       return this.handleResponse(message, response);
     } catch (error) {
       return this.logUnreachableGambitConversationsAndRetry(error, message);

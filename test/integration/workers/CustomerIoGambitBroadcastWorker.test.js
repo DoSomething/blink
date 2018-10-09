@@ -27,14 +27,15 @@ const chance = new Chance();
  * by the GAMBIT_BROADCAST_SPEED_LIMIT env variable
  */
 test.serial('Gambit Broadcast relay should be consume close to 50 messages per second', async (t) => {
-  // Turn off extra logs for this tests, as it genertes thouthands of messages.
+  // Turn off extra logs for this tests, as it generates thousands of messages.
   await HooksHelper.startBlinkWebApp(t);
   const blink = t.context.blink;
   const { customerIoGambitBroadcastQ } = blink.queues;
 
   // Publish 2x rate limit messages to the queue
   for (let i = 0; i < 120; i++) {
-    const message = MessageFactoryHelper.getValidGambitBroadcastData();
+    const message = MessageFactoryHelper.getGambitBroadcastMessage();
+    message.validate();
     message.payload.meta.request_id = chance.guid({ version: 4 });
     customerIoGambitBroadcastQ.publish(message);
   }
@@ -74,7 +75,7 @@ test.serial('POST /api/v1/webhooks/customerio-gambit-broadcast should publish me
   await HooksHelper.startBlinkWebApp(t);
 
   const broadcastId = chance.word();
-  const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId).getData();
+  const data = MessageFactoryHelper.getGambitBroadcastMessage(broadcastId).getData();
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
     .set('Content-Type', 'application/json')

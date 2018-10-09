@@ -23,7 +23,7 @@ const chance = new Chance();
 // ------- Helpers -------------------------------------------------------------
 
 class MessageFactoryHelper {
-  static getValidUser() {
+  static getUserMessage() {
     const fakeId = MessageFactoryHelper.getFakeUserId();
     const createdAt = chance.date({ year: chance.year({ min: 2000, max: 2010 }) }).toISOString();
     return new UserMessage({
@@ -35,7 +35,7 @@ class MessageFactoryHelper {
         last_initial: chance.character({ alpha: true }),
         photo: chance.url({ extensions: ['gif', 'jpg', 'png'] }),
         email: chance.email(),
-        mobile: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        mobile: MessageFactoryHelper.getFakeMobileNumber(),
         facebook_id: chance.fbid().toString(),
         interests: chance.n(chance.word, chance.natural({ min: 0, max: 20 })),
         birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
@@ -77,7 +77,7 @@ class MessageFactoryHelper {
     });
   }
 
-  static getValidCustomerIoIdentify() {
+  static getCustomerIoUpdateCustomerMessage() {
     const fakeId = MessageFactoryHelper.getFakeUserId();
     return new CustomerIoUpdateCustomerMessage({
       data: {
@@ -118,46 +118,17 @@ class MessageFactoryHelper {
     });
   }
 
-  static getValidTwilioInboundData() {
-    const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
-    return new FreeFormMessage({
-      data: {
-        ToCountry: 'US',
-        ToState: '',
-        SmsMessageSid: sid,
-        NumMedia: '0',
-        ToCity: '',
-        FromZip: chance.zip(),
-        SmsSid: sid,
-        FromState: chance.state({ territories: true }),
-        SmsStatus: 'received',
-        FromCity: chance.city(),
-        Body: '',
-        FromCountry: 'US',
-        To: '38383',
-        MessagingServiceSid: sid,
-        ToZip: '',
-        NumSegments: '1',
-        MessageSid: sid,
-        AccountSid: sid,
-        From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
-        ApiVersion: '2010-04-01',
-      },
-      meta: {},
-    });
-  }
-
-  static getValidTwilioOutboundStatusData(deliveredAt) {
+  static getTwilioOutboundDeliveredStatusMessage(deliveredAt) {
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
     const msg = new TwilioOutboundStatusCallbackMessage({
       data: {
         SmsSid: sid,
         SmsStatus: 'delivered',
         MessageStatus: 'delivered',
-        To: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        To: MessageFactoryHelper.getFakeMobileNumber(),
         MessageSid: sid,
         AccountSid: sid,
-        From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        From: MessageFactoryHelper.getFakeMobileNumber(),
         ApiVersion: '2010-04-01',
       },
       meta: {},
@@ -168,17 +139,17 @@ class MessageFactoryHelper {
     return msg;
   }
 
-  static getValidTwilioOutboundErrorStatusData(failedAt) {
+  static getTwilioOutboundErrorStatusMessage(failedAt) {
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
     const msg = new TwilioOutboundStatusCallbackMessage({
       data: {
         SmsSid: sid,
         SmsStatus: 'delivered',
         MessageStatus: 'delivered',
-        To: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        To: MessageFactoryHelper.getFakeMobileNumber(),
         MessageSid: sid,
         AccountSid: sid,
-        From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        From: MessageFactoryHelper.getFakeMobileNumber(),
         ApiVersion: '2010-04-01',
         ErrorCode: 30006,
         ErrorMessage: 'Landline or unreachable carrier',
@@ -191,7 +162,7 @@ class MessageFactoryHelper {
     return msg;
   }
 
-  static getValidInboundMessageData() {
+  static getTwilioInboundMessage() {
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
     return new FreeFormMessage({
       data: {
@@ -212,7 +183,7 @@ class MessageFactoryHelper {
         ToZip: '',
         NumSegments: '1',
         MessageSid: sid,
-        From: `+1555${chance.string({ length: 7, pool: '1234567890' })}`,
+        From: MessageFactoryHelper.getFakeMobileNumber(),
         MediaUrl0: chance.avatar({ protocol: 'https' }),
         ApiVersion: '2010-04-01',
       },
@@ -220,7 +191,7 @@ class MessageFactoryHelper {
     });
   }
 
-  static getValidCampaignSignup() {
+  static getCampaignSignupMessage() {
     const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
     const updatedAt = moment(createdAt).add(1, 'days').toISOString();
 
@@ -241,7 +212,7 @@ class MessageFactoryHelper {
     });
   }
 
-  static getValidCampaignSignupPostData() {
+  static getCampaignSignupPostMessageData() {
     const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
     const updatedAt = moment(createdAt).add(1, 'days').toISOString();
     const deletedAt = moment(createdAt).add(2, 'days').toISOString();
@@ -278,8 +249,8 @@ class MessageFactoryHelper {
     return data;
   }
 
-  static getValidCampaignSignupPost() {
-    const data = MessageFactoryHelper.getValidCampaignSignupPostData();
+  static getCampaignSignupPostMessage() {
+    const data = MessageFactoryHelper.getCampaignSignupPostMessageData();
 
     return new CampaignSignupPostMessage({
       data,
@@ -287,8 +258,8 @@ class MessageFactoryHelper {
     });
   }
 
-  static getValidCampaignSignupPostReview() {
-    const data = MessageFactoryHelper.getValidCampaignSignupPostData();
+  static getCampaignSignupPostMessageReviewMessage() {
+    const data = MessageFactoryHelper.getCampaignSignupPostMessageData();
 
     return new CampaignSignupPostReviewMessage({
       data,
@@ -354,17 +325,22 @@ class MessageFactoryHelper {
     return chance.hash({ length: 24 });
   }
 
-  static getValidGambitBroadcastData(broadcastId) {
+  static getBroadcastId() {
+    return chance.word();
+  }
+
+  static getGambitBroadcastMessage(broadcastId = MessageFactoryHelper.getBroadcastId()) {
     return new CustomerIoGambitBroadcastMessage({
       data: {
         northstarId: MessageFactoryHelper.getFakeUserId(),
         broadcastId,
+        mobile: MessageFactoryHelper.getFakeMobileNumber(),
       },
       meta: {},
     });
   }
 
-  static getValidSmsActiveData() {
+  static getSmsActiveMessage() {
     return new CustomerIoSmsStatusActiveMessage({
       data: {
         northstarId: MessageFactoryHelper.getFakeUserId(),
@@ -373,7 +349,7 @@ class MessageFactoryHelper {
     });
   }
 
-  static getValidCustomerIoWebhookData() {
+  static getCustomerIoWebhookData() {
     return {
       data: {
         campaign_id: chance.integer({ min: 0 }),
@@ -389,8 +365,8 @@ class MessageFactoryHelper {
     };
   }
 
-  static getValidCustomerIoWebhookMessage(eventType) {
-    const data = MessageFactoryHelper.getValidCustomerIoWebhookData();
+  static getCustomerIoWebhookMessage(eventType) {
+    const data = MessageFactoryHelper.getCustomerIoWebhookData();
     data.event_type = eventType || chance.word();
     return new CustomerIoWebhookMessage({
       data,

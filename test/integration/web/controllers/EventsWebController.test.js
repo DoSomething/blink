@@ -156,7 +156,7 @@ test('POST /api/v1/events/user-signup should validate incoming message', async (
  * POST /api/v1/events/user-signup
  */
 test('POST /api/v1/events/user-signup should publish message to user-signup-event', async (t) => {
-  const data = MessageFactoryHelper.getValidCampaignSignup().getData();
+  const data = MessageFactoryHelper.getCampaignSignupMessage().getData();
   const res = await t.context.supertest.post('/api/v1/events/user-signup')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
@@ -207,7 +207,7 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
  * POST /api/v1/events/user-signup-post
  */
 test('POST /api/v1/events/user-signup-post should publish message to user-signup-post-event', async (t) => {
-  const data = MessageFactoryHelper.getValidCampaignSignupPost().getData();
+  const data = MessageFactoryHelper.getCampaignSignupPostMessage().getData();
 
   const res = await t.context.supertest.post('/api/v1/events/user-signup-post')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
@@ -244,7 +244,7 @@ test('POST /api/v1/events/user-signup-post should publish message to user-signup
  * POST /api/v1/events/user-signup-post-review
  */
 test('POST /api/v1/events/user-signup-post-review should publish message to user-signup-post-review-event', async (t) => {
-  const data = MessageFactoryHelper.getValidCampaignSignupPostReview().getData();
+  const data = MessageFactoryHelper.getCampaignSignupPostMessageReviewMessage().getData();
 
   const res = await t.context.supertest.post('/api/v1/events/user-signup-post-review')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)

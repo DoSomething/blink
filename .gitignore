@@ -41,3 +41,6 @@ jspm_packages
 
 # wercker files
 .wercker
+
+# vscode
+.vscode

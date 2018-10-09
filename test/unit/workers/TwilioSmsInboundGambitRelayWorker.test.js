@@ -30,16 +30,16 @@ test('getLogCode should be setup and have correct logs', () => {
 
 test('Gambit Broadcast relay should receive correct retry count if message has been retried', () => {
   // No retry property:
-  gambitHelper.getRequestHeaders(MessageFactoryHelper.getValidInboundMessageData())
+  gambitHelper.getRequestHeaders(MessageFactoryHelper.getTwilioInboundMessage())
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 0
-  const retriedZero = MessageFactoryHelper.getValidInboundMessageData();
+  const retriedZero = MessageFactoryHelper.getTwilioInboundMessage();
   gambitHelper.getRequestHeaders(retriedZero)
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 1
-  const retriedOnce = MessageFactoryHelper.getValidInboundMessageData();
+  const retriedOnce = MessageFactoryHelper.getTwilioInboundMessage();
   retriedOnce.incrementRetryAttempt();
   gambitHelper.getRequestHeaders(retriedOnce)
     .should.have.property('x-blink-retry-count').and.equal(1);

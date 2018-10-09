@@ -12,7 +12,7 @@ const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
-const generator = MessageFactoryHelper.getValidGambitBroadcastData;
+const generator = MessageFactoryHelper.getGambitBroadcastMessage;
 
 // ------- Tests ---------------------------------------------------------------
 

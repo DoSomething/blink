@@ -30,16 +30,16 @@ test('getLogCode should be setup and have correct logs', () => {
 
 test('Gambit Sms Status Active relay should receive correct retry count if message has been retried', () => {
   // No retry property:
-  gambitHelper.getRequestHeaders(MessageFactoryHelper.getValidSmsActiveData())
+  gambitHelper.getRequestHeaders(MessageFactoryHelper.getSmsActiveMessage())
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 0
-  const retriedZero = MessageFactoryHelper.getValidSmsActiveData();
+  const retriedZero = MessageFactoryHelper.getSmsActiveMessage();
   gambitHelper.getRequestHeaders(retriedZero)
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 1
-  const retriedOnce = MessageFactoryHelper.getValidSmsActiveData();
+  const retriedOnce = MessageFactoryHelper.getSmsActiveMessage();
   retriedOnce.incrementRetryAttempt();
   gambitHelper.getRequestHeaders(retriedOnce)
     .should.have.property('x-blink-retry-count').and.equal(1);

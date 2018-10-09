@@ -79,6 +79,7 @@ class WebHooksWebController extends WebController {
     try {
       const message = CustomerIoGambitBroadcastMessage.fromCtx(ctx);
       message.validate();
+      // TODO: Send via topic exchange instead
       const { customerIoGambitBroadcastQ } = this.blink.queues;
       customerIoGambitBroadcastQ.publish(message);
       this.sendOK(ctx, message, 201);

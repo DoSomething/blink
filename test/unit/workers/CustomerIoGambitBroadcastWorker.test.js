@@ -32,16 +32,16 @@ test('Gambit Broadcast relay should receive correct retry count if message has b
   const broadcastId = MessageFactoryHelper.getFakeUserId();
 
   // No retry property:
-  gambitHelper.getRequestHeaders(MessageFactoryHelper.getValidGambitBroadcastData(broadcastId))
+  gambitHelper.getRequestHeaders(MessageFactoryHelper.getGambitBroadcastMessage(broadcastId))
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 0
-  const retriedZero = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId);
+  const retriedZero = MessageFactoryHelper.getGambitBroadcastMessage(broadcastId);
   gambitHelper.getRequestHeaders(retriedZero)
     .should.not.have.property('x-blink-retry-count');
 
   // retry = 1
-  const retriedOnce = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId);
+  const retriedOnce = MessageFactoryHelper.getGambitBroadcastMessage(broadcastId);
   retriedOnce.incrementRetryAttempt();
   gambitHelper.getRequestHeaders(retriedOnce)
     .should.have.property('x-blink-retry-count').and.equal(1);

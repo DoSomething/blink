@@ -3,7 +3,6 @@
 // ------- Imports -------------------------------------------------------------
 
 const chai = require('chai');
-const Chance = require('chance');
 const test = require('ava');
 
 const RabbitManagement = require('../../../helpers/RabbitManagement');
@@ -16,8 +15,6 @@ const twilioHelper = require('../../../helpers/twilio');
 chai.should();
 test.beforeEach(HooksHelper.startBlinkWebApp);
 test.afterEach(HooksHelper.stopBlinkWebApp);
-
-const chance = new Chance();
 
 // ------- Tests ---------------------------------------------------------------
 
@@ -56,7 +53,7 @@ test('GET /api/v1/webhooks should respond with JSON list available webhooks', as
  * POST /api/v1/webhooks/customerio
  */
 test.serial('POST /api/v1/webhooks/customerio-email-activity should publish message to customer-io queue', async (t) => {
-  const data = MessageFactoryHelper.getValidCustomerIoWebhookData();
+  const data = MessageFactoryHelper.getCustomerIoWebhookData();
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-email-activity')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
@@ -85,7 +82,7 @@ test.serial('POST /api/v1/webhooks/customerio-email-activity should publish mess
 });
 
 test.serial('POST /api/v1/webhooks/customerio-email-activity should publish email_unsubscribed events to the quasar-customer-io-email-activity and quasar-customer-io-email-unsubscribed queues', async (t) => {
-  const data = MessageFactoryHelper.getValidCustomerIoWebhookData();
+  const data = MessageFactoryHelper.getCustomerIoWebhookData();
   data.event_type = 'email_unsubscribed';
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-email-activity')
@@ -140,7 +137,7 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should fail with 403 forbidden fo
  * POST /api/v1/webhooks/twilio-sms-inbound
  */
 test('POST /api/v1/webhooks/twilio-sms-inbound should be queued when a valid x-twilio-signature is received', async (t) => {
-  const message = MessageFactoryHelper.getValidTwilioInboundData();
+  const message = MessageFactoryHelper.getTwilioInboundMessage();
   const data = message.getData();
 
   const serverAddress = t.context.blink.web.server.address();
@@ -175,9 +172,8 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should be queued when a valid x-t
 /**
  * POST /api/v1/webhooks/customerio-gambit-broadcast
  */
-test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming payload', async (t) => {
-  const broadcastId = chance.word();
-  const data = MessageFactoryHelper.getValidGambitBroadcastData(broadcastId).getData();
+test('POST /api/v1/webhooks/customerio-gambit-broadcast responds w/ 422 if northstarId is missing', async (t) => {
+  const data = MessageFactoryHelper.getGambitBroadcastMessage().getData();
   delete data.northstarId;
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
@@ -191,11 +187,55 @@ test('POST /api/v1/webhooks/customerio-gambit-broadcast validates incoming paylo
     .and.have.string('"northstarId" is required');
 });
 
+test('POST /api/v1/webhooks/customerio-gambit-broadcast responds w/ 422 if broadcastId is missing', async (t) => {
+  const data = MessageFactoryHelper.getGambitBroadcastMessage().getData();
+  delete data.broadcastId;
+
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(422);
+  res.body.should.have.property('ok', false);
+  res.body.should.have.property('message')
+    .and.have.string('"broadcastId" is required');
+});
+
+test('POST /api/v1/webhooks/customerio-gambit-broadcast responds w/ 201 if mobile is missing (is optional)', async (t) => {
+  const data = MessageFactoryHelper.getGambitBroadcastMessage().getData();
+  delete data.mobile;
+
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(201);
+  res.body.should.have.property('ok', true);
+  res.body.should.have.property('code')
+    .and.have.string('success_message_queued');
+});
+
+test('POST /api/v1/webhooks/customerio-gambit-broadcast responds w/ 201 if message is valid', async (t) => {
+  const data = MessageFactoryHelper.getGambitBroadcastMessage().getData();
+
+  const res = await t.context.supertest.post('/api/v1/webhooks/customerio-gambit-broadcast')
+    .set('Content-Type', 'application/x-www-form-urlencoded')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(201);
+  res.body.should.have.property('ok', true);
+  res.body.should.have.property('code')
+    .and.have.string('success_message_queued');
+});
+
 /**
  * POST /api/v1/webhooks/customerio-sms-status-active
  */
 test('POST /api/v1/webhooks/customerio-sms-status-active validates incoming payload', async (t) => {
-  const data = MessageFactoryHelper.getValidSmsActiveData().getData();
+  const data = MessageFactoryHelper.getSmsActiveMessage().getData();
   delete data.northstarId;
 
   const res = await t.context.supertest.post('/api/v1/webhooks/customerio-sms-status-active')
@@ -213,7 +253,7 @@ test('POST /api/v1/webhooks/customerio-sms-status-active validates incoming payl
  * POST /api/v1/webhooks/twilio-sms-outbound-status
  */
 test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twilio-sms-outbound-status-relay when a valid x-twilio-signature is received', async (t) => {
-  const message = MessageFactoryHelper.getValidTwilioOutboundStatusData();
+  const message = MessageFactoryHelper.getTwilioOutboundDeliveredStatusMessage();
   const data = message.getData();
 
   const serverAddress = t.context.blink.web.server.address();
@@ -257,7 +297,7 @@ test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twili
  * POST /api/v1/webhooks/twilio-sms-outbound-status
  */
 test('POST /api/v1/webhooks/twilio-sms-outbound-status should be queued in twilio-sms-outbound-error-relay when a valid x-twilio-signature is received', async (t) => {
-  const message = MessageFactoryHelper.getValidTwilioOutboundErrorStatusData();
+  const message = MessageFactoryHelper.getTwilioOutboundErrorStatusMessage();
   const data = message.getData();
 
   const serverAddress = t.context.blink.web.server.address();
