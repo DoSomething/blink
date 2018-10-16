@@ -274,7 +274,7 @@ class RabbitMQBroker extends Broker {
       // TODO: create other exchanges.
       return true;
     } catch (error) {
-      logger.error(`Couldn't assert neccessary exchanges: ${error}`, {
+      logger.error(`Couldn't assert necessary exchanges: ${error}`, {
         meta: {
           code: 'error_rabbitmq_broker_assert_exchange_failed',
         },
