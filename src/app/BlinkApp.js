@@ -117,7 +117,7 @@ class BlinkApp {
       // To construct a class dynamically, it's possible `new` its reference
       // stored as an array element: `new queueClasses[i]`.
       const queue = new queueClasses[i](this.broker);
-      // Ensure the queue is present with exptected settings.
+      // Ensure the queue is present with expected settings.
       // Todo: parse result.
       await queue.create();
       // Registry key makes it more convenient to get queues from the
@@ -151,7 +151,7 @@ class BlinkApp {
    * ```
    * const { fetchQ } = blink.queues;
    * ```
-   * @param  {strin} name The name of the queue to search
+   * @param  {String} name The name of the queue to search
    * @return {Queue|undefined} The queue found or undefined
    */
   getQueueByName(name) {
