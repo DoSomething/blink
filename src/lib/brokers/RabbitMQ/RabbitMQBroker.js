@@ -170,7 +170,7 @@ class RabbitMQBroker extends Broker {
    * Note: This method works with the value of message.fields.deliveryTag.
    * @see https://github.com/squaremo/amqp.node/blob/master/lib/channel_model.js#L231
    *
-   * @param  {object} message The messgage to acknowledge negativly
+   * @param  {object} message The message to acknowledge negatively
    * @return {undefined}      This method is RPC and does not have server response
    */
   nack(message) {
@@ -182,7 +182,7 @@ class RabbitMQBroker extends Broker {
    *
    * 1. Creates main queue with the name provided
    * 2. Binds it to the topic exchange on provided routes
-   * 3. TODO: create additional support queueus
+   * 3. TODO: create additional support queues
    *
    * @param  {string} queueName    Queue name
    * @param  {array}  queueRoutes  The list of routes, see publishToRoute()
@@ -320,8 +320,8 @@ class RabbitMQBroker extends Broker {
       });
       return false;
     }
-
-    logger.debug(`Queue ${queueName} created or already present in expected state`, {
+    // exposed as info for monitoring
+    logger.info(`Queue ${queueName} created or already present in expected state`, {
       meta: {
         code: 'success_rabbitmq_broker_assert_queue',
       },
@@ -329,21 +329,21 @@ class RabbitMQBroker extends Broker {
     return true;
   }
 
-  async bindQueue(queueName, exhangeName, route) {
+  async bindQueue(queueName, exchangeName, route) {
     try {
-      await this.getChannel().bindQueue(queueName, exhangeName, route);
+      await this.getChannel().bindQueue(queueName, exchangeName, route);
     } catch (error) {
       // Should never happen, but log this, just in case.
       // @see http://www.squaremobius.net/amqp.node/channel_api.html#channel_bindQueue
-      logger.error(`Error binding queue ${queueName} to ${exhangeName} on ${route}: ${error}`, {
+      logger.error(`Error binding queue ${queueName} to ${exchangeName} on ${route}: ${error}`, {
         meta: {
           code: 'error_rabbitmq_broker_bind_queue_unexpected',
         },
       });
       return false;
     }
-
-    logger.debug(`Queue ${queueName} bound to ${exhangeName} on ${route}`, {
+    // exposed as info for monitoring
+    logger.info(`Queue ${queueName} bound to ${exchangeName} on ${route}`, {
       meta: {
         code: 'success_rabbitmq_broker_bind_queue',
       },
