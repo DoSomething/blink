@@ -87,7 +87,7 @@ class RedisConnectionManager {
 
   logSuccess() {
     const networkData = RedisConnectionManager.getNetworkData(this.client);
-    logger.info('Redis connection created', {
+    logger.debug('Redis connection created', {
       meta: {
         code: 'success_redis_connection_manager_connection_created',
         redis_local: `${networkData.localAddress}:${networkData.localPort}`,
