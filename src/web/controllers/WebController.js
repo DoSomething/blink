@@ -78,7 +78,8 @@ class WebController {
       // Machine-readable error code.
       ctx.body.code = 'error_validation_failed';
       ctx.status = 422;
-      level = 'warning';
+      // Exposing as info for monitoring
+      level = 'info';
       // When message exists, log it.
       if (error.payload) {
         message = error.payload;
