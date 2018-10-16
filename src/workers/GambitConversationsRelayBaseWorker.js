@@ -98,7 +98,7 @@ class GambitConversationsRelayBaseWorker extends Worker {
    */
   logSuccess(message, statusCode, text) {
     this.log(
-      'debug',
+      'info',
       message,
       statusCode,
       this.constructor.getLogCode('success'),
