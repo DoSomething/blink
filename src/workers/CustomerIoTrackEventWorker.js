@@ -65,7 +65,8 @@ class CustomerIoTrackEventWorker extends Worker {
     }
 
     this.log(
-      'debug',
+      // Expose as info for monitoring
+      'info',
       transformableMessage,
       'Customer.io event tracked',
       `success_cio_${this.eventName}`,
