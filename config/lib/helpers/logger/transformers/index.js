@@ -26,6 +26,15 @@ config.removePII.northstarPIIKeys = [
  * object. So, starting the key with `data` here, it's intentional.
  */
 config.removePII.customerIoPIIKeys = [
+  // To C.io from Northstar when updating user
+  'data.email',
+  'data.birthdate',
+  'data.first_name',
+  'data.last_name',
+  'data.addr_city',
+  'data.addr_state',
+  'data.phone',
+  // From C.io webhook
   'data.email_address',
   'data.variables.customer.email',
   'data.variables.customer.birthdate',
