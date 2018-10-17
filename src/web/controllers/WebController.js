@@ -95,7 +95,7 @@ class WebController {
   }
 
   log(level, ctx, message, code) {
-    let text = ctx.body ? ctx.body.message : undefined;
+    let text = ctx.body ? ctx.body.message : 'No Content';
     if (message) {
       text = `${text}, message ${message.toString(removePIITransformer)}`;
     }
