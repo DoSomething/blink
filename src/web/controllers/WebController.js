@@ -20,7 +20,7 @@ class WebController {
 
   /**
    * A helper function that returns named route as full URL
-   * @param  {String} name Named route avaiable in this.router
+   * @param  {String} name Named route available in this.router
    * @return {String}      Full route URL
    */
   fullUrl(name) {
