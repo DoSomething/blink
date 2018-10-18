@@ -69,7 +69,7 @@ test('InMemoryRetryDelayer.delayMessageRetry(): should republish original messag
   // Unless error is thrown, result will be true.
   result.should.be.true;
 
-  // Make sure message hasn't been nacked and then republished again.
+  // Make sure message has been nacked and then republished again.
   nackStub.should.have.been.calledWith(message);
   publishStub.should.have.been.calledWith(message);
 
