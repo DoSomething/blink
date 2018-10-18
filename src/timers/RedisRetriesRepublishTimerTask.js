@@ -31,7 +31,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
       return;
     }
 
-    // Pressess each message.
+    // Process each message.
     packedMessages.forEach(async (packedMessage) => {
       try {
         await this.republishMessage(packedMessage);
@@ -72,7 +72,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
     queue.publish(message, 'HIGH');
     this.log(
       'debug',
-      `Message sucesfully returned to queue ${queue.name}, ${message.toString(removePIITransformer)}`,
+      `Message successfully returned to queue ${queue.name}, ${message.toString(removePIITransformer)}`,
       message,
       'success_redis_republisher_message_republished',
     );

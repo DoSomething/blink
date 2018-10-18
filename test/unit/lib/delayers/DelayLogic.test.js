@@ -36,7 +36,7 @@ test('DelayLogic.exponentialBackoff(): Check exponentialBackoff behavior', () =>
   // Delay should be between 30 minutes and 1 hour on 100th retry.
   DelayLogic.exponentialBackoff(100).should.be.above(30 * 60 * 1000).and.below(60 * 60 * 1000);
 
-  // Total wait time whould be less than a day.
+  // Total wait time would be less than a day.
   let retry = 0;
   let accumulator = 0;
   while (retry <= 100) {

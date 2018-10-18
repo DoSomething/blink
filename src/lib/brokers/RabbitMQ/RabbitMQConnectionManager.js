@@ -37,7 +37,7 @@ class RabbitMQConnectionManager {
 
   async connect() {
     if (!this.reconnectManager) {
-      // No reconnection logic provided, just try once and return the result.
+      // No re-connection logic provided, just try once and return the result.
       // In this case, auto recovery will be disabled too.
       return this.createActiveChannel();
     }

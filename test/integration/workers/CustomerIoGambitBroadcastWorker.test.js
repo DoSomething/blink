@@ -60,7 +60,7 @@ test.serial('Gambit Broadcast relay should be consume close to 50 messages per s
   consumeStub.callCount.should.be.at.most(50);
 
   // Await consuming to complete
-  // @todo: gracefull worker shutdown instead.
+  // @todo: graceful worker shutdown instead.
   await new Promise(resolve => setTimeout(resolve, 3000));
 
   // Cleanup
