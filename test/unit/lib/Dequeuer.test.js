@@ -52,7 +52,7 @@ test('Dequeuer.executeCallback(): should ack processed message', async (t) => {
   const callback = async () => true;
   const callbackSpy = sinon.spy(callback);
 
-  // Prepare random message to make dequeuer think it fot it from Rabbit.
+  // Prepare random message to make dequeuer think it got it from Rabbit.
   const message = MessageFactoryHelper.getRandomMessage();
 
   // Dequeue test message.
