@@ -114,7 +114,7 @@ test('Dequeuer.executeCallback(): ensure nack on unexpected error thrown from ca
   };
   const callbackSpy = sinon.spy(callback);
 
-  // Prepare random message to make dequeuer think it fot it from Rabbit.
+  // Prepare random message to make dequeuer think it got it from Rabbit.
   const message = MessageFactoryHelper.getRandomMessage();
 
   // Dequeue test message.
