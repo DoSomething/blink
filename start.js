@@ -1,7 +1,7 @@
 'use strict';
 
-// ------- Fitst things first --------------------------------------------------
-// Load enviroment vars.
+// ------- First things first --------------------------------------------------
+// Load environment vars.
 require('dotenv').config();
 
 // New Relic.

@@ -50,8 +50,9 @@ class RetryManager {
     const delayMs = this.delayLogic(message.getRetryAttempt());
 
     // Log retry information.
+    // Exposing as info for monitoring
     this.log(
-      'debug',
+      'info',
       `Retry scheduled, attempt ${message.getRetryAttempt()}, reason '${reason}', retry in ${delayMs}ms`,
       message,
       'debug_retry_manager_redeliver_scheduled',
@@ -64,8 +65,9 @@ class RetryManager {
     if (message.getRetryAttempt() >= this.retryLimit) {
       // Retry limit reached.
       // Log the reason why message is denied for retry.
+      // Exposing as info for monitoring
       this.log(
-        'debug',
+        'info',
         `Retry limit reached, rejecting. Retry reason '${reason}'`,
         message,
         'debug_retry_manager_limit_reached',

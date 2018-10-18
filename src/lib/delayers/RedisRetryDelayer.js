@@ -78,14 +78,14 @@ class RedisRetryDelayer extends RetryDelayer {
     if (result !== 1) {
       logger.debug(`Redis message already present: ${packedMessage}.`, {
         meta: {
-          code: 'sucess_redis_retry_delayer_message_saved',
+          code: 'success_redis_retry_delayer_message_saved',
         },
       });
     }
 
     logger.debug(`Redis message saved: ${packedMessage}.`, {
       meta: {
-        code: 'sucess_redis_retry_delayer_message_saved',
+        code: 'success_redis_retry_delayer_message_saved',
       },
     });
     return true;

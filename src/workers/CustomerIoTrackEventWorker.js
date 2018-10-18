@@ -52,8 +52,9 @@ class CustomerIoTrackEventWorker extends Worker {
         data: customerIoEvent.getData(),
       });
     } catch (error) {
+      // Exposed as info for monitoring
       this.log(
-        'warning',
+        'info',
         transformableMessage,
         `${error}`,
         `error_cio_track_cant_${this.eventName}`,
@@ -65,6 +66,7 @@ class CustomerIoTrackEventWorker extends Worker {
     }
 
     this.log(
+      // Set as debug since we will monitor on error instead
       'debug',
       transformableMessage,
       'Customer.io event tracked',

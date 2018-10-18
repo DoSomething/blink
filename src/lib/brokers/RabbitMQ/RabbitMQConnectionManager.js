@@ -60,7 +60,7 @@ class RabbitMQConnectionManager {
 
   async disconnect() {
     // Log request for disconnect.
-    logger.debug('AMQP disconnect requested', {
+    logger.info('AMQP disconnect requested', {
       meta: {
         code: 'debug_rabbitmq_connection_manager_disconnect_requested',
       },
@@ -79,9 +79,9 @@ class RabbitMQConnectionManager {
       await this.channel.close();
     } catch (error) {
       const wrappedError = new BlinkConnectionError(
-        `Ignoring: attepmeted closing active channel, but ${error}.`,
+        `Ignoring: attempted closing active channel, but ${error}.`,
       );
-      RabbitMQConnectionManager.logDebug(wrappedError);
+      RabbitMQConnectionManager.logInfo(wrappedError);
     }
     this.channel = false;
 
@@ -90,9 +90,9 @@ class RabbitMQConnectionManager {
       await this.connection.close();
     } catch (error) {
       const wrappedError = new BlinkConnectionError(
-        `Ignoring: attepmeted closing active connection, but ${error}.`,
+        `Ignoring: attempted closing active connection, but ${error}.`,
       );
-      RabbitMQConnectionManager.logDebug(wrappedError);
+      RabbitMQConnectionManager.logInfo(wrappedError);
     }
     this.connection = false;
     // Indicate offline state.
@@ -162,7 +162,7 @@ class RabbitMQConnectionManager {
     } catch (error) {
       // Will throw an error on malformed URI, network problems or other issues.
       // For now, just rethrow wrapped error.
-      throw new BlinkConnectionError(`Connectiod failed: ${error}`);
+      throw new BlinkConnectionError(`Connection failed: ${error}`);
     }
 
     // Just in case.
@@ -204,14 +204,14 @@ class RabbitMQConnectionManager {
       const error = new BlinkConnectionError(
         'AMQP channel got closed, attempting automatic recovery.',
       );
-      RabbitMQConnectionManager.logDebug(error);
+      RabbitMQConnectionManager.logInfo(error);
       this.recoverActiveChannel();
     });
     this.connection.on('close', () => {
       const error = new BlinkConnectionError(
         'AMQP connection got closed, attempting automatic recovery.',
       );
-      RabbitMQConnectionManager.logDebug(error);
+      RabbitMQConnectionManager.logInfo(error);
       this.recoverActiveChannel();
     });
   }
@@ -303,9 +303,15 @@ class RabbitMQConnectionManager {
       },
     });
   }
-
-  static logDebug(error) {
-    logger.debug(`RabbitMQ connection notice: ${error.message}`, {
+  /**
+   * logInfo - Logs important connection manager notices.
+   * TODO: Turn back to debug if it turns out this is too noisy. The plan is to
+   * set aggressive alarms and monitoring in Blink to make up for the shortage in
+   * manpower we have now.
+   * @param {*} error
+   */
+  static logInfo(error) {
+    logger.info(`RabbitMQ connection notice: ${error.message}`, {
       meta: {
         code: 'debug_rabbitmq_connection_manager_notice',
       },
