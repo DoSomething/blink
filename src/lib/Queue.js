@@ -12,7 +12,7 @@ class Queue {
     if (!name) {
       // If name is not explicitly set, generate Queue name from class name:
       // - Removes conventional Q at the end
-      // - Param cases the string
+      // - Parameterizes the string
       // For example, RemoteHttpRequestQ will become remote-http-request.
       this.name = changeCase.paramCase(this.constructor.name.replace(/Q$/, ''));
     } else {
