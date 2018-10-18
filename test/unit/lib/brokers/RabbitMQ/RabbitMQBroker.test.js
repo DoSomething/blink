@@ -62,10 +62,10 @@ test('RabbitMQBroker.connect(): Should delegate connection to the connection man
       this.connected = true;
       return true;
     });
-  // Restore original getChannel() function, as we're setting channel manualy.
+  // Restore original getChannel() function, as we're setting channel manually.
   broker.getChannel.restore();
 
-  // Stub assert exchanegs in broker.
+  // Stub assert exchanges in broker.
   const assertExchangesStub = sandbox.stub(broker, 'assertExchanges').resolves(true);
 
   // Execute the connect.
@@ -163,7 +163,7 @@ test('RabbitMQBroker.ack(): Should delegate message ack to amqplib', (t) => {
 
   // Prepare fake message to acknowledgement.
   const message = MessageFactoryHelper.getFakeRabbitMessage();
-  // AMQPLib's ack method implicitly depends on mesaage.fields.deliveryTag.
+  // AMQPLib's ack method implicitly depends on message.fields.deliveryTag.
   // We'll ensure it works correctly by by spying on sendImmediately();
   message.fields.deliveryTag.should.be.not.empty;
   // Acknowledge the fake message.
@@ -198,7 +198,7 @@ test('RabbitMQBroker.nack(): Should delegate message nack to amqplib', (t) => {
 
   // Prepare fake message to acknowledgement.
   const message = MessageFactoryHelper.getFakeRabbitMessage();
-  // AMQPLib's reject() method implicitly depends on mesaage.fields.deliveryTag.
+  // AMQPLib's reject() method implicitly depends on message.fields.deliveryTag.
   // We'll ensure it works correctly by by spying on sendImmediately();
   message.fields.deliveryTag.should.be.not.empty;
   // Negative acknowledge the fake message.
@@ -607,7 +607,7 @@ test('RabbitMQBroker.subscribe(): Callback is executed on new message', async (t
   const message = MessageFactoryHelper.getFakeRabbitMessage(false, consumerTag);
   channel.emit('delivery', message);
 
-  // Ensure the callback recieved the message. So cool.
+  // Ensure the callback received the message. So cool.
   dequeuerSpy.should.have.been.calledOnce;
   const [messageArg] = dequeuerSpy.firstCall.args;
   messageArg.should.be.deep.equal(message);

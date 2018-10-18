@@ -32,15 +32,15 @@ test.serial('RedisRetriesRepublishTimerTask Test full message cycle. ', async ()
   // 0. Initial setup
   const config = require('../../../config');
   // Override redis retry set name.
-  // WARNING: this could interfier with other tests in this file.
+  // WARNING: this could interfere with other tests in this file.
   config.redis.settings.retrySet = `test-full-message-${chance.word()}`;
 
   // Start blink app.
   const blink = new BlinkApp(config);
   await blink.start();
 
-  // Cleanup redis set in case it has unprocess data from
-  // the previous unseccesfull test
+  // Cleanup redis set in case it has unprocessed data from
+  // the previous unsuccessfully test
   await blink.redis.getClient().del(blink.config.redis.settings.retrySet);
 
   // Sinon setup.

@@ -67,7 +67,7 @@ test('RedisRetryDelayer.delayMessageRetry(): Should save message to redis queue'
 /**
  * RedisRetryDelayer.getReadyMessages()
  */
-test('RedisRetryDelayer.getReadyMessages(): Ensure messages will not be returned prematurly', async (t) => {
+test('RedisRetryDelayer.getReadyMessages(): Ensure messages will not be returned prematurely', async (t) => {
   // Set variables from the context.
   const { redis, queue } = t.context;
 
@@ -78,11 +78,11 @@ test('RedisRetryDelayer.getReadyMessages(): Ensure messages will not be returned
   const redisClient = redis.getClient();
   const delayer = new RedisRetryDelayer(redisClient, redis.settings);
 
-  // Prepare 2 messages: one to be returned immidiatelly,
+  // Prepare 2 messages: one to be returned immediately,
   // second to be returned in an hor.
   const shortDelayMessage = MessageFactoryHelper.getRandomMessage(true);
   const longDelayMessage = MessageFactoryHelper.getRandomMessage(true);
-  // Should be immidiatelly returned.
+  // Should be immediately returned.
   const shortDelayMs = 1;
   // Assuming this test will not run for an hour :)
   const longDelayMs = 1000 * 3600;

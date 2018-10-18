@@ -46,7 +46,7 @@ test('Test Gambit response with x-blink-retry-suppress header', () => {
       status: 422,
       statusText: 'Unknown Gambit error',
       headers: {
-        // Also make sure that blink recongnizes non standart header case
+        // Also make sure that blink recognizes non standard header case
         'X-BlInK-RetRY-SuPPRESS': 'TRUE',
       },
     },
