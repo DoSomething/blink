@@ -60,9 +60,9 @@ test('WebController.fullUrl(): Test generating urls for controller methods', (t)
 });
 
 /**
- * WebController.fullUrl(): Test ommitting port 80
+ * WebController.fullUrl(): Test omitting port 80
  */
-test('WebController.fullUrl(): Test ommitting port 80', (t) => {
+test('WebController.fullUrl(): Test omitting port 80', (t) => {
   class TestController extends WebController {
     constructor(...args) {
       super(...args);

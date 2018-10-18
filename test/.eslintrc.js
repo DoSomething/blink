@@ -3,7 +3,7 @@ module.exports = {
   rules: {
     // Allow all common iterator names as well as `t` for tests
     'id-length': ['error', { exceptions: ['t', 'i', 'j', 'k'] }],
-    // Allow i++ in fors
+    // Allow i++ in for loops
     'no-plusplus': ['error', { 'allowForLoopAfterthoughts': true }],
     // Disable ForInStatement and ForOfStatement errors.
     // We don't care about so-called "heavyweight" operations in tests.

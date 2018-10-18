@@ -41,7 +41,7 @@ test('Any non specialized event message should get the generic routing key when 
   routingKey.should.be.equal(genericRoutingKey);
 });
 
-test('C.io webhook message should return the data.customer_id propety when calling getUserId()', () => {
+test('C.io webhook message should return the data.customer_id property when calling getUserId()', () => {
   const msg = MessageFactoryHelper.getCustomerIoWebhookMessage();
   const userId = msg.getUserId();
   userId.should.be.equal(msg.payload.data.data.customer_id);

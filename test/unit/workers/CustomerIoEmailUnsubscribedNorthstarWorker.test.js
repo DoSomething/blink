@@ -12,7 +12,7 @@ const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 
 northstarHelper.__set__('identityService', {
-  getAuthHeader: () => ({ Autorization: 'Bearer 12345' }),
+  getAuthHeader: () => ({ Authorization: 'Bearer 12345' }),
 });
 
 // ------- Init ----------------------------------------------------------------

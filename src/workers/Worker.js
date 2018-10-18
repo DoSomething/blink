@@ -17,7 +17,7 @@ class Worker {
   constructor(blink) {
     this.blink = blink;
     this.rateLimit = this.blink.config.app.rateLimit;
-    this.messagsInMemoryLimit = this.blink.config.app.prefetchCount;
+    this.messagesInMemoryLimit = this.blink.config.app.prefetchCount;
     this.workerName = this.constructor.name;
     // TODO: get from dyno?
     this.consumerName = `${this.workerName}-${uuidV4()}`;
@@ -61,9 +61,9 @@ class Worker {
 
     // Limit the number of messages simultaneously loaded into
     // worker's memory to avoid reaching memory limit.
-    await this.limitMessagesInMemory(this.messagsInMemoryLimit);
+    await this.limitMessagesInMemory(this.messagesInMemoryLimit);
 
-    // Prepare optioons.
+    // Prepare options.
     const rateLimit = this.rateLimit;
     const retryManager = this.retryManager;
     const consumerName = this.consumerName;

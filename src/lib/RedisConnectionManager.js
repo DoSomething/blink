@@ -52,7 +52,7 @@ class RedisConnectionManager {
     const pingResult = await this.client.ping();
     if (pingResult !== 'PONG') {
       const wrappedError = new BlinkConnectionError(
-        `Redis didn't resond expected PONG to PING. Response was: ${pingResult}`,
+        `Redis didn't respond expected PONG to PING. Response was: ${pingResult}`,
       );
       RedisConnectionManager.logFailure(wrappedError);
       return false;

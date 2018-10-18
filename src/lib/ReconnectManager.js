@@ -38,7 +38,7 @@ class ReconnectManager {
 
   /**
    * Reconnect API
-   * @param  {functuon} connectFunction The function to be called
+   * @param  {Function} connectFunction The function to be called
    *
    * Connect function should:
    *  - be async
@@ -65,13 +65,13 @@ class ReconnectManager {
       // Wait.
       await ReconnectManager.wait(delayMs);
     }
-    // Execution has been interrrupted. Let know this.interrupt of clean finish.
+    // Execution has been interrupted. Let know this.interrupt of clean finish.
     this.executionLock = false;
     return false;
   }
 
   async interrupt() {
-    // We're connected, no need to interrupt antyhing.
+    // We're connected, no need to interrupt anything.
     if (!this.executionLock) {
       return true;
     }

@@ -119,7 +119,7 @@ class Message {
     };
 
     // Save GET params when present.
-    // TODO: only save whitelsited query params?
+    // TODO: only save whitelisted query params?
     if (ctx.query && Object.keys(ctx.query).length) {
       messageData.meta.query = ctx.query;
     }

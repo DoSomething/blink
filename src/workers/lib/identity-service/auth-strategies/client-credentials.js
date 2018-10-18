@@ -35,7 +35,7 @@ class ClientCredentials extends EventEmitter {
     this.autoRenewToken = opts.autoRenewToken || config.defaults.autoRenewToken;
     // How many seconds before the token expires we should attempt to renew?
     this.renewWindow = opts.renewWindow || config.defaults.renewWindow;
-    // Maximum amount of linear retries to attemp before a waiting period
+    // Maximum amount of linear retries to attempt before a waiting period
     this.maxReconnectAttempts = opts.maxReconnectAttempts || 1;
     // It increases on each attempt to reconnect
     this.reconnectAttempts = 0;

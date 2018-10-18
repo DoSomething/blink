@@ -58,10 +58,10 @@ test('InMemoryRetryDelayer.delayMessageRetry(): should republish original messag
   // Request message republish in 60s.
   const resultPromise = inMemoryRetryDelayer.delayMessageRetry(queue, message, waitTime);
 
-  // Advace the clock to wait time before actually waiting on promise.
+  // Advance the clock to wait time before actually waiting on promise.
   clock.tick(waitTime);
 
-  // Should be resolved immidiatelly.
+  // Should be resolved immediately.
   const result = await resultPromise;
   // Important: reset the clock.
   clock.restore();
@@ -69,7 +69,7 @@ test('InMemoryRetryDelayer.delayMessageRetry(): should republish original messag
   // Unless error is thrown, result will be true.
   result.should.be.true;
 
-  // Make sure message hasn been nackd and then republished again.
+  // Make sure message hasn't been nacked and then republished again.
   nackStub.should.have.been.calledWith(message);
   publishStub.should.have.been.calledWith(message);
 
