@@ -61,7 +61,8 @@ function logFetchFailureAndRetry(logMessage,
     worker: workerName,
     request_id: message ? message.getRequestId() : 'not_parsed',
   };
-  logger.log('error', logMessage, { meta });
+  // Exposed as info for monitoring
+  logger.log('info', logMessage, { meta });
 
   throw new BlinkRetryError(
     logMessage,

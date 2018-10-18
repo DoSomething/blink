@@ -35,7 +35,7 @@ class TwilioStatusCallbackRelayBaseWorker extends GambitConversationsRelayBaseWo
     const success = this.handleResponse(message, getMessageResponse);
     /**
      * returning false will ack the message but won't continue processing the other calls below.
-     * If the error we get back from G-Conversstions should not be retried then we should Just
+     * If the error we get back from G-Conversations should not be retried then we should Just
      * not process this message and drop it.
      */
     if (!success) {

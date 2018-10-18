@@ -20,7 +20,7 @@ class WebController {
 
   /**
    * A helper function that returns named route as full URL
-   * @param  {String} name Named route avaiable in this.router
+   * @param  {String} name Named route available in this.router
    * @return {String}      Full route URL
    */
   fullUrl(name) {
@@ -78,7 +78,8 @@ class WebController {
       // Machine-readable error code.
       ctx.body.code = 'error_validation_failed';
       ctx.status = 422;
-      level = 'warning';
+      // Exposing as info for monitoring
+      level = 'info';
       // When message exists, log it.
       if (error.payload) {
         message = error.payload;
@@ -94,7 +95,7 @@ class WebController {
   }
 
   log(level, ctx, message, code) {
-    let text = ctx.body ? ctx.body.message : undefined;
+    let text = ctx.body ? ctx.body.message : 'No Content';
     if (message) {
       text = `${text}, message ${message.toString(removePIITransformer)}`;
     }

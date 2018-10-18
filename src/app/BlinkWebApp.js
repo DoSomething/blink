@@ -71,7 +71,7 @@ class BlinkWebApp extends BlinkApp {
       const controller = new controllerClasses[i](this, router);
 
       /**
-       * Use camelcased controller class name as a map key.
+       * Use camelCased controller class name as a map key.
        * NOTE: Classes use camelCase but are capitalized, example: SuperClass.
        * This step normalizes the name to standard camelCase syntax: superClass.
        */
@@ -117,7 +117,7 @@ class BlinkWebApp extends BlinkApp {
           fwd: ctx.request.ip,
           protocol: ctx.request.protocol,
         };
-        logger.warning('Body parsing error.', meta);
+        logger.warning('Body parsing error.', { meta });
         ctx.throw(422, 'Body parsing error.');
       },
     }));
@@ -148,7 +148,7 @@ class BlinkWebApp extends BlinkApp {
         this.config.web.bind_address,
         () => {
           const address = this.web.server.address();
-          // TODO: Make sure random port setting gets overriden with actual resolved port.
+          // TODO: Make sure random port setting gets overridden with actual resolved port.
 
           // TODO: log process name
           const meta = {
@@ -160,7 +160,7 @@ class BlinkWebApp extends BlinkApp {
           };
 
           const readableUrl = `http://${this.config.web.hostname}:${address.port}`;
-          logger.debug(`Blink Web is listening on ${readableUrl}`, { meta });
+          logger.info(`Blink Web is listening on ${readableUrl}`, { meta });
 
           /**
            * Wait for listening event
@@ -186,7 +186,7 @@ class BlinkWebApp extends BlinkApp {
         port: address.port,
       };
 
-      logger.debug('Blink Web is stopped', { meta });
+      logger.info('Blink Web is stopped', { meta });
     });
   }
 }

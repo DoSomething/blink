@@ -41,8 +41,9 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     try {
       await this.cioClient.identify(id, data);
     } catch (error) {
+      // Exposed as info for monitoring
       this.log(
-        'warning',
+        'info',
         customerIoUpdateCustomerMessage,
         `${error}`,
         'error_cio_update_cant_update_consumer',
@@ -54,6 +55,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     }
 
     this.log(
+      // Set as debug since we will monitor on error instead
       'debug',
       customerIoUpdateCustomerMessage,
       'Customer.io updated',

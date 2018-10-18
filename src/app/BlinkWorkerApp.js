@@ -36,7 +36,7 @@ class BlinkWorkerApp extends BlinkApp {
     }
   }
 
-  // @todo: gracefull worker shutdown
+  // @todo: graceful worker shutdown
   // async stop() {
   //   await this.worker.gracefulStop();
   //   return await super.reconnect();
