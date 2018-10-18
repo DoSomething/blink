@@ -55,8 +55,8 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     }
 
     this.log(
-      // exposed as info for monitoring
-      'info',
+      // Set as debug since we will monitor on error instead
+      'debug',
       customerIoUpdateCustomerMessage,
       'Customer.io updated',
       'success_cio_consumer_updated',
