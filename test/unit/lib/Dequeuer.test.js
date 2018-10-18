@@ -52,7 +52,7 @@ test('Dequeuer.executeCallback(): should ack processed message', async (t) => {
   const callback = async () => true;
   const callbackSpy = sinon.spy(callback);
 
-  // Prepare random message to make dequeur think it fot it from Rabbit.
+  // Prepare random message to make dequeuer think it got it from Rabbit.
   const message = MessageFactoryHelper.getRandomMessage();
 
   // Dequeue test message.
@@ -82,7 +82,7 @@ test('Dequeuer/executeCallback(): ensure ack expected unprocessed message', asyn
   const callback = async () => false;
   const callbackSpy = sinon.spy(callback);
 
-  // Prepare random message to make dequeur think it fot it from Rabbit.
+  // Prepare random message to make dequeuer think it got it from Rabbit.
   const message = MessageFactoryHelper.getRandomMessage();
 
   // Dequeue test message.
@@ -114,7 +114,7 @@ test('Dequeuer.executeCallback(): ensure nack on unexpected error thrown from ca
   };
   const callbackSpy = sinon.spy(callback);
 
-  // Prepare random message to make dequeur think it fot it from Rabbit.
+  // Prepare random message to make dequeuer think it got it from Rabbit.
   const message = MessageFactoryHelper.getRandomMessage();
 
   // Dequeue test message.
@@ -158,7 +158,7 @@ test('Dequeuer.executeCallback(): ensure RetryManager is called when a retry is 
   // Execute callback using dequeuer.
   const dequeuer = new Dequeuer(queue, callbackSpy, retryManager);
   const result = await dequeuer.executeCallback(message);
-  // Retry has been succesfully scheduled.
+  // Retry has been successfully scheduled.
   result.should.be.true;
 
   // Ensure callback has been called.
@@ -188,7 +188,7 @@ test('Dequeuer.extractOrDiscard(): ensure nack on incorrect JSON payload', (t) =
   // Ensure Message.fromRabbitMessage throws MessageParsingBlinkError
   const blinkParsingErrorSpy = sinon.spy(queue.messageClass, 'unpackRabbitMessage');
 
-  // Create deliberaly incorrect JSON and feed it to extractOrDiscard.
+  // Create deliberately incorrect JSON and feed it to extractOrDiscard.
   const rabbitMessage = MessageFactoryHelper.getFakeRabbitMessage('{incorrect-json}');
   const dequeuer = new Dequeuer(queue);
   const result = dequeuer.extractOrDiscard(rabbitMessage);

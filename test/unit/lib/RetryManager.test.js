@@ -118,7 +118,7 @@ test('RetryManager.retry(): should delegate the delay procedure to an instance o
   // In example above, it will be 100.
   message.getRetryAttempt().should.equal(retryAttempt + 1);
 
-  // Ensure delayMessageRetryStub() recived correct message and delay call.
+  // Ensure delayMessageRetryStub() received correct message and delay call.
   delayMessageRetryStub.should.have.been.calledWith(
     queue,
     message,

@@ -53,7 +53,7 @@ test('Gambit should receive signups not created by Gambit', () => {
   GambitCampaignSignupRelayWorker.shouldSkip(message).should.be.false;
 });
 
-test('Gambit should not recieve signups created by Gambit', () => {
+test('Gambit should not receive signups created by Gambit', () => {
   const message = MessageFactoryHelper.getCampaignSignupMessage();
   const smsRelatedSources = [
     'sms',
