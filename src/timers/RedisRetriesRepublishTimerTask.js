@@ -31,7 +31,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
       return;
     }
 
-    // Presses each message.
+    // Process each message.
     packedMessages.forEach(async (packedMessage) => {
       try {
         await this.republishMessage(packedMessage);
