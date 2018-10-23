@@ -97,7 +97,16 @@ class WebController {
   log(level, ctx, message, code) {
     let text = ctx.body ? ctx.body.message : 'No Content';
     if (message) {
-      text = `${text}, message ${message.toLog([removePIITransformer])}`;
+      /**
+       * FIXME: message is not consistently an instance of Message
+       * Errors parse the payload internally and send the stringified version
+       * for logging as the 'message' argument.
+       */
+      if (typeof message.toLog === 'function') {
+        text = `${text}, message ${message.toLog([removePIITransformer])}`;
+      } else {
+        text = `${text}, message ${message}`;
+      }
     }
     const meta = {
       env: this.blink.config.app.env,
