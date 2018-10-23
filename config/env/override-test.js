@@ -17,4 +17,5 @@ module.exports = (config) => {
   config.twilio.authToken = 'testtoken';
   // logger transformers
   config.logger.transformers.removePII.enabled = true;
+  config.logger.transformers.leanify.enabled = true;
 };

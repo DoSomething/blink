@@ -10,4 +10,5 @@
 
 module.exports = (config) => {
   config.logger.transformers.removePII.enabled = false;
+  config.logger.transformers.leanify.enabled = false;
 };
