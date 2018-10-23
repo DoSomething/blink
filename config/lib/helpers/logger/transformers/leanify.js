@@ -6,9 +6,11 @@ const enabled = process.env.BLINK_LOGGER_TRANSFORMER_LEANIFY === 'true';
 const bloatKeys = [
   'AccountSid',
   'ApiVersion',
-  'SmsSid',
   'deliveredAt',
   'failedAt',
+  'MessagingServiceSid',
+  'SmsMessageSid',
+  'SmsSid',
 ];
 
 module.exports = {
