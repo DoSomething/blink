@@ -5,7 +5,13 @@ const CIO = require('customerio-node');
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const logger = require('../../config/logger');
 const removePIITransformer = require('../lib/helpers/logger/transformers/remove-pii');
+const leanifyTransformer = require('../lib/helpers/logger/transformers/leanify');
 const Worker = require('./Worker');
+
+const logTransformers = [
+  removePIITransformer,
+  leanifyTransformer,
+];
 
 class CustomerIoTrackEventWorker extends Worker {
   setup({ queue, eventName }) {
@@ -84,7 +90,7 @@ class CustomerIoTrackEventWorker extends Worker {
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
     // Todo: log error?
-    logger.log(level, `${text}, message ${message.toLog([removePIITransformer])}`, { meta });
+    logger.log(level, `${text}, message ${message.toLog(logTransformers)}`, { meta });
   }
 }
 

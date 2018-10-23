@@ -7,6 +7,12 @@ const logger = require('../../config/logger');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
 const removePIITransformer = require('./helpers/logger/transformers/remove-pii');
+const leanifyTransformer = require('./helpers/logger/transformers/leanify');
+
+const logTransformers = [
+  removePIITransformer,
+  leanifyTransformer,
+];
 
 class Dequeuer {
   constructor(queue, callback, retryManager, rateLimit = 100) {
@@ -150,7 +156,7 @@ class Dequeuer {
 
     this.log(
       'debug',
-      `Message valid ${message.toLog([removePIITransformer])}`,
+      `Message valid ${message.toLog(logTransformers)}`,
       message,
       'success_dequeue_message_valid',
     );

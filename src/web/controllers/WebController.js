@@ -6,6 +6,12 @@ const BlinkError = require('../../errors/BlinkError');
 const logger = require('../../../config/logger');
 const MessageValidationBlinkError = require('../../errors/MessageValidationBlinkError');
 const removePIITransformer = require('../../lib/helpers/logger/transformers/remove-pii');
+const leanifyTransformer = require('../../lib/helpers/logger/transformers/leanify');
+
+const logTransformers = [
+  removePIITransformer,
+  leanifyTransformer,
+];
 
 class WebController {
   constructor(blink, router) {
@@ -103,7 +109,7 @@ class WebController {
        * for logging as the 'message' argument.
        */
       if (typeof message.toLog === 'function') {
-        text = `${text}, message ${message.toLog([removePIITransformer])}`;
+        text = `${text}, message ${message.toLog(logTransformers)}`;
       } else {
         text = `${text}, message ${message}`;
       }
