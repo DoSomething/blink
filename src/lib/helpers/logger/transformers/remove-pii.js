@@ -23,7 +23,7 @@ function filterPII(payload) {
 }
 
 /**
- * transformer - removes PII (Personal Identifiable Information)
+ * transformer
  *
  * @param  {Object} payload message payload object containing data and meta properties
  * @return {Object}         transformed payload
