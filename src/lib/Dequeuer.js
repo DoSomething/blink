@@ -150,7 +150,7 @@ class Dequeuer {
 
     this.log(
       'debug',
-      `Message valid ${message.toString(removePIITransformer)}`,
+      `Message valid ${message.toLog([removePIITransformer])}`,
       message,
       'success_dequeue_message_valid',
     );

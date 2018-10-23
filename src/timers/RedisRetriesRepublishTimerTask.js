@@ -72,7 +72,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
     queue.publish(message, 'HIGH');
     this.log(
       'debug',
-      `Message successfully returned to queue ${queue.name}, ${message.toString(removePIITransformer)}`,
+      `Message successfully returned to queue ${queue.name}, ${message.toLog([removePIITransformer])}`,
       message,
       'success_redis_republisher_message_republished',
     );
@@ -149,7 +149,7 @@ class RedisRetriesRepublishTimerTask extends SkipTimer {
 
     this.log(
       'debug',
-      `Message valid ${message.toString(removePIITransformer)}`,
+      `Message valid ${message.toLog([removePIITransformer])}`,
       message,
       'success_redis_republisher_message_valid',
     );

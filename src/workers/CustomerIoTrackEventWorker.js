@@ -84,7 +84,7 @@ class CustomerIoTrackEventWorker extends Worker {
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
     // Todo: log error?
-    logger.log(level, `${text}, message ${message.toString(removePIITransformer)}`, { meta });
+    logger.log(level, `${text}, message ${message.toLog([removePIITransformer])}`, { meta });
   }
 }
 

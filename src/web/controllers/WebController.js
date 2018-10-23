@@ -97,7 +97,7 @@ class WebController {
   log(level, ctx, message, code) {
     let text = ctx.body ? ctx.body.message : 'No Content';
     if (message) {
-      text = `${text}, message ${message.toString(removePIITransformer)}`;
+      text = `${text}, message ${message.toLog([removePIITransformer])}`;
     }
     const meta = {
       env: this.blink.config.app.env,
