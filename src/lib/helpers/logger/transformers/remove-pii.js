@@ -9,6 +9,7 @@ const removePIIConfig = config.logger.transformers.removePII;
 const keysToOmit = [
   ...removePIIConfig.northstarPIIKeys,
   ...removePIIConfig.customerIoPIIKeys,
+  ...removePIIConfig.twilioPIIKeys,
 ];
 
 /**

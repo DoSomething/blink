@@ -49,8 +49,13 @@ const customerIoPIIKeys = [
   'data.variables.customer.data',
 ];
 
+const twilioPIIKeys = [
+  'To',
+];
+
 module.exports = {
   enabled,
   northstarPIIKeys,
   customerIoPIIKeys,
+  twilioPIIKeys,
 };
