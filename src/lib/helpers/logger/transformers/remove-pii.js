@@ -10,6 +10,7 @@ const keysToOmit = [
   ...removePIIConfig.northstarPIIKeys,
   ...removePIIConfig.customerIoPIIKeys,
   ...removePIIConfig.twilioPIIKeys,
+  ...removePIIConfig.roguePIIKeys,
 ];
 
 /**

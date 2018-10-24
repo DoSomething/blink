@@ -59,9 +59,15 @@ const twilioPIIKeys = [
   // 'From',
 ];
 
+const roguePIIKeys = [
+  // Contains stringified object w/ PII
+  'details',
+];
+
 module.exports = {
   enabled,
   northstarPIIKeys,
   customerIoPIIKeys,
   twilioPIIKeys,
+  roguePIIKeys,
 };
