@@ -51,7 +51,12 @@ const customerIoPIIKeys = [
 
 const twilioPIIKeys = [
   'To',
-  'From',
+  /**
+   * This is considered PII in other payloads, but since the phone number
+   * is the Twilio platform identifier I think we should log it.
+   * TODO: Uncomment if considers PII and needs to be removed from logs.
+   */
+  // 'From',
 ];
 
 module.exports = {
