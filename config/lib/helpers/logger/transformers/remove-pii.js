@@ -51,6 +51,7 @@ const customerIoPIIKeys = [
 
 const twilioPIIKeys = [
   'To',
+  'From',
 ];
 
 module.exports = {
