@@ -6,6 +6,12 @@ const BlinkError = require('../../errors/BlinkError');
 const logger = require('../../../config/logger');
 const MessageValidationBlinkError = require('../../errors/MessageValidationBlinkError');
 const removePIITransformer = require('../../lib/helpers/logger/transformers/remove-pii');
+const leanifyTransformer = require('../../lib/helpers/logger/transformers/leanify');
+
+const logTransformers = [
+  removePIITransformer,
+  leanifyTransformer,
+];
 
 class WebController {
   constructor(blink, router) {
@@ -97,7 +103,16 @@ class WebController {
   log(level, ctx, message, code) {
     let text = ctx.body ? ctx.body.message : 'No Content';
     if (message) {
-      text = `${text}, message ${message.toString(removePIITransformer)}`;
+      /**
+       * FIXME: message is not consistently an instance of Message
+       * Errors parse the payload internally and send the stringified version
+       * for logging as the 'message' argument.
+       */
+      if (typeof message.toLog === 'function') {
+        text = `${text}, message ${message.toLog(logTransformers)}`;
+      } else {
+        text = `${text}, message ${message}`;
+      }
     }
     const meta = {
       env: this.blink.config.app.env,

@@ -58,6 +58,19 @@ class Message {
     return this.payload.meta.retryAttempt;
   }
 
+  toLog(transformers = []) {
+    let payload = Object.assign({}, this.payload);
+    if (transformers.length) {
+      transformers.forEach((transformer) => {
+        if (typeof transformer === 'function') {
+          payload = transformer(payload);
+        }
+      });
+    }
+    return JSON.stringify(payload);
+  }
+
+  // TODO: remove logger transformer logic from this method
   toString(transformer) {
     let payload = Object.assign({}, this.payload);
     if (typeof transformer === 'function') {

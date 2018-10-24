@@ -4,22 +4,19 @@ const lodash = require('lodash');
 
 const config = require('../../../../../config');
 
-const removePIIConfig = config.logger.transformers.removePII;
+const leanifyConfig = config.logger.transformers.leanify;
 // merge all keys so lodash can do it's magic omitting them
 const keysToOmit = [
-  ...removePIIConfig.northstarPIIKeys,
-  ...removePIIConfig.customerIoPIIKeys,
-  ...removePIIConfig.twilioPIIKeys,
-  ...removePIIConfig.roguePIIKeys,
+  ...leanifyConfig.bloatKeys,
 ];
 
 /**
- * filterPII - Filters out PII properties from the payload.data object
+ * leanify - Filters out bloating properties from the payload.data object
  *
  * @param  {Object} payload message payload object containing data and meta properties
- * @return {Object}         modified payload without PII
+ * @return {Object}         modified payload without bloating keys
  */
-function filterPII(payload) {
+function leanify(payload) {
   payload.data = lodash.omit(payload.data, keysToOmit); // eslint-disable-line
   return payload;
 }
@@ -31,10 +28,10 @@ function filterPII(payload) {
  * @return {Object}         transformed payload
  */
 function transformer(payload = {}) {
-  if (!removePIIConfig.enabled || !payload.data) {
+  if (!leanifyConfig.enabled || !payload.data) {
     return payload;
   }
-  return filterPII(payload);
+  return leanify(payload);
 }
 
 module.exports = transformer;
