@@ -6,7 +6,13 @@ const BlinkRetryError = require('../errors/BlinkRetryError');
 const CustomerIoUpdateCustomerMessage = require('../messages/CustomerIoUpdateCustomerMessage');
 const logger = require('../../config/logger');
 const removePIITransformer = require('../lib/helpers/logger/transformers/remove-pii');
+const leanifyTransformer = require('../lib/helpers/logger/transformers/leanify');
 const Worker = require('./Worker');
+
+const logTransformers = [
+  removePIITransformer,
+  leanifyTransformer,
+];
 
 class CustomerIoUpdateCustomerWorker extends Worker {
   setup() {
@@ -73,7 +79,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       request_id: message ? message.getRequestId() : 'not_parsed',
     };
     // Todo: log error?
-    logger.log(level, `${text}, message ${message.toString(removePIITransformer)}`, { meta });
+    logger.log(level, `${text}, message ${message.toLog(logTransformers)}`, { meta });
   }
 }
 
