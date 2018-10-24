@@ -6,6 +6,7 @@ const test = require('ava');
 const chai = require('chai');
 
 const Message = require('../../../src/messages/Message');
+const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -27,4 +28,9 @@ test('Message.heuristicMessageFactory(): Should correctly detect concrete messag
   customMessage.should.respondTo('myConcreteMethod');
 });
 
+test('A message instance that inherits from Message should be able to call toLog', () => {
+  const message = MessageFactoryHelper.getRandomMessage();
+  message.should.be.an.instanceof(Message);
+  message.should.respondTo('toLog');
+});
 // ------- End -----------------------------------------------------------------
