@@ -180,8 +180,8 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
   cioMessageData.should.have.property('data');
   cioMessageData.data.should.be.eql({
     campaign_id: data.campaign_id,
-    campaign_run_id: data.campaign_run_id,
     created_at: data.created_at,
+    updated_at: data.updated_at,
     id: data.id,
     northstar_id: data.northstar_id,
     source: data.source,
@@ -195,8 +195,8 @@ test('POST /api/v1/events/user-signup should publish message to user-signup-even
   gambitMessageData.should.have.property('data');
   gambitMessageData.data.should.be.eql({
     campaign_id: data.campaign_id,
-    campaign_run_id: data.campaign_run_id,
     created_at: data.created_at,
+    updated_at: data.updated_at,
     id: data.id,
     northstar_id: data.northstar_id,
     source: data.source,
