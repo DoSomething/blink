@@ -23,7 +23,6 @@ class Message {
     this.getRequestId = this.getRequestId.bind(this);
     this.toString = this.toString.bind(this);
     this.validate = this.validate.bind(this);
-    this.validateStrict = this.validateStrict.bind(this);
   }
 
   getData() {
@@ -116,10 +115,6 @@ class Message {
 
     this.payload.data = filtered || data;
     return true;
-  }
-
-  validateStrict() {
-    return this.validate(true);
   }
 
   static fromCtx(ctx) {

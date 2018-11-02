@@ -42,12 +42,7 @@ test('Validate a hundred fake users', () => {
 });
 
 test('User Message should fail if required fields are missing, undefined, null, or empty', () => {
-  [
-    'id',
-    'created_at',
-    'updated_at',
-  ]
-    .forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
+  ['id'].forEach(field => MessageValidationHelper.failsWithout(field, generator, mutator));
 });
 
 // ------- End -----------------------------------------------------------------

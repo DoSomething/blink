@@ -78,7 +78,7 @@ class EventsWebController extends WebController {
   async userSignup(ctx) {
     try {
       const message = CampaignSignupMessage.fromCtx(ctx);
-      message.validateStrict();
+      message.validate();
       this.blink.broker.publishToRoute(
         'signup.user.event',
         message,
