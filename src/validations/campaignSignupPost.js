@@ -13,7 +13,6 @@ const schema = Joi.object()
     northstar_id: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
     type: Joi.string().required().empty(whenNullOrEmpty),
     action: Joi.string().required().empty(whenNullOrEmpty),
-    created_at: Joi.string().required().empty(whenNullOrEmpty).isoDate(), // Time stamp.
   });
 
 module.exports = schema;
