@@ -44,7 +44,6 @@ test('Campaign signup message should be correctly transformed to CustomerIoEvent
 
     eventData.signup_id.should.equal(String(data.id));
     eventData.campaign_id.should.equal(data.campaign_id);
-    eventData.campaign_run_id.should.equal(data.campaign_run_id);
 
     // Todo: make sure TZ is corrected
     const originalCreatedAt = moment(data.created_at).milliseconds(0);

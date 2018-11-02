@@ -200,7 +200,6 @@ class MessageFactoryHelper {
         id: chance.integer({ min: 0 }),
         northstar_id: chance.hash({ length: 24 }),
         campaign_id: chance.string({ length: 4, pool: '1234567890' }),
-        campaign_run_id: chance.string({ length: 4, pool: '1234567890' }),
         quantity: null,
         why_participated: null,
         // Don't add sms signup here, they are tested separately.
