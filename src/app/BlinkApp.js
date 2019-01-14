@@ -18,7 +18,6 @@ const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ')
 const CustomerIoGambitBroadcastQ = require('../queues/CustomerIoGambitBroadcastQ');
 const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const CustomerIoSmsStatusActiveQ = require('../queues/CustomerIoSmsStatusActiveQ');
-const FetchQ = require('../queues/FetchQ');
 const GambitCampaignSignupRelayQ = require('../queues/GambitCampaignSignupRelayQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
 const QuasarCustomerIoEmailUnsubscribedQ = require('../queues/QuasarCustomerIoEmailUnsubscribedQ');
@@ -169,7 +168,6 @@ class BlinkApp {
       CustomerIoGambitBroadcastQ,
       CustomerIoUpdateCustomerQ,
       CustomerIoSmsStatusActiveQ,
-      FetchQ,
       GambitCampaignSignupRelayQ,
       QuasarCustomerIoEmailActivityQ,
       QuasarCustomerIoEmailUnsubscribedQ,
