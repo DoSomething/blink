@@ -10,6 +10,7 @@ class RabbitManagement {
       hostname,
       port,
       // Plugin rabbitmq_management API always lives under /api/
+      // @see https://cdn.rawgit.com/rabbitmq/rabbitmq-management/v3.7.7/priv/www/api/index.html
       pathname: '/api',
     });
 
@@ -62,7 +63,7 @@ class RabbitManagement {
     try {
       response = await this.post(endpoint, {
         count,
-        requeue,
+        ackmode: requeue ? 'ack_requeue_true' : 'ack_requeue_false',
         encoding: 'auto',
       });
     } catch (error) {
