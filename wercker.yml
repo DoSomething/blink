@@ -10,7 +10,7 @@ build:
   steps:
     - script:
       name: install yarn
-      code: npm install -g yarn@1.7.0
+      code: npm install -g yarn@1.9.4
     - script:
       name: report yarn version
       code: yarn --version
