@@ -10,7 +10,6 @@ const Promise = require('bluebird');
 
 const ApiWebController = require('../web/controllers/ApiWebController');
 const EventsWebController = require('../web/controllers/EventsWebController');
-const ToolsWebController = require('../web/controllers/ToolsWebController');
 const WebHooksWebController = require('../web/controllers/WebHooksWebController');
 const unauthorized401Handler = require('../web/middleware/errorHandlers/401');
 const forbidden403Handler = require('../web/middleware/errorHandlers/403');
@@ -27,7 +26,6 @@ class BlinkWebApp extends BlinkApp {
     this.web.controllers = this.initControllers([
       ApiWebController,
       EventsWebController,
-      ToolsWebController,
       WebHooksWebController,
     ]);
 
@@ -44,10 +42,6 @@ class BlinkWebApp extends BlinkApp {
     // ApiWeb router
     const apiWebRouter = this.web.controllers.apiWebController.getRouter();
     router.use(apiWebRouter.routes());
-
-    // Tools router
-    const toolsRouter = this.web.controllers.toolsWebController.getRouter();
-    router.use(toolsRouter.routes());
 
     // Events router
     const eventsRouter = this.web.controllers.eventsWebController.getRouter();

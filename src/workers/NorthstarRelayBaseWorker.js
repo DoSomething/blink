@@ -75,7 +75,8 @@ class NorthstarRelayBaseWorker extends Worker {
 
   logAndRetry(message, statusCode, text) {
     this.log(
-      'warning',
+      // Expose as info for monitoring
+      'info',
       message,
       statusCode,
       this.constructor.getLogCode('retry'),

@@ -8,7 +8,6 @@ const CustomerIoGambitBroadcastWorker = require('../workers/CustomerIoGambitBroa
 const CustomerIoSmsStatusActiveWorker = require('../workers/CustomerIoSmsStatusActiveWorker');
 const CustomerIoUpdateCustomerWorker = require('../workers/CustomerIoUpdateCustomerWorker');
 const CustomerIoEmailUnsubscribedNorthstarWorker = require('../workers/CustomerIoEmailUnsubscribedNorthstarWorker');
-const FetchWorker = require('../workers/FetchWorker');
 const GambitCampaignSignupRelayWorker = require('../workers/GambitCampaignSignupRelayWorker');
 const TwilioSmsInboundGambitRelayWorker = require('../workers/TwilioSmsInboundGambitRelayWorker');
 const TwilioSmsOutboundStatusRelayWorker = require('../workers/TwilioSmsOutboundStatusRelayWorker');
@@ -44,7 +43,6 @@ class BlinkWorkerApp extends BlinkApp {
 
   static getAvailableWorkers() {
     return {
-      fetch: FetchWorker,
       'customer-io-campaign-signup': CustomerIoCampaignSignupWorker,
       'customer-io-campaign-signup-post': CustomerIoCampaignSignupPostWorker,
       'customer-io-campaign-signup-post-review': CustomerIoCampaignSignupPostReviewWorker,
