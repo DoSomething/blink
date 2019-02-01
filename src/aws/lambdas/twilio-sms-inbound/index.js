@@ -8,7 +8,8 @@ const { config } = require('./config');
 
 // Dummy logger
 const logger = {
-  info: msg => console.log(msg),
+  // TODO: enable linter once we decide which logger to use in lambdas
+  info: msg => console.log(msg), // eslint-disable-line
 };
 
 /**
@@ -107,7 +108,6 @@ function validateTestRequest(eventHeaders) {
 
 // Lambda will pass event and context arguments to this function
 exports.handler = (event, context, callback) => {
-
   const isTwilioSignedRequest = validateTwilioSignedRequest(
     event.headers, event.requestContext, event.body);
 
