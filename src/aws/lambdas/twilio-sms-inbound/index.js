@@ -13,10 +13,6 @@ const logger = {
 };
 
 /**
- * This lambda function will receive Twilio inbound SMS requests and will enqueue into SQS
- */
-
-/**
  * Returns the Twilio valid response
  * @see https://www.twilio.com/docs/sms/twiml#responding-to-twilio
  * @returns {Object}
@@ -76,7 +72,12 @@ function getSignatureURL(eventRequestContext) {
   const domain = eventRequestContext.domainName;
   // Includes forward slash, stage and resource path
   const path = eventRequestContext.path;
-  return `${protocol}://${domain}${path}`;
+  /**
+   * The Twilio request includes the query parameters with the API key.
+   * We need to add them here, otherwise the hash won't generated won't validate
+   * with the signature sent from Twilio
+   */
+  return `${protocol}://${domain}${path}?${config.apiKeyQueryVarName}=${config.apiKeyQueryVarValue}`;
 }
 
 /**
@@ -106,6 +107,10 @@ function validateTestRequest(eventHeaders) {
   return eventHeaders[config.testHeader] === config.testKey;
 }
 
+/**
+ * This lambda function will receive Twilio inbound SMS requests and will enqueue into SQS
+ */
+
 // Lambda will pass event and context arguments to this function
 exports.handler = (event, context, callback) => {
   const isTwilioSignedRequest = validateTwilioSignedRequest(
@@ -116,6 +121,7 @@ exports.handler = (event, context, callback) => {
 
   if (isTwilioSignedRequest) {
     logger.info('Valid Twilio signed request.');
+    // TODO: Enqueue inbound message
     callback(null, getTwilioResponse());
   } else if (isTestRequest) {
     logger.info('Valid Test request.');
