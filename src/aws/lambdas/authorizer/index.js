@@ -21,12 +21,13 @@ function getPolicyOptions(eventRequestContext) {
 
 /**
  * This Lambda function will receive the request from the internet and will
- * authorize based on a Token.
+ * authorize based on a query string api key parameter.
  */
 
 exports.handler = (event, context, callback) => {
   const apiKey = getApiKey(event.queryStringParameters);
   const isValidApiKey = validateApiKey(apiKey);
+  // TODO: Should this be dynamic and be required?
   const principalId = 'twilio';
 
   if (isValidApiKey) {
