@@ -27,7 +27,7 @@ coverage
 build/Release
 
 # Dependency directories
-node_modules
+**/node_modules
 jspm_packages
 
 # Optional npm cache directory
@@ -44,3 +44,9 @@ jspm_packages
 
 # vscode
 .vscode
+
+# zipped lambdas
+*.zip
+
+# Apple macOS operating system
+.DS_Store
