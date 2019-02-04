@@ -3,13 +3,21 @@
 const twilioClient = require('twilio');
 const { STATUS_CODES } = require('http');
 const querystring = require('querystring');
+const AWS = require('aws-sdk');
 
 const { config } = require('./config');
+
+// setup SQS client
+// TODO: Move to lib/sqs/client
+// Region
+AWS.config.update({ region: config.sqsSettings.AWSRegion });
+const sqsClient = new AWS.SQS({ apiVersion: config.sqsSettings.APIversion });
 
 // Dummy logger
 const logger = {
   // TODO: enable linter once we decide which logger to use in lambdas
   info: msg => console.log(msg), // eslint-disable-line
+  error: msg => console.error(msg), // eslint-disable-line
 };
 
 /**
@@ -74,7 +82,7 @@ function getSignatureURL(eventRequestContext) {
   const path = eventRequestContext.path;
   /**
    * The Twilio request includes the query parameters with the API key.
-   * We need to add them here, otherwise the hash won't generated won't validate
+   * We need to add them here, otherwise the generated hash won't validate
    * with the signature sent from Twilio
    */
   return `${protocol}://${domain}${path}?${config.apiKeyQueryVarName}=${config.apiKeyQueryVarValue}`;
@@ -108,6 +116,31 @@ function validateTestRequest(eventHeaders) {
 }
 
 /**
+ * Builds the message params needed to enqueue the message
+ * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html
+ * @param {String} body
+ */
+function getMessageParams(body) {
+  // Parse into a JS Object
+  const parsedBody = querystring.parse(body);
+  return {
+    // TODO: pass message attributes
+    MessageAttributes: {},
+    // Required to keep order within the message group
+    MessageGroupId: parsedBody.From,
+    // Required if deduplication is not based on body contents hash
+    MessageDeduplicationId: parsedBody.MessageSid,
+    MessageBody: body,
+    QueueUrl: config.sqsSettings.QueueURL,
+  };
+}
+
+function publishMessage(messageParams, cb) {
+  // TODO: Check if cb is a function
+  sqsClient.sendMessage(messageParams, cb);
+}
+
+/**
  * This lambda function will receive Twilio inbound SMS requests and will enqueue into SQS
  */
 
@@ -121,8 +154,16 @@ exports.handler = (event, context, callback) => {
 
   if (isTwilioSignedRequest) {
     logger.info('Valid Twilio signed request.');
-    // TODO: Enqueue inbound message
-    callback(null, getTwilioResponse());
+    // Enqueue inbound message
+    const messageParams = getMessageParams(event.body);
+    publishMessage(messageParams, (error, data) => {
+      if (!error) {
+        return callback(null, getTwilioResponse());
+      }
+      // Expose error for monitoring
+      logger.error(error);
+      return callback(null, getErrorResponse());
+    });
   } else if (isTestRequest) {
     logger.info('Valid Test request.');
     callback(null, getResponse(200, event.body));

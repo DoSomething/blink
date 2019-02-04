@@ -9,6 +9,7 @@
   "author": "Rafael Pacas <rpacas@dosomething.org> (https://github.com/rapala61)",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.395.0",
     "twilio": "^3.27.1"
   }
 }

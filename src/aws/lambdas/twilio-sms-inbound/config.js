@@ -12,6 +12,15 @@ exports.config = {
   testKey: process.env.LAMBDA_TEST_REQUEST_KEY,
   testHeader: process.env.LAMBDA_TEST_REQUEST_HEADER || 'X-Lambda-Test-Key',
   // TODO: Naming and nesting can help with readability
+  // Blink API Key
   apiKeyQueryVarName: process.env.API_KEY_QUERY_VARIABLE_NAME || 'blinkApiKey',
   apiKeyQueryVarValue: process.env.API_KEY_QUERY_VARIABLE_VALUE,
+  // AWS SQS config
+  sqsSettings: {
+    // @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/Welcome.html
+    APIversion: '2012-11-05',
+    // TODO: This could be gathered from the queue URL
+    AWSRegion: process.env.BLINK_TWILIO_SMS_INBOUND_QUEUE_REGION || 'us-east-1',
+    QueueURL: process.env.BLINK_TWILIO_SMS_INBOUND_QUEUE_URL,
+  },
 };
