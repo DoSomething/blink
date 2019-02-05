@@ -1,0 +1,14 @@
+{
+  "name": "cio-sms-broadcast",
+  "version": "1.0.0",
+  "description": "Lambda function that processes C.io webhook requests w/ member metadata. The metadata is used to send the member a SMS broadcast message.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rafael Pacas <rpacas@dosomething.org> (https://github.com/rapala61)",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.396.0"
+  }
+}

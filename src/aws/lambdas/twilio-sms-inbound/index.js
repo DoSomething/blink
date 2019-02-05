@@ -156,7 +156,7 @@ exports.handler = (event, context, callback) => {
     logger.info('Valid Twilio signed request.');
     // Enqueue inbound message
     const messageParams = getMessageParams(event.body);
-    publishMessage(messageParams, (error, data) => {
+    publishMessage(messageParams, (error) => {
       if (!error) {
         return callback(null, getTwilioResponse());
       }
