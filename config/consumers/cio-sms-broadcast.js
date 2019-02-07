@@ -9,4 +9,9 @@ exports.config = {
   batchSize: 1,
   visibilityTimeout: 30,
   waitTimeSeconds: 20,
+  attributeNames: ['All'],
+  messageAttributeNames: [
+    // TODO: Forward to Gambit as X-Request-Id for backwards compatibility
+    'Request-Id',
+  ],
 };

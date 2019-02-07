@@ -24,6 +24,7 @@ const argv = yargs
   .version(config.app.version)
   .command('web', 'Start a web app')
   .command('worker <name>', 'Start worker with the given name')
+  .command('consumer <name>', 'Start consumer with the given name')
   .command('timer  <name>', 'Start timer with the given name')
   .demandCommand(1, 'Please provide a valid command')
   .help()

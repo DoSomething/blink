@@ -297,13 +297,14 @@ module.exports.parseMessageIdFromBody = function parseMessageIdFromBody(body) {
  * @return {Object}
  */
 module.exports.getRequestHeaders = function getRequestHeaders(message) {
+  const retryAttempt = message.getRetryAttempt();
   const headers = {
     Authorization: `Basic ${gambitConfig.apiKey}`,
     'X-Request-ID': message.getRequestId(),
     'Content-type': 'application/json',
   };
-  if (message.getRetryAttempt() > 0) {
-    headers['x-blink-retry-count'] = message.getRetryAttempt();
+  if (retryAttempt > 0) {
+    headers['x-blink-retry-count'] = retryAttempt;
   }
   return headers;
 };
