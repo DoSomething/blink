@@ -44,11 +44,20 @@ function getErrorResponse(statusCode = 500, message) {
  * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html
  * @param {String} body
  */
-function getMessageParams(body) {
+function getMessageParams(body, requestId) {
   logger.info(body);
   return {
-    // TODO: pass message attributes
-    MessageAttributes: {},
+    /**
+     * TODO: ALL Messages queued should keep the request Id as a Message Attribute.
+     * This will be used to make the request idempotent in Gambit
+     * (if the same request w/ request_id is sent it would just load it).
+     */
+    MessageAttributes: {
+      'Request-Id': {
+        DataType: 'String',
+        StringValue: requestId,
+      },
+    },
     MessageBody: body,
     QueueUrl: config.sqsSettings.QueueURL,
   };
@@ -62,7 +71,7 @@ function publishMessage(messageParams, cb) {
 exports.handler = (event, context, callback) => {
   logger.info('Cio Broadcast request.');
   // Enqueue inbound message
-  const messageParams = getMessageParams(event.body);
+  const messageParams = getMessageParams(event.body, event.requestContext.requestId);
   publishMessage(messageParams, (error) => {
     if (!error) {
       return callback(null, getCioResponse());

@@ -120,12 +120,21 @@ function validateTestRequest(eventHeaders) {
  * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html
  * @param {String} body
  */
-function getMessageParams(body) {
+function getMessageParams(body, requestId) {
   // Parse into a JS Object
   const parsedBody = querystring.parse(body);
   return {
-    // TODO: pass message attributes
-    MessageAttributes: {},
+    /**
+     * TODO: ALL Messages queued should keep the request Id as a Message Attribute.
+     * This will be used to make the request idempotent in Gambit
+     * (if the same request w/ request_id is sent it would just load it).
+     */
+    MessageAttributes: {
+      'Request-Id': {
+        DataType: 'String',
+        StringValue: requestId,
+      },
+    },
     // Required to keep order within the message group
     MessageGroupId: parsedBody.From,
     // Required if deduplication is not based on body contents hash
@@ -155,7 +164,7 @@ exports.handler = (event, context, callback) => {
   if (isTwilioSignedRequest) {
     logger.info('Valid Twilio signed request.');
     // Enqueue inbound message
-    const messageParams = getMessageParams(event.body);
+    const messageParams = getMessageParams(event.body, event.requestContext.requestId);
     publishMessage(messageParams, (error) => {
       if (!error) {
         return callback(null, getTwilioResponse());
