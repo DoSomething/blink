@@ -18,6 +18,7 @@
     "lint": "eslint .",
     "web": "node start.js web",
     "worker": "node start.js worker",
+    "consumer": "node start.js consumer",
     "timer": "node start.js timer"
   },
   "repository": {
