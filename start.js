@@ -33,6 +33,7 @@ const argv = yargs
 
 let blinkApp;
 let concurrency;
+let consumers;
 const [command] = argv._;
 switch (command) {
   case 'web':
@@ -56,6 +57,13 @@ switch (command) {
   case 'timer':
     blinkApp = new BlinkTimerApp(config, argv.name);
     blinkApp.start();
+    break;
+  case 'consumer':
+    consumers = BlinkWorkerApp.getAvailableConsumers();
+    if (consumers[argv.name]) {
+      // TODO: Use clustering
+      consumers[argv.name].app.start();
+    }
     break;
   default:
     throw new Error('Argument parsing integrity violation');
