@@ -36,6 +36,7 @@ async function handler(rawMessage) {
      */
     throw new Error('failed!');
   }
+  // TODO: These logs should be compatible with what is being monitored in papertrail
   logger.info(`Consumed message instance: ${inspect(message)}, raw message: ${inspect(rawMessage)}`); // eslint-disable-line
   // Will help w/ figuring out how much memory a single process needs to use
   logMemUsage();
@@ -56,7 +57,7 @@ app.on('error', (error, msg) => {
   logger.error(`Error ocurred interacting w/ a queue\nError: ${error}\nMessage:${msg || 'n/a'}\n`);
 });
 app.on('timeout_error', (error, msg) => logger.error(`Timeout error ocurred\nError: ${error}\nMessage:${msg || 'n/a'}\n`));
-app.on('empty', () => logger.info('Drained queue!\n'));
+app.on('empty', () => logger.debug('Drained queue!\n'));
 app.on('stopped', () => logger.info('Consumer stopped!\n'));
 
 exports.app = app;
