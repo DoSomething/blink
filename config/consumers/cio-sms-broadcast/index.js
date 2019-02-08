@@ -9,11 +9,11 @@ const memoryAvailable = parseInt(process.env.MEMORY_AVAILABLE, 10);
 /**
  * Expected MAX memory footprint of a single concurrent process in Megabytes.
  *
- * NOTE: This value is the basis to calculate the Procfile server flag: --max_old_space_size=<size>
- *       The value in the Procfile is 90% of the estimated processMemory here.
+ * NOTE: This value is the basis to calculate the V8 server flag: --max_old_space_size=<size>
+ *       The value in the consumer NPM script is 90% of the estimated processMemory here.
  *       Based on a Heroku recommendation. @see https://blog.heroku.com/node-habits-2016#7-avoid-garbage
  */
-const processMemory = 32;
+const processMemory = 25;
 
 /**
  * Calculate total amount of concurrent processes to fork
