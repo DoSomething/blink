@@ -31,7 +31,10 @@ async function handler(rawMessage) {
     throw new Error('failed!');
   }
   // TODO: These logs should be compatible with what is being monitored in papertrail
-  logger.info(`Consumed message instance: ${inspect(message)}, raw message: ${inspect(rawMessage)}`); // eslint-disable-line
+  logger.debug(`
+    Consumed message
+    requestId: ${message.getRequestId()},
+    retryAttempt: ${message.getRetryAttempt()}`);
   // Will help w/ figuring out how much memory a single process needs to use
   utilHelper.logMemUsage();
 }

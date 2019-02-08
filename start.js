@@ -72,6 +72,7 @@ switch (command) {
         start: () => {
           consumer.start();
           utilHelper.logMemUsage();
+          // TODO: Listen for process SIGTERM to cleanup and stop the consumer
         },
       });
       utilHelper.logMemUsage();

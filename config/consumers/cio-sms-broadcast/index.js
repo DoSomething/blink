@@ -19,19 +19,29 @@ const processMemory = 128;
  * Calculate total amount of concurrent processes to fork
  * based on available memory and estimated process memory footprint
  */
-const total = memoryAvailable ?
+const concurrency = memoryAvailable ?
   Math.floor(memoryAvailable / processMemory) : 1;
+
+/**
+ * Concurrency for this consumer is calculated automatically from the available memory
+ * and the estimated memory allocated for this process. However, this calculation can
+ * be overridden by passing a value to BLINK_CIO_SMS_BROADCAST_CONCURRENCY
+ */
+const concurrencyOverride = parseInt(process.env.BLINK_CIO_SMS_BROADCAST_CONCURRENCY, 10);
 
 /**
  * @see https://github.com/BBC/sqs-consumer#options
  */
 exports.config = {
-  concurrency: total,
+  concurrency: concurrencyOverride || concurrency,
+  // @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html
   handler: {
     queueUrl: process.env.BLINK_CIO_SMS_BROADCAST_QUEUE_URL,
+    // How long before the handler function times out
     handleMessageTimeout: '30000',
-    // @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html (MaxNumberOfMessages)
-    // Max of 10
+    // AWS param: MaxNumberOfMessages (Max of 10)
+    // Since we are using clustering. The total messages we can consume concurrently from AWS is
+    // concurrency * batchSize.
     batchSize: 10,
     visibilityTimeout: 30,
     waitTimeSeconds: 20,
