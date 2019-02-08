@@ -13,7 +13,7 @@ const memoryAvailable = parseInt(process.env.MEMORY_AVAILABLE, 10);
  *       The value in the consumer NPM script is 90% of the estimated processMemory here.
  *       Based on a Heroku recommendation. @see https://blog.heroku.com/node-habits-2016#7-avoid-garbage
  */
-const processMemory = 128;
+const processMemory = 102;
 
 /**
  * Calculate total amount of concurrent processes to fork

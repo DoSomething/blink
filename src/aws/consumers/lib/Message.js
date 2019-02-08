@@ -9,6 +9,7 @@ class Message {
     return parsed ? JSON.parse(body) : body;
   }
   getRequestId() {
+    // FIXME: This seems to be returning an object instead of the number
     const msgAttributes = this.message.MessageAttributes;
     return msgAttributes ? msgAttributes['Request-Id'] : undefined;
   }
