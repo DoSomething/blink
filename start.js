@@ -7,6 +7,8 @@ require('dotenv').config();
 // New Relic.
 require('newrelic');
 
+const utilHelper = require('./src/aws/consumers/lib/util');
+
 // ------- Imports -------------------------------------------------------------
 const throng = require('throng');
 const yargs = require('yargs');
@@ -69,8 +71,10 @@ switch (command) {
         lifetime: Infinity,
         start: () => {
           consumer.start();
+          utilHelper.logMemUsage();
         },
       });
+      utilHelper.logMemUsage();
     }
     break;
   default:
