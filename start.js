@@ -35,6 +35,7 @@ const argv = yargs
 let blinkApp;
 let concurrency;
 let consumers;
+let consumer;
 const [command] = argv._;
 switch (command) {
   case 'web':
@@ -61,9 +62,15 @@ switch (command) {
     break;
   case 'consumer':
     consumers = BlinkWorkerApp.getAvailableConsumers();
-    if (consumers[argv.name]) {
-      // TODO: Use clustering
-      consumers[argv.name].app.start();
+    consumer = consumers[argv.name];
+    if (consumer) {
+      throng({
+        workers: consumer.concurrency || 1,
+        lifetime: Infinity,
+        start: () => {
+          consumer.start();
+        },
+      });
     }
     break;
   default:

@@ -4,16 +4,10 @@ const Consumer = require('sqs-consumer');
 const inspect = require('util').inspect;
 
 const logger = require('../../../config/logger');
-const { Message } = require('./Message');
+const { Message } = require('./lib/Message');
+const utilHelper = require('./lib/util');
 const { config } = require('../../../config/consumers/cio-sms-broadcast');
 const gambitHelper = require('../../workers/lib/helpers/gambit-conversations');
-
-function logMemUsage() {
-  const used = process.memoryUsage();
-  Object.keys(used).forEach((key) => {
-    logger.info(`${key} ${Math.round(used[key] / 1024 / (1024 * 100)) / 100} MB`);
-  });
-}
 
 function getPayload(message) {
   return {
@@ -39,13 +33,18 @@ async function handler(rawMessage) {
   // TODO: These logs should be compatible with what is being monitored in papertrail
   logger.info(`Consumed message instance: ${inspect(message)}, raw message: ${inspect(rawMessage)}`); // eslint-disable-line
   // Will help w/ figuring out how much memory a single process needs to use
-  logMemUsage();
+  utilHelper.logMemUsage();
 }
 //  Create queue consumer
 const app = Consumer.create({
   handleMessage: handler,
-  ...config,
+  ...config.handler,
 });
+
+function start() {
+  logger.info(`Starting new consumer w/ pid: ${process.pid}`);
+  app.start();
+}
 
 // Register event handlers
 // @see https://www.npmjs.com/package/sqs-consumer#events
@@ -60,4 +59,7 @@ app.on('timeout_error', (error, msg) => logger.error(`Timeout error ocurred\nErr
 app.on('empty', () => logger.debug('Drained queue!\n'));
 app.on('stopped', () => logger.info('Consumer stopped!\n'));
 
-exports.app = app;
+module.exports = {
+  concurrency: config.concurrency,
+  start,
+};
