@@ -5,6 +5,7 @@ const CustomerIoCampaignSignupPostWorker = require('../workers/CustomerIoCampaig
 const CustomerIoCampaignSignupPostReviewWorker = require('../workers/CustomerIoCampaignSignupPostReviewWorker');
 const CustomerIoCampaignSignupWorker = require('../workers/CustomerIoCampaignSignupWorker');
 const CustomerIoGambitBroadcastWorker = require('../workers/CustomerIoGambitBroadcastWorker');
+const CustomerIoPasswordResetWorker = require('../workers/CustomerIoPasswordResetWorker');
 const CustomerIoSmsStatusActiveWorker = require('../workers/CustomerIoSmsStatusActiveWorker');
 const CustomerIoUpdateCustomerWorker = require('../workers/CustomerIoUpdateCustomerWorker');
 const CustomerIoEmailUnsubscribedNorthstarWorker = require('../workers/CustomerIoEmailUnsubscribedNorthstarWorker');
@@ -47,6 +48,7 @@ class BlinkWorkerApp extends BlinkApp {
       'customer-io-campaign-signup-post': CustomerIoCampaignSignupPostWorker,
       'customer-io-campaign-signup-post-review': CustomerIoCampaignSignupPostReviewWorker,
       'customer-io-gambit-broadcast': CustomerIoGambitBroadcastWorker,
+      'customer-io-password-reset': CustomerIoPasswordResetWorker,
       'customer-io-sms-status-active': CustomerIoSmsStatusActiveWorker,
       'customer-io-update-customer': CustomerIoUpdateCustomerWorker,
       'customer-io-email-unsubscribed-northstar': CustomerIoEmailUnsubscribedNorthstarWorker,
