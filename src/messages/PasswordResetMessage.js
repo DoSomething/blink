@@ -26,11 +26,10 @@ class PasswordResetMessage extends Message {
   toCustomerIoEvent() {
     const data = this.getData();
     const eventData = {
-      body_closing: data.body_closing,
-      body_greeting: data.body_greeting,
-      reset_label: data.reset_label,
-      reset_url: data.reset_url,
+      body: data.body,
       subject: data.subject,
+      type: data.type,
+      url: data.url,
     };
 
     const event = new CustomerIoEvent(
