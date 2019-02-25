@@ -1,6 +1,7 @@
 'use strict';
 
 const CIO = require('customerio-node');
+const inspect = require('util').inspect;
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
 const CustomerIoUpdateCustomerMessage = require('../messages/CustomerIoUpdateCustomerMessage');
@@ -51,7 +52,7 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       this.log(
         'info',
         customerIoUpdateCustomerMessage,
-        `${error.message}`,
+        `${JSON.stringify(inspect(error))}`,
         'error_cio_update_cant_update_consumer',
       );
       throw new BlinkRetryError(
