@@ -51,11 +51,11 @@ class CustomerIoUpdateCustomerWorker extends Worker {
       this.log(
         'info',
         customerIoUpdateCustomerMessage,
-        `${error}`,
+        `${error.message}`,
         'error_cio_update_cant_update_consumer',
       );
       throw new BlinkRetryError(
-        `Unknown customer.io error: ${error}`,
+        `Unknown customer.io error: ${error.message}`,
         userMessage,
       );
     }
