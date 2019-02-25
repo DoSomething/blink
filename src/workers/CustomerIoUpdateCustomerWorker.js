@@ -46,13 +46,14 @@ class CustomerIoUpdateCustomerWorker extends Worker {
     const { id, data } = customerIoUpdateCustomerMessage.getData();
 
     try {
+      logger.info(inspect(data));
       await this.cioClient.identify(id, data);
     } catch (error) {
       // Exposed as info for monitoring
       this.log(
         'info',
         customerIoUpdateCustomerMessage,
-        `${JSON.stringify(inspect(error))}`,
+        `${inspect(error)}`,
         'error_cio_update_cant_update_consumer',
       );
       throw new BlinkRetryError(
