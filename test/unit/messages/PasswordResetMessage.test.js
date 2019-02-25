@@ -40,6 +40,7 @@ test('Password reset message should be correctly transformed to CustomerIoEvent'
     const eventData = cioEvent.getData();
     eventData.version.should.equal(3);
 
+    cioEvent.getId().should.equal(data.user_id);
     eventData.body.should.equal(data.body);
     eventData.subject.should.equal(data.subject);
     eventData.type.should.equal(data.type);
