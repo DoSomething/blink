@@ -36,8 +36,8 @@ test('GET /api/v1/events should respond with JSON list available tools', async (
   res.body.should.have.property('user-create')
     .and.have.string('/api/v1/events/user-create');
 
-  res.body.should.have.property('user-signup')
-    .and.have.string('/api/v1/events/user-signup');
+  res.body.should.have.property('user-password-reset')
+    .and.have.string('/api/v1/events/user-password-reset');
 
   res.body.should.have.property('user-signup')
     .and.have.string('/api/v1/events/user-signup');
@@ -123,6 +123,41 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
   await t.context.blink.queues.customerIoUpdateCustomerQ.purge();
 });
 
+/**
+ * POST /api/v1/events/user-password-reset
+ */
+test('POST /api/v1/events/user-password-reset should publish message to user-password-reset-event', async (t) => {
+  const data = MessageFactoryHelper.getPasswordResetMessage().getData();
+
+  const res = await t.context.supertest.post('/api/v1/events/user-password-reset')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(202);
+
+  // Check response to be json
+  res.header.should.have.property('content-type');
+  res.header['content-type'].should.match(/json/);
+
+  // Check response.
+  res.body.should.have.property('ok', true);
+
+  // Check that the message is queued.
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+  const messages = await rabbit.getMessagesFrom('customer-io-password-reset', 1, false);
+  messages.should.be.an('array').and.to.have.lengthOf(1);
+
+  messages[0].should.have.property('payload');
+  const payload = messages[0].payload;
+  const messageData = JSON.parse(payload);
+  messageData.should.have.property('data');
+
+  // Required.
+  messageData.data.body.should.be.eql(data.body);
+  messageData.data.subject.should.be.eql(data.subject);
+  messageData.data.type.should.be.eql(data.type);
+  messageData.data.url.should.be.eql(data.url);
+});
 
 /**
  * POST /api/v1/events/user-signup
