@@ -11,6 +11,7 @@ const CustomerIoSmsStatusActiveMessage = require('../../src/messages/CustomerIoS
 const CampaignSignupPostReviewMessage = require('../../src/messages/CampaignSignupPostReviewMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const CustomerIoGambitBroadcastMessage = require('../../src/messages/CustomerIoGambitBroadcastMessage');
+const PasswordResetMessage = require('../../src/messages/PasswordResetMessage');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const TwilioOutboundStatusCallbackMessage = require('../../src/messages/TwilioOutboundStatusCallbackMessage');
 const CustomerIoWebhookMessage = require('../../src/messages/CustomerIoWebhookMessage');
@@ -263,6 +264,18 @@ class MessageFactoryHelper {
     return new CampaignSignupPostReviewMessage({
       data,
       meta: {},
+    });
+  }
+
+  static getPasswordResetMessage() {
+    return new PasswordResetMessage({
+      data: {
+        body: chance.sentence({ words: 25 }),
+        user_id: chance.hash({ length: 24 }),
+        subject: chance.sentence({ words: 3 }),
+        type: chance.pickone(['forgot-password', 'rtv-activate-account']),
+        url: chance.url({ path: 'reset' }),
+      },
     });
   }
 
