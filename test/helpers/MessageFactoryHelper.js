@@ -270,11 +270,12 @@ class MessageFactoryHelper {
   static getCallToActionEmailMessage() {
     return new CallToActionEmailMessage({
       data: {
-        body: chance.sentence({ words: 25 }),
-        user_id: chance.hash({ length: 24 }),
+        actionText: chance.sentence({ words: 2 }),
+        actionUrl: chance.url(),
+        intro: chance.sentence({ words: 25 }),
+        outro: chance.sentence({ words: 22 }),
+        userId: chance.hash({ length: 24 }),
         subject: chance.sentence({ words: 3 }),
-        type: chance.pickone(['forgot-password', 'rtv-activate-account']),
-        url: chance.url({ path: 'reset' }),
       },
     });
   }

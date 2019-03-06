@@ -153,10 +153,11 @@ test('POST /api/v1/events/user-call-to-action-email should publish message to us
   messageData.should.have.property('data');
 
   // Required.
-  messageData.data.body.should.be.eql(data.body);
+  messageData.data.actionText.should.be.eql(data.actionText);
+  messageData.data.actionUrl.should.be.eql(data.actionUrl);
+  messageData.data.intro.should.be.eql(data.intro);
+  messageData.data.outro.should.be.eql(data.outro);
   messageData.data.subject.should.be.eql(data.subject);
-  messageData.data.type.should.be.eql(data.type);
-  messageData.data.url.should.be.eql(data.url);
 });
 
 /**
