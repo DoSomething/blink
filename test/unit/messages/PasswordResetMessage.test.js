@@ -5,7 +5,7 @@
 const test = require('ava');
 const chai = require('chai');
 
-const PasswordResetMessage = require('../../../src/messages/PasswordResetMessage');
+const CallToActionEmailMessage = require('../../../src/messages/CallToActionEmailMessage');
 const CustomerIoEvent = require('../../../src/models/CustomerIoEvent');
 const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
@@ -13,12 +13,12 @@ const MessageFactoryHelper = require('../../helpers/MessageFactoryHelper');
 
 chai.should();
 const expect = chai.expect;
-const generator = MessageFactoryHelper.getPasswordResetMessage;
+const generator = MessageFactoryHelper.getCallToActionEmailMessage;
 
 // ------- Tests ---------------------------------------------------------------
 
 test('Password reset message generator', () => {
-  generator().should.be.an.instanceof(PasswordResetMessage);
+  generator().should.be.an.instanceof(CallToActionEmailMessage);
 });
 
 test('Password reset message should have toCustomerIoEvent', () => {
@@ -35,7 +35,7 @@ test('Password reset message should be correctly transformed to CustomerIoEvent'
     expect(cioEvent).to.be.an.instanceof(CustomerIoEvent);
 
     cioEvent.getId().should.equal(data.user_id);
-    cioEvent.getName().should.equal('password_reset');
+    cioEvent.getName().should.equal('call_to_action_email');
 
     const eventData = cioEvent.getData();
     eventData.version.should.equal(3);

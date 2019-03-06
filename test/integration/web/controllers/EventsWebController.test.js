@@ -36,8 +36,8 @@ test('GET /api/v1/events should respond with JSON list available tools', async (
   res.body.should.have.property('user-create')
     .and.have.string('/api/v1/events/user-create');
 
-  res.body.should.have.property('user-password-reset')
-    .and.have.string('/api/v1/events/user-password-reset');
+  res.body.should.have.property('user-call-to-action-email')
+    .and.have.string('/api/v1/events/user-call-to-action-email');
 
   res.body.should.have.property('user-signup')
     .and.have.string('/api/v1/events/user-signup');
@@ -124,12 +124,12 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
 });
 
 /**
- * POST /api/v1/events/user-password-reset
+ * POST /api/v1/events/user-call-to-action-email
  */
-test('POST /api/v1/events/user-password-reset should publish message to user-password-reset-event', async (t) => {
-  const data = MessageFactoryHelper.getPasswordResetMessage().getData();
+test('POST /api/v1/events/user-call-to-action-email should publish message to user-call-to-action-email-event', async (t) => {
+  const data = MessageFactoryHelper.getCallToActionEmailMessage().getData();
 
-  const res = await t.context.supertest.post('/api/v1/events/user-password-reset')
+  const res = await t.context.supertest.post('/api/v1/events/user-call-to-action-email')
     .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
     .send(data);
 
@@ -144,7 +144,7 @@ test('POST /api/v1/events/user-password-reset should publish message to user-pas
 
   // Check that the message is queued.
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('customer-io-password-reset', 1, false);
+  const messages = await rabbit.getMessagesFrom('customer-io-call-to-action-email', 1, false);
   messages.should.be.an('array').and.to.have.lengthOf(1);
 
   messages[0].should.have.property('payload');

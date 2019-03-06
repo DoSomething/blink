@@ -2,14 +2,14 @@
 
 const CustomerIoEvent = require('../models/CustomerIoEvent');
 const Message = require('./Message');
-const schema = require('../validations/passwordReset');
+const schema = require('../validations/callToActionEmail');
 
-class PasswordResetMessage extends Message {
+class CallToActionEmailMessage extends Message {
   constructor(...args) {
     super(...args);
     // Data validation rules.
     this.schema = schema;
-    this.eventName = 'password_reset';
+    this.eventName = 'call_to_action_email';
   }
 
   /**
@@ -45,4 +45,4 @@ class PasswordResetMessage extends Message {
   }
 }
 
-module.exports = PasswordResetMessage;
+module.exports = CallToActionEmailMessage;
