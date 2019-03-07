@@ -2,14 +2,14 @@
 
 const CustomerIoEvent = require('../models/CustomerIoEvent');
 const Message = require('./Message');
-const schema = require('../validations/passwordReset');
+const schema = require('../validations/callToActionEmail');
 
-class PasswordResetMessage extends Message {
+class CallToActionEmailMessage extends Message {
   constructor(...args) {
     super(...args);
     // Data validation rules.
     this.schema = schema;
-    this.eventName = 'password_reset';
+    this.eventName = 'call_to_action_email';
   }
 
   /**
@@ -26,18 +26,19 @@ class PasswordResetMessage extends Message {
   toCustomerIoEvent() {
     const data = this.getData();
     const eventData = {
-      body: data.body,
+      actionText: data.actionText,
+      actionUrl: data.actionUrl,
+      intro: data.intro,
+      outro: data.outro,
       subject: data.subject,
-      type: data.type,
-      url: data.url,
     };
 
     const event = new CustomerIoEvent(
-      data.user_id,
+      data.userId,
       this.eventName,
       eventData,
     );
-    // Password reset -> customer.io event transformation would only happen in this class.
+    // Call to action email -> customer.io event transformation would only happen in this class.
     // It's safe to hardcode schema event version here.
     // Please bump it this when data schema changes.
     event.setVersion(3);
@@ -45,4 +46,4 @@ class PasswordResetMessage extends Message {
   }
 }
 
-module.exports = PasswordResetMessage;
+module.exports = CallToActionEmailMessage;

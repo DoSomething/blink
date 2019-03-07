@@ -3,7 +3,7 @@ customer-io-campaign-signup-post: npm run worker customer-io-campaign-signup-pos
 customer-io-campaign-signup-post-review: npm run worker customer-io-campaign-signup-post-review
 customer-io-campaign-signup: npm run worker customer-io-campaign-signup
 customer-io-gambit-broadcast: npm run worker customer-io-gambit-broadcast
-customer-io-password-reset: npm run worker customer-io-password-reset
+customer-io-call-to-action-email: npm run worker customer-io-call-to-action-email
 customer-io-sms-status-active: npm run worker customer-io-sms-status-active
 customer-io-update-customer: npm run worker customer-io-update-customer
 customer-io-email-unsubscribed-northstar: npm run worker customer-io-email-unsubscribed-northstar
