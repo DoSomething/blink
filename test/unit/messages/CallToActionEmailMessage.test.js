@@ -46,6 +46,7 @@ test('Call to action email message should be correctly transformed to CustomerIo
     eventData.intro.should.equal(data.intro);
     eventData.outro.should.equal(data.outro);
     eventData.subject.should.equal(data.subject);
+    eventData.type.should.equal(data.type);
 
     count -= 1;
   }
