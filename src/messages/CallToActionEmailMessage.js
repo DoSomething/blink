@@ -31,6 +31,7 @@ class CallToActionEmailMessage extends Message {
       intro: data.intro,
       outro: data.outro,
       subject: data.subject,
+      type: data.type,
     };
 
     const event = new CustomerIoEvent(

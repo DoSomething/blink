@@ -276,6 +276,7 @@ class MessageFactoryHelper {
         outro: chance.sentence({ words: 22 }),
         userId: chance.hash({ length: 24 }),
         subject: chance.sentence({ words: 3 }),
+        type: chance.word(),
       },
     });
   }
