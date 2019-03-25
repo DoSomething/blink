@@ -12,8 +12,7 @@ const schema = Joi.object()
     intro: Joi.string().empty(whenNullOrEmpty),
     outro: Joi.string().empty(whenNullOrEmpty),
     subject: Joi.string().empty(whenNullOrEmpty),
-    // TODO: This should be required once Northstar starts sending it.
-    type: Joi.string().empty(whenNullOrEmpty),
+    type: Joi.string().required(whenNullOrEmpty),
     userId: Joi.string().required().empty(whenNullOrEmpty).regex(/^[0-9a-f]{24}$/, 'valid object id'),
   });
 
