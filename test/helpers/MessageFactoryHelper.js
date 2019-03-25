@@ -271,7 +271,7 @@ class MessageFactoryHelper {
     return new CallToActionEmailMessage({
       data: {
         actionText: chance.sentence({ words: 2 }),
-        actionUrl: chance.url(),
+        actionUrl: MessageFactoryHelper.getRandomUrl(),
         intro: chance.sentence({ words: 25 }),
         outro: chance.sentence({ words: 22 }),
         userId: chance.hash({ length: 24 }),
@@ -329,6 +329,10 @@ class MessageFactoryHelper {
     // Todo: add option to set message tag.
     rabbitMessage.content = Buffer.from(contentString);
     return rabbitMessage;
+  }
+
+  static getRandomUrl() {
+    return chance.url();
   }
 
   static getFakeMobileNumber() {

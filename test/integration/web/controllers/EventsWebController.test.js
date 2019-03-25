@@ -160,6 +160,57 @@ test('POST /api/v1/events/user-call-to-action-email should publish message to us
   messageData.data.subject.should.be.eql(data.subject);
 });
 
+test('POST /api/v1/events/user-call-to-action-email should return error if missing actionUrl parameter', async (t) => {
+  const data = {
+    id: MessageFactoryHelper.getFakeUserId(),
+    type: MessageFactoryHelper.getBroadcastId(),
+  };
+
+  const res = await t.context.supertest.post('/api/v1/events/user-call-to-action-email')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(422);
+
+  // Check response to be json
+  res.header.should.have.property('content-type');
+  res.header['content-type'].should.match(/json/);
+});
+
+test('POST /api/v1/events/user-call-to-action-email should return error if missing id parameter', async (t) => {
+  const data = {
+    actionUrl: MessageFactoryHelper.getRandomUrl(),
+    type: MessageFactoryHelper.getBroadcastId(),
+  };
+
+  const res = await t.context.supertest.post('/api/v1/events/user-call-to-action-email')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(422);
+
+  // Check response to be json
+  res.header.should.have.property('content-type');
+  res.header['content-type'].should.match(/json/);
+});
+
+test('POST /api/v1/events/user-call-to-action-email should return error if missing type parameter', async (t) => {
+  const data = {
+    actionUrl: MessageFactoryHelper.getRandomUrl(),
+    id: MessageFactoryHelper.getFakeUserId(),
+  };
+
+  const res = await t.context.supertest.post('/api/v1/events/user-call-to-action-email')
+    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
+    .send(data);
+
+  res.status.should.be.equal(422);
+
+  // Check response to be json
+  res.header.should.have.property('content-type');
+  res.header['content-type'].should.match(/json/);
+});
+
 /**
  * POST /api/v1/events/user-signup
  */
