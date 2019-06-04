@@ -30,7 +30,7 @@ class CustomerIoEmailUnsubscribedNorthstarWorker extends NorthstarRelayBaseWorke
     try {
       const response = await northstarHelper.updateUserById(userId, {
         headers,
-        body,
+        body: JSON.stringify(body),
       });
       return this.handleResponse(message, response);
     } catch (error) {
