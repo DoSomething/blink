@@ -44,3 +44,6 @@ jspm_packages
 
 # vscode
 .vscode
+
+# File System metadata
+.DS_Store
