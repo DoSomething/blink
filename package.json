@@ -3,9 +3,9 @@
   "version": "2.9.3",
   "description": "The DoSomething.org Message Bus.",
   "engines": {
-    "node": "8.15",
+    "node": "8.16",
     "npm": "6.4.1",
-    "yarn": "1.9.4"
+    "yarn": "1.13.0"
   },
   "scripts": {
     "test": "npm run test:unit",
