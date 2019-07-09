@@ -4,7 +4,6 @@
 
 const test = require('ava');
 const chai = require('chai');
-const moment = require('moment');
 
 const CampaignSignupMessage = require('../../../src/messages/CampaignSignupMessage');
 const CustomerIoEvent = require('../../../src/models/CustomerIoEvent');
@@ -40,15 +39,9 @@ test('Campaign signup message should be correctly transformed to CustomerIoEvent
 
     // Event data.
     const eventData = cioEvent.getData();
-    eventData.version.should.equal(1);
+    eventData.version.should.equal(2);
 
-    eventData.signup_id.should.equal(String(data.id));
     eventData.campaign_id.should.equal(data.campaign_id);
-
-    // Todo: make sure TZ is corrected
-    const originalCreatedAt = moment(data.created_at).milliseconds(0);
-    const eventCreatedAt = moment.unix(eventData.created_at);
-    eventCreatedAt.toISOString().should.be.equal(originalCreatedAt.toISOString());
 
     if (data.source) {
       expect(eventData.source).to.be.equal(data.source);

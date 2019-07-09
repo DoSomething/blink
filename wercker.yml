@@ -1,4 +1,4 @@
-box: node:8.15
+box: node:8.16
 services:
   - id: rabbitmq:3.7.7-management
     env:
@@ -10,7 +10,7 @@ build:
   steps:
     - script:
       name: install yarn
-      code: npm install -g yarn@1.9.4
+      code: npm install -g yarn@1.13.0
     - script:
       name: report yarn version
       code: yarn --version

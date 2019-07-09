@@ -47,6 +47,7 @@ class CustomerIoUpdateCustomerMessage extends Message {
       }
     });
 
+    // If "unsubscribed" is not included in the payload (is undefined)
     if (typeof customerData.unsubscribed === 'undefined') {
       const isNew = customerData.created_at === customerData.updated_at;
       /**
