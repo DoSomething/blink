@@ -3,6 +3,7 @@
 const PromiseThrottle = require('promise-throttle');
 
 const BlinkRetryError = require('../errors/BlinkRetryError');
+const BlinkSendToDLXError = require('../errors/BlinkSendToDLXError');
 const logger = require('../../config/logger');
 const MessageParsingBlinkError = require('../errors/MessageParsingBlinkError');
 const MessageValidationBlinkError = require('../errors/MessageValidationBlinkError');
@@ -77,13 +78,24 @@ class Dequeuer {
       return this.retryManager.retry(message, error);
     }
 
-    // Really unexpected error, no retry requested.
-    this.log(
-      'error',
-      error.toString(),
-      message,
-      'error_process_message_no_retry',
-    );
+    // Ignore error and send to dead letter exchange
+    if (error instanceof BlinkSendToDLXError) {
+      this.log(
+        // Expose for monitoring skipped/ignored payloads
+        'info',
+        error.toString(),
+        message,
+        'error_send_message_to_dlx_no_retry',
+      );
+    } else {
+      // Really unexpected error, no retry requested.
+      this.log(
+        'error',
+        error.toString(),
+        message,
+        'error_process_message_no_retry',
+      );
+    }
     this.queue.nack(message);
     return false;
   }
