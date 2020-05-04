@@ -9,6 +9,7 @@ const RabbitManagement = require('../../../helpers/RabbitManagement');
 const HooksHelper = require('../../../helpers/HooksHelper');
 const MessageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
 const twilioHelper = require('../../../helpers/twilio');
+const CustomerIoEmailUnsubscribedNorthstarWorker = require('../../../../src/workers/CustomerIoEmailUnsubscribedNorthstarWorker');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -113,6 +114,44 @@ test.serial('POST /api/v1/webhooks/customerio-email-activity should publish emai
     messageData.should.have.property('data');
     messageData.data.should.be.eql(data);
   });
+});
+
+// This test should be in it's own CustomerIoEmailUnsubscribedNorthstarWorker.test.js file.
+// But because it would interfere with the previous test.
+// It must run after the previous serial test above.
+test.serial('A customer unsubscribed event w/ timestamp in between range of the backfill should be put on the dead letter exchange', async (t) => {
+  const blink = t.context.blink;
+  const { quasarCustomerIoEmailUnsubscribedQ } = blink.queues;
+
+  const eventName = 'email_unsubscribed';
+  const timestamp = new Date('2020-04-15').getTime();
+  const message = MessageFactoryHelper.getCustomerIoWebhookMessage(eventName, timestamp);
+  const data = message.getData();
+  message.validate();
+  quasarCustomerIoEmailUnsubscribedQ.publish(message);
+
+  const worker = new CustomerIoEmailUnsubscribedNorthstarWorker(blink);
+
+  worker.setup();
+  worker.start();
+
+  // Await consuming to complete
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+  const result = await rabbit.getMessagesFrom('quasar-customer-io-email-unsubscribed', 1, false);
+  // The message should not exist
+  result.should.be.an('array').and.to.have.lengthOf(0);
+
+  const deadLetterQueueResult = await rabbit.getMessagesFrom('blink-dlx', 1, false);
+  // The message should exist in the deadLetter exchange queue
+  // NOTE: Manually created in RabbitMQ
+  deadLetterQueueResult.should.be.an('array').and.to.have.lengthOf(1);
+  deadLetterQueueResult[0].should.have.property('payload');
+  const payload = deadLetterQueueResult[0].payload;
+  const messageData = JSON.parse(payload);
+  messageData.should.have.property('data');
+  messageData.data.should.be.eql(data);
 });
 
 
