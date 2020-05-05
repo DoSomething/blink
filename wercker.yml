@@ -62,7 +62,7 @@ build:
         name: Setup dead letter queue binding
         code: |
           curl -i -u $RABBITMQ_ENV_RABBITMQ_DEFAULT_USER:$RABBITMQ_ENV_RABBITMQ_DEFAULT_PASS -H "Content-Type: application/json" -X POST \
-          -d '{"routing-key": "*"}' \
+          -d '{"routing_key": "*"}' \
           http://$RABBITMQ_PORT_15672_TCP_ADDR:$RABBITMQ_PORT_15672_TCP_PORT/api/bindings/$RABBITMQ_ENV_RABBITMQ_DEFAULT_VHOST/e/blink-dlx/q/blink-dlx -v
     - script:
         name: run lint, BDD tests and code coverage
