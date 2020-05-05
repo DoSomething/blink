@@ -9,6 +9,9 @@ services:
 build:
   steps:
     - script:
+      name: install netcat
+      code: apt-get update && apt-get install --assume-yes netcat
+    - script:
       name: install yarn
       code: npm install -g yarn@1.13.0
     - script:
@@ -29,6 +32,38 @@ build:
           export BLINK_AMQP_MANAGEMENT_PORT=$RABBITMQ_PORT_15672_TCP_PORT
           export BLINK_REDIS_HOST=$REDIS_PORT_6379_TCP_ADDR
           export BLINK_REDIS_PORT=$REDIS_PORT_6379_TCP_PORT
+    - script:
+        name: env
+        code: |
+          env
+    - franciscocpg/step-wait-tcp:
+        host: $RABBITMQ_PORT_15672_TCP_ADDR
+        port: $RABBITMQ_PORT_15672_TCP_PORT
+        timeout: 20
+    - script:
+        name: Create dead letter exchange
+        code: |
+          curl -i -u $RABBITMQ_ENV_RABBITMQ_DEFAULT_USER:$RABBITMQ_ENV_RABBITMQ_DEFAULT_PASS -H "Content-Type: application/json" -X PUT \
+          -d '{"type":"topic","durable": true}' \
+          http://$RABBITMQ_PORT_15672_TCP_ADDR:$RABBITMQ_PORT_15672_TCP_PORT/api/exchanges/$RABBITMQ_ENV_RABBITMQ_DEFAULT_VHOST/blink-dlx -v
+    - script:
+        name: Create dead letter queue
+        code: |
+          curl -i -u $RABBITMQ_ENV_RABBITMQ_DEFAULT_USER:$RABBITMQ_ENV_RABBITMQ_DEFAULT_PASS -H "Content-Type: application/json" -X PUT \
+          -d '{"arguments":{ "x-queue-type": "classic", "x-max-priority": 2},"durable": true}' \
+          http://$RABBITMQ_PORT_15672_TCP_ADDR:$RABBITMQ_PORT_15672_TCP_PORT/api/queues/$RABBITMQ_ENV_RABBITMQ_DEFAULT_VHOST/blink-dlx -v
+    - script:
+        name: Setup dead letter exchange Policy
+        code: |
+          curl -i -u $RABBITMQ_ENV_RABBITMQ_DEFAULT_USER:$RABBITMQ_ENV_RABBITMQ_DEFAULT_PASS -H "Content-Type: application/json" -X PUT \
+          -d '{"pattern":"quasar-customer-io-email-unsubscribed","definition":{"dead-letter-exchange":"blink-dlx"},"apply-to": "queues"}' \
+          http://$RABBITMQ_PORT_15672_TCP_ADDR:$RABBITMQ_PORT_15672_TCP_PORT/api/policies/$RABBITMQ_ENV_RABBITMQ_DEFAULT_VHOST/cio-user-unsubscribed-northstar-dlx -v
+    - script:
+        name: Setup dead letter queue binding
+        code: |
+          curl -i -u $RABBITMQ_ENV_RABBITMQ_DEFAULT_USER:$RABBITMQ_ENV_RABBITMQ_DEFAULT_PASS -H "Content-Type: application/json" -X POST \
+          -d '{"routing_key": "*"}' \
+          http://$RABBITMQ_PORT_15672_TCP_ADDR:$RABBITMQ_PORT_15672_TCP_PORT/api/bindings/$RABBITMQ_ENV_RABBITMQ_DEFAULT_VHOST/e/blink-dlx/q/blink-dlx -v
     - script:
         name: run lint, BDD tests and code coverage
         code: yarn test:full

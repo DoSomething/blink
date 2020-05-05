@@ -383,9 +383,11 @@ class MessageFactoryHelper {
     };
   }
 
-  static getCustomerIoWebhookMessage(eventType) {
+  static getCustomerIoWebhookMessage(eventType, timestamp) {
     const data = MessageFactoryHelper.getCustomerIoWebhookData();
     data.event_type = eventType || chance.word();
+    data.timestamp = timestamp || chance.timestamp();
+
     return new CustomerIoWebhookMessage({
       data,
       meta: {},
