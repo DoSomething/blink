@@ -23,6 +23,10 @@ class CustomerIoWebhookMessage extends Message {
     return this.getData().data.customer_id;
   }
 
+  getEventTimestamp() {
+    return this.getData().timestamp;
+  }
+
   getEventType() {
     return this.getData().event_type;
   }
