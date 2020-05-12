@@ -14,6 +14,7 @@ class CustomerIoWebhookMessage extends Message {
       data: Joi.object().required(),
       event_id: Joi.string().required(),
       event_type: Joi.string().required(),
+      // Sent to us as Unix timestamp (seconds)
       timestamp: Joi.number().integer().required(),
     });
   }
@@ -25,6 +26,12 @@ class CustomerIoWebhookMessage extends Message {
 
   getEventTimestamp() {
     return this.getData().timestamp;
+  }
+
+  // TODO: return Date object per https://github.com/DoSomething/blink/pull/247#discussion_r423854150
+  // when date-fns is updated to latest version that supports https://date-fns.org/v2.13.0/docs/fromUnixTime
+  getEventTimestampInMilliseconds() {
+    return this.getData().timestamp * 1000;
   }
 
   getEventType() {
