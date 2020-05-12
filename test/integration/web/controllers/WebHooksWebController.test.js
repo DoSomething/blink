@@ -124,7 +124,7 @@ test.serial('A customer unsubscribed event w/ timestamp in between range of the 
   const { quasarCustomerIoEmailUnsubscribedQ } = blink.queues;
 
   const eventName = 'email_unsubscribed';
-  const timestamp = new Date('2020-04-15').getTime();
+  const timestamp = Math.floor(new Date('2020-04-15').getTime() / 1000);
   const message = MessageFactoryHelper.getCustomerIoWebhookMessage(eventName, timestamp);
   const data = message.getData();
   message.validate();
