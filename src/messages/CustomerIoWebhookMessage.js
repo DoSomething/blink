@@ -14,6 +14,7 @@ class CustomerIoWebhookMessage extends Message {
       data: Joi.object().required(),
       event_id: Joi.string().required(),
       event_type: Joi.string().required(),
+      // Sent to us as Unix timestamp (seconds)
       timestamp: Joi.number().integer().required(),
     });
   }
@@ -25,6 +26,10 @@ class CustomerIoWebhookMessage extends Message {
 
   getEventTimestamp() {
     return this.getData().timestamp;
+  }
+
+  getEventTimestampInMilliseconds() {
+    return this.getData().timestamp * 1000;
   }
 
   getEventType() {

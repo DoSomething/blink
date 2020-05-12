@@ -27,7 +27,7 @@ class CustomerIoEmailUnsubscribedNorthstarWorker extends NorthstarRelayBaseWorke
     const userId = message.getUserId();
 
     // TODO: Remove patch when https://www.pivotaltracker.com/story/show/172585118 is accepted
-    const eventTimestamp = message.getEventTimestamp();
+    const eventTimestamp = message.getEventTimestampInMilliseconds();
     const startDate = new Date('2020-04-01');
     const endDate = new Date('2020-05-05');
 
