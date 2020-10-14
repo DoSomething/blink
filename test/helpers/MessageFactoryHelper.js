@@ -5,7 +5,6 @@
 const Chance = require('chance');
 const moment = require('moment');
 
-const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPostMessage');
 const CustomerIoSmsStatusActiveMessage = require('../../src/messages/CustomerIoSmsStatusActiveMessage');
 const CampaignSignupPostReviewMessage = require('../../src/messages/CampaignSignupPostReviewMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
@@ -186,52 +185,6 @@ class MessageFactoryHelper {
         MediaUrl0: chance.avatar({ protocol: 'https' }),
         ApiVersion: '2010-04-01',
       },
-      meta: {},
-    });
-  }
-
-  static getCampaignSignupPostMessageData() {
-    const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
-    const updatedAt = moment(createdAt).add(1, 'days').toISOString();
-    const deletedAt = moment(createdAt).add(2, 'days').toISOString();
-
-    const data = {
-      // Required minimum
-      id: chance.integer({ min: 0 }),
-      signup_id: chance.integer({ min: 0 }),
-      northstar_id: chance.hash({ length: 24 }),
-      campaign_id: chance.string({ length: 4, pool: '1234567890' }),
-      type: chance.pickone(['photo', 'voter-reg']),
-      action: chance.pickone(['january2018-turbovote', 'january-submit-photo']),
-      created_at: createdAt,
-
-      // Optional / nullable
-      campaign_run_id: chance.pickone([null, chance.integer({ min: 0 })]),
-      source: chance.pickone([null, 'campaigns', 'phoenix-web']),
-      media: chance.pickone([null, {
-        url: chance.avatar({ protocol: 'https' }),
-        caption: chance.sentence({ words: 5 }),
-      }]),
-      why_participated: chance.pickone([null, chance.sentence()]),
-      updated_at: chance.pickone([null, updatedAt]),
-      deleted_at: chance.pickone([null, deletedAt]),
-      details: chance.pickone([null, { random: 'stuff' }]),
-      remote_addr: chance.pickone([null, chance.ip()]),
-      tags: chance.pickone([null, [], ['stuff', 'more-stuff']]),
-      status: chance.pickone([null, 'pending']),
-      quantity: chance.pickone([null, chance.integer({
-        min: 1, max: 10,
-      })]),
-    };
-
-    return data;
-  }
-
-  static getCampaignSignupPostMessage() {
-    const data = MessageFactoryHelper.getCampaignSignupPostMessageData();
-
-    return new CampaignSignupPostMessage({
-      data,
       meta: {},
     });
   }

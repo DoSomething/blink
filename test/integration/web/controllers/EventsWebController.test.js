@@ -36,9 +36,6 @@ test('GET /api/v1/events should respond with JSON list available tools', async (
   res.body.should.have.property('user-create')
     .and.have.string('/api/v1/events/user-create');
 
-  res.body.should.have.property('user-signup-post')
-    .and.have.string('/api/v1/events/user-signup-post');
-
   res.body.should.have.property('quasar-relay')
     .and.have.string('/api/v1/events/quasar-relay');
 });
@@ -115,43 +112,6 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
     .and.equal('Message queued');
 
   await t.context.blink.queues.customerIoUpdateCustomerQ.purge();
-});
-
-/**
- * POST /api/v1/events/user-signup-post
- */
-test('POST /api/v1/events/user-signup-post should publish message to user-signup-post-event', async (t) => {
-  const data = MessageFactoryHelper.getCampaignSignupPostMessage().getData();
-
-  const res = await t.context.supertest.post('/api/v1/events/user-signup-post')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
-    .send(data);
-
-  res.status.should.be.equal(202);
-
-  // Check response to be json
-  res.header.should.have.property('content-type');
-  res.header['content-type'].should.match(/json/);
-
-  // Check response.
-  res.body.should.have.property('ok', true);
-
-  // Check that the message is queued.
-  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('customer-io-campaign-signup-post', 1, false);
-  messages.should.be.an('array').and.to.have.lengthOf(1);
-
-  messages[0].should.have.property('payload');
-  const payload = messages[0].payload;
-  const messageData = JSON.parse(payload);
-  messageData.should.have.property('data');
-
-  // Required.
-  messageData.data.id.should.be.eql(data.id);
-  messageData.data.campaign_id.should.be.eql(data.campaign_id);
-  messageData.data.northstar_id.should.be.eql(data.northstar_id);
-  messageData.data.signup_id.should.be.eql(data.signup_id);
-  messageData.data.created_at.should.be.eql(data.created_at);
 });
 
 /**
