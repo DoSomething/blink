@@ -5,7 +5,6 @@
 const Chance = require('chance');
 const moment = require('moment');
 
-const CampaignSignupMessage = require('../../src/messages/CampaignSignupMessage');
 const CampaignSignupPostMessage = require('../../src/messages/CampaignSignupPostMessage');
 const CustomerIoSmsStatusActiveMessage = require('../../src/messages/CustomerIoSmsStatusActiveMessage');
 const CampaignSignupPostReviewMessage = require('../../src/messages/CampaignSignupPostReviewMessage');
@@ -186,26 +185,6 @@ class MessageFactoryHelper {
         From: MessageFactoryHelper.getFakeMobileNumber(),
         MediaUrl0: chance.avatar({ protocol: 'https' }),
         ApiVersion: '2010-04-01',
-      },
-      meta: {},
-    });
-  }
-
-  static getCampaignSignupMessage() {
-    const createdAt = chance.date({ year: (new Date()).getFullYear() }).toISOString();
-    const updatedAt = moment(createdAt).add(1, 'days').toISOString();
-
-    return new CampaignSignupMessage({
-      data: {
-        id: chance.integer({ min: 0 }),
-        northstar_id: chance.hash({ length: 24 }),
-        campaign_id: chance.string({ length: 4, pool: '1234567890' }),
-        quantity: null,
-        why_participated: null,
-        // Don't add sms signup here, they are tested separately.
-        source: chance.pickone(['campaigns', 'phoenix-web']),
-        created_at: createdAt,
-        updated_at: updatedAt,
       },
       meta: {},
     });

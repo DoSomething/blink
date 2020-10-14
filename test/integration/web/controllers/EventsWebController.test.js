@@ -36,9 +36,6 @@ test('GET /api/v1/events should respond with JSON list available tools', async (
   res.body.should.have.property('user-create')
     .and.have.string('/api/v1/events/user-create');
 
-  res.body.should.have.property('user-signup')
-    .and.have.string('/api/v1/events/user-signup');
-
   res.body.should.have.property('user-signup-post')
     .and.have.string('/api/v1/events/user-signup-post');
 
@@ -118,85 +115,6 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
     .and.equal('Message queued');
 
   await t.context.blink.queues.customerIoUpdateCustomerQ.purge();
-});
-
-/**
- * POST /api/v1/events/user-signup
- */
-test('POST /api/v1/events/user-signup should validate incoming message', async (t) => {
-  // Test empty message
-  const responseToEmptyPayload = await t.context.supertest
-    .post('/api/v1/events/user-signup')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
-    .send({});
-  responseToEmptyPayload.status.should.be.equal(422);
-  responseToEmptyPayload.body.should.have.property('ok', false);
-  responseToEmptyPayload.body.should.have.property('message')
-    .and.have.string('"id" is required');
-
-  // Test incorrect northstar_id
-  const responseToNotUuid = await t.context.supertest
-    .post('/api/v1/events/user-signup')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
-    .send({
-      id: 'any-id-is-ok',
-      northstar_id: 'not-an-uuid',
-    });
-  responseToNotUuid.status.should.be.equal(422);
-  responseToNotUuid.body.should.have.property('ok', false);
-  responseToNotUuid.body.should.have.property('message')
-    .and.have.string('fails to match the valid object id pattern');
-});
-
-/**
- * POST /api/v1/events/user-signup
- */
-test('POST /api/v1/events/user-signup should publish message to user-signup-event', async (t) => {
-  const data = MessageFactoryHelper.getCampaignSignupMessage().getData();
-  const res = await t.context.supertest.post('/api/v1/events/user-signup')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
-    .send(data);
-
-  res.status.should.be.equal(202);
-
-  // Check response to be json
-  res.header.should.have.property('content-type');
-  res.header['content-type'].should.match(/json/);
-
-  // Check response.
-  res.body.should.have.property('ok', true);
-
-  // Check that the message is queued to customer-io-campaign-signup.
-  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const cioMessage = await rabbit.getMessagesFrom('customer-io-campaign-signup', 1, false);
-  cioMessage.should.be.an('array').and.to.have.lengthOf(1);
-
-  cioMessage[0].should.have.property('payload');
-  const cioMessageData = JSON.parse(cioMessage[0].payload);
-  cioMessageData.should.have.property('data');
-  cioMessageData.data.should.be.eql({
-    campaign_id: data.campaign_id,
-    created_at: data.created_at,
-    updated_at: data.updated_at,
-    id: data.id,
-    northstar_id: data.northstar_id,
-    source: data.source,
-  });
-
-  const gambitMessage = await rabbit.getMessagesFrom('gambit-campaign-signup-relay', 1, false);
-  gambitMessage.should.be.an('array').and.to.have.lengthOf(1);
-
-  gambitMessage[0].should.have.property('payload');
-  const gambitMessageData = JSON.parse(gambitMessage[0].payload);
-  gambitMessageData.should.have.property('data');
-  gambitMessageData.data.should.be.eql({
-    campaign_id: data.campaign_id,
-    created_at: data.created_at,
-    updated_at: data.updated_at,
-    id: data.id,
-    northstar_id: data.northstar_id,
-    source: data.source,
-  });
 });
 
 /**

@@ -14,11 +14,9 @@ const RedisConnectionManager = require('../lib/RedisConnectionManager');
 // Queues.
 const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
 const CustomerIoCampaignSignupPostReviewQ = require('../queues/CustomerIoCampaignSignupPostReviewQ');
-const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ');
 const CustomerIoGambitBroadcastQ = require('../queues/CustomerIoGambitBroadcastQ');
 const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const CustomerIoSmsStatusActiveQ = require('../queues/CustomerIoSmsStatusActiveQ');
-const GambitCampaignSignupRelayQ = require('../queues/GambitCampaignSignupRelayQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
 const QuasarCustomerIoEmailUnsubscribedQ = require('../queues/QuasarCustomerIoEmailUnsubscribedQ');
 const TwilioSmsInboundGambitRelayQ = require('../queues/TwilioSmsInboundGambitRelayQ');
@@ -164,11 +162,9 @@ class BlinkApp {
     return [
       CustomerIoCampaignSignupPostQ,
       CustomerIoCampaignSignupPostReviewQ,
-      CustomerIoCampaignSignupQ,
       CustomerIoGambitBroadcastQ,
       CustomerIoUpdateCustomerQ,
       CustomerIoSmsStatusActiveQ,
-      GambitCampaignSignupRelayQ,
       QuasarCustomerIoEmailActivityQ,
       QuasarCustomerIoEmailUnsubscribedQ,
       TwilioSmsInboundGambitRelayQ,

@@ -115,20 +115,6 @@ test.serial('relaySmsStatusActiveMessage should relay the message to the correct
   gambitHelper.relayMessage.should.have.been.calledWith(path, message, opts);
 });
 
-// relayCampaignSignupMessage
-test.serial('relayCampaignSignupMessage should relay the message to the correct path', async () => {
-  sandbox.stub(gambitHelper, 'relayMessage')
-    .returns(Promise.resolve(true));
-  const message = messageFactoryHelper.getCampaignSignupMessage();
-  const path = gambitHelper.getCampaignSignupPath();
-  const opts = {
-    body: JSON.stringify({ hello: 'world' }),
-  };
-
-  await gambitHelper.relayCampaignSignupMessage(message, opts);
-  gambitHelper.relayMessage.should.have.been.calledWith(path, message, opts);
-});
-
 // relayBroadcastMessage
 test.serial('relayBroadcastMessage should relay the message to the correct path', async () => {
   sandbox.stub(gambitHelper, 'relayMessage')

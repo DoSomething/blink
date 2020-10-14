@@ -1,6 +1,5 @@
 'use strict';
 
-const CampaignSignupMessage = require('../../messages/CampaignSignupMessage');
 const CampaignSignupPostMessage = require('../../messages/CampaignSignupPostMessage');
 const CampaignSignupPostReviewMessage = require('../../messages/CampaignSignupPostReviewMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
@@ -26,12 +25,6 @@ class EventsWebController extends WebController {
       this.userCreate.bind(this),
     );
     this.router.post(
-      'v1.events.user-signup',
-      '/api/v1/events/user-signup',
-      basicAuthStrategy(this.blink.config.app.auth),
-      this.userSignup.bind(this),
-    );
-    this.router.post(
       'v1.events.user-signup-post',
       '/api/v1/events/user-signup-post',
       basicAuthStrategy(this.blink.config.app.auth),
@@ -54,7 +47,6 @@ class EventsWebController extends WebController {
   async index(ctx) {
     ctx.body = {
       'user-create': this.fullUrl('v1.events.user-create'),
-      'user-signup': this.fullUrl('v1.events.user-signup'),
       'user-signup-post': this.fullUrl('v1.events.user-signup-post'),
       'user-signup-post-review': this.fullUrl('v1.events.user-signup-post-review'),
       'quasar-relay': this.fullUrl('v1.events.quasar-relay'),
@@ -70,20 +62,6 @@ class EventsWebController extends WebController {
         userMessage,
       );
       this.sendOK(ctx, userMessage);
-    } catch (error) {
-      this.sendError(ctx, error);
-    }
-  }
-
-  async userSignup(ctx) {
-    try {
-      const message = CampaignSignupMessage.fromCtx(ctx);
-      message.validate();
-      this.blink.broker.publishToRoute(
-        'signup.user.event',
-        message,
-      );
-      this.sendOK(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
     }

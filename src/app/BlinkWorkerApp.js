@@ -3,12 +3,10 @@
 const BlinkError = require('../errors/BlinkError');
 const CustomerIoCampaignSignupPostWorker = require('../workers/CustomerIoCampaignSignupPostWorker');
 const CustomerIoCampaignSignupPostReviewWorker = require('../workers/CustomerIoCampaignSignupPostReviewWorker');
-const CustomerIoCampaignSignupWorker = require('../workers/CustomerIoCampaignSignupWorker');
 const CustomerIoGambitBroadcastWorker = require('../workers/CustomerIoGambitBroadcastWorker');
 const CustomerIoSmsStatusActiveWorker = require('../workers/CustomerIoSmsStatusActiveWorker');
 const CustomerIoUpdateCustomerWorker = require('../workers/CustomerIoUpdateCustomerWorker');
 const CustomerIoEmailUnsubscribedNorthstarWorker = require('../workers/CustomerIoEmailUnsubscribedNorthstarWorker');
-const GambitCampaignSignupRelayWorker = require('../workers/GambitCampaignSignupRelayWorker');
 const TwilioSmsInboundGambitRelayWorker = require('../workers/TwilioSmsInboundGambitRelayWorker');
 const TwilioSmsOutboundStatusRelayWorker = require('../workers/TwilioSmsOutboundStatusRelayWorker');
 const TwilioSmsOutboundErrorRelayWorker = require('../workers/TwilioSmsOutboundErrorRelayWorker');
@@ -43,14 +41,12 @@ class BlinkWorkerApp extends BlinkApp {
 
   static getAvailableWorkers() {
     return {
-      'customer-io-campaign-signup': CustomerIoCampaignSignupWorker,
       'customer-io-campaign-signup-post': CustomerIoCampaignSignupPostWorker,
       'customer-io-campaign-signup-post-review': CustomerIoCampaignSignupPostReviewWorker,
       'customer-io-gambit-broadcast': CustomerIoGambitBroadcastWorker,
       'customer-io-sms-status-active': CustomerIoSmsStatusActiveWorker,
       'customer-io-update-customer': CustomerIoUpdateCustomerWorker,
       'customer-io-email-unsubscribed-northstar': CustomerIoEmailUnsubscribedNorthstarWorker,
-      'gambit-campaign-signup-relay': GambitCampaignSignupRelayWorker,
       'twilio-sms-inbound-gambit-relay': TwilioSmsInboundGambitRelayWorker,
       'twilio-sms-outbound-status-relay': TwilioSmsOutboundStatusRelayWorker,
       'twilio-sms-outbound-error-relay': TwilioSmsOutboundErrorRelayWorker,
