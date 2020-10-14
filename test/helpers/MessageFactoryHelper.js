@@ -3,15 +3,12 @@
 // ------- Imports -------------------------------------------------------------
 
 const Chance = require('chance');
-const moment = require('moment');
 
 const CustomerIoSmsStatusActiveMessage = require('../../src/messages/CustomerIoSmsStatusActiveMessage');
-const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const CustomerIoGambitBroadcastMessage = require('../../src/messages/CustomerIoGambitBroadcastMessage');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const TwilioOutboundStatusCallbackMessage = require('../../src/messages/TwilioOutboundStatusCallbackMessage');
 const CustomerIoWebhookMessage = require('../../src/messages/CustomerIoWebhookMessage');
-const UserMessage = require('../../src/messages/UserMessage');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -20,101 +17,6 @@ const chance = new Chance();
 // ------- Helpers -------------------------------------------------------------
 
 class MessageFactoryHelper {
-  static getUserMessage() {
-    const fakeId = MessageFactoryHelper.getFakeUserId();
-    const createdAt = chance.date({ year: chance.year({ min: 2000, max: 2010 }) }).toISOString();
-    return new UserMessage({
-      data: {
-        id: fakeId,
-        _id: fakeId,
-        first_name: chance.first(),
-        last_name: chance.last(),
-        last_initial: chance.character({ alpha: true }),
-        photo: chance.url({ extensions: ['gif', 'jpg', 'png'] }),
-        email: chance.email(),
-        mobile: MessageFactoryHelper.getFakeMobileNumber(),
-        facebook_id: chance.fbid().toString(),
-        interests: chance.n(chance.word, chance.natural({ min: 0, max: 20 })),
-        birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
-        addr_street1: chance.address(),
-        addr_street2: `Apt ${chance.natural({ min: 1, max: 20 })}`,
-        addr_city: chance.city(),
-        addr_state: chance.state({ territories: true }),
-        addr_zip: chance.zip(),
-        source: chance.pickone(['niche', 'phoenix', 'after_school']),
-        source_detail: chance.word(),
-        slack_id: chance.natural().toString(),
-        mobilecommons_id: chance.natural().toString(),
-        parse_installation_ids: chance.n(chance.guid, 2),
-        sms_paused: chance.bool(),
-        sms_status: chance.pickone([
-          'undeliverable',
-          'less',
-          'active',
-          'unknown',
-          'stop',
-          'pending',
-          null,
-          undefined,
-        ]),
-        language: chance.locale({ region: false }),
-        country: chance.country(),
-        drupal_id: chance.natural().toString(),
-        role: chance.pickone(['user', 'admin', 'staff']),
-        // Dates are arbitrary, but it makes more sense when they are within
-        // different ranges.
-        last_messaged_at: chance.timestamp(),
-        last_authenticated_at: chance.date({
-          year: chance.year({ min: 2013, max: 2015 }),
-        }).toISOString(),
-        updated_at: createdAt,
-        created_at: createdAt,
-      },
-      meta: {},
-    });
-  }
-
-  static getCustomerIoUpdateCustomerMessage() {
-    const fakeId = MessageFactoryHelper.getFakeUserId();
-    return new CustomerIoUpdateCustomerMessage({
-      data: {
-        id: fakeId,
-        data: {
-          email: chance.email(),
-          updated_at: chance.pickone([moment().toISOString(), chance.timestamp()]),
-          created_at: chance.pickone([moment().toISOString(), chance.timestamp()]),
-          sms_paused: chance.bool(),
-          sms_status: chance.pickone([
-            'undeliverable',
-            'active',
-            'less',
-            'unknown',
-            'stop',
-            'pending',
-            null,
-          ]),
-          last_authenticated_at: chance.pickone([moment().toISOString(), chance.timestamp()]),
-          last_messaged_at: chance.timestamp(),
-          birthdate: moment(chance.birthday({ type: 'teen' })).format('YYYY-MM-DD'),
-          facebook_id: chance.fbid().toString(),
-          first_name: chance.first(),
-          last_name: chance.last(),
-          addr_city: chance.city(),
-          addr_state: chance.state({ territories: true }),
-          addr_zip: chance.zip(),
-          source: chance.pickone(['niche', 'phoenix', 'after_school']),
-          source_detail: chance.word(),
-          language: chance.locale({ region: false }),
-          country: chance.country(),
-          unsubscribed: chance.bool(),
-          role: chance.pickone(['user', 'admin', 'staff']),
-          interests: chance.n(chance.word, chance.natural({ min: 0, max: 20 })),
-        },
-      },
-      meta: {},
-    });
-  }
-
   static getTwilioOutboundDeliveredStatusMessage(deliveredAt) {
     const sid = `${chance.pickone(['SM', 'MM'])}${chance.hash({ length: 32 })}`;
     const msg = new TwilioOutboundStatusCallbackMessage({

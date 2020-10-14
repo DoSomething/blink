@@ -13,7 +13,6 @@ const RedisConnectionManager = require('../lib/RedisConnectionManager');
 
 // Queues.
 const CustomerIoGambitBroadcastQ = require('../queues/CustomerIoGambitBroadcastQ');
-const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const CustomerIoSmsStatusActiveQ = require('../queues/CustomerIoSmsStatusActiveQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
 const QuasarCustomerIoEmailUnsubscribedQ = require('../queues/QuasarCustomerIoEmailUnsubscribedQ');
@@ -159,7 +158,6 @@ class BlinkApp {
     // TODO: register them from workers, bottom-up approach.
     return [
       CustomerIoGambitBroadcastQ,
-      CustomerIoUpdateCustomerQ,
       CustomerIoSmsStatusActiveQ,
       QuasarCustomerIoEmailActivityQ,
       QuasarCustomerIoEmailUnsubscribedQ,
