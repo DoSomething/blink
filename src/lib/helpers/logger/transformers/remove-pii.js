@@ -7,10 +7,8 @@ const config = require('../../../../../config');
 const removePIIConfig = config.logger.transformers.removePII;
 // merge all keys so lodash can do it's magic omitting them
 const keysToOmit = [
-  ...removePIIConfig.northstarPIIKeys,
   ...removePIIConfig.customerIoPIIKeys,
   ...removePIIConfig.twilioPIIKeys,
-  ...removePIIConfig.roguePIIKeys,
 ];
 
 /**
