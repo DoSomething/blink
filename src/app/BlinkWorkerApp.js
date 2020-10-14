@@ -1,7 +1,6 @@
 'use strict';
 
 const BlinkError = require('../errors/BlinkError');
-const CustomerIoCampaignSignupPostReviewWorker = require('../workers/CustomerIoCampaignSignupPostReviewWorker');
 const CustomerIoGambitBroadcastWorker = require('../workers/CustomerIoGambitBroadcastWorker');
 const CustomerIoSmsStatusActiveWorker = require('../workers/CustomerIoSmsStatusActiveWorker');
 const CustomerIoUpdateCustomerWorker = require('../workers/CustomerIoUpdateCustomerWorker');
@@ -40,7 +39,6 @@ class BlinkWorkerApp extends BlinkApp {
 
   static getAvailableWorkers() {
     return {
-      'customer-io-campaign-signup-post-review': CustomerIoCampaignSignupPostReviewWorker,
       'customer-io-gambit-broadcast': CustomerIoGambitBroadcastWorker,
       'customer-io-sms-status-active': CustomerIoSmsStatusActiveWorker,
       'customer-io-update-customer': CustomerIoUpdateCustomerWorker,

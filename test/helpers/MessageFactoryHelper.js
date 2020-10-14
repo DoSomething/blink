@@ -6,7 +6,6 @@ const Chance = require('chance');
 const moment = require('moment');
 
 const CustomerIoSmsStatusActiveMessage = require('../../src/messages/CustomerIoSmsStatusActiveMessage');
-const CampaignSignupPostReviewMessage = require('../../src/messages/CampaignSignupPostReviewMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const CustomerIoGambitBroadcastMessage = require('../../src/messages/CustomerIoGambitBroadcastMessage');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
@@ -186,29 +185,6 @@ class MessageFactoryHelper {
         ApiVersion: '2010-04-01',
       },
       meta: {},
-    });
-  }
-
-  static getCampaignSignupPostMessageReviewMessage() {
-    const data = MessageFactoryHelper.getCampaignSignupPostMessageData();
-
-    return new CampaignSignupPostReviewMessage({
-      data,
-      meta: {},
-    });
-  }
-
-  static getCallToActionEmailMessage() {
-    return new CallToActionEmailMessage({
-      data: {
-        actionText: chance.sentence({ words: 2 }),
-        actionUrl: MessageFactoryHelper.getRandomUrl(),
-        intro: chance.sentence({ words: 25 }),
-        outro: chance.sentence({ words: 22 }),
-        userId: chance.hash({ length: 24 }),
-        subject: chance.sentence({ words: 3 }),
-        type: chance.word(),
-      },
     });
   }
 

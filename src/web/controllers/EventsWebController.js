@@ -1,6 +1,5 @@
 'use strict';
 
-const CampaignSignupPostReviewMessage = require('../../messages/CampaignSignupPostReviewMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
 const UserMessage = require('../../messages/UserMessage');
 const WebController = require('./WebController');
@@ -22,12 +21,6 @@ class EventsWebController extends WebController {
       '/api/v1/events/user-create',
       basicAuthStrategy(this.blink.config.app.auth),
       this.userCreate.bind(this),
-    );
-    this.router.post(
-      'v1.events.user-signup-post-review',
-      '/api/v1/events/user-signup-post-review',
-      basicAuthStrategy(this.blink.config.app.auth),
-      this.userSignupPostReview.bind(this),
     );
     this.router.post(
       'v1.events.quasar-relay',
@@ -54,20 +47,6 @@ class EventsWebController extends WebController {
         userMessage,
       );
       this.sendOK(ctx, userMessage);
-    } catch (error) {
-      this.sendError(ctx, error);
-    }
-  }
-
-  async userSignupPostReview(ctx) {
-    try {
-      const message = CampaignSignupPostReviewMessage.fromCtx(ctx);
-      message.validate();
-      this.blink.broker.publishToRoute(
-        'signup-post-review.user.event',
-        message,
-      );
-      this.sendOK(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
     }

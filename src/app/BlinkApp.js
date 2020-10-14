@@ -12,7 +12,6 @@ const RabbitMQBroker = require('../lib/brokers/RabbitMQ/RabbitMQBroker');
 const RedisConnectionManager = require('../lib/RedisConnectionManager');
 
 // Queues.
-const CustomerIoCampaignSignupPostReviewQ = require('../queues/CustomerIoCampaignSignupPostReviewQ');
 const CustomerIoGambitBroadcastQ = require('../queues/CustomerIoGambitBroadcastQ');
 const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const CustomerIoSmsStatusActiveQ = require('../queues/CustomerIoSmsStatusActiveQ');
@@ -159,7 +158,6 @@ class BlinkApp {
   static discoverQueueClasses() {
     // TODO: register them from workers, bottom-up approach.
     return [
-      CustomerIoCampaignSignupPostReviewQ,
       CustomerIoGambitBroadcastQ,
       CustomerIoUpdateCustomerQ,
       CustomerIoSmsStatusActiveQ,
