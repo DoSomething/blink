@@ -36,9 +36,6 @@ test('GET /api/v1/events should respond with JSON list available tools', async (
   res.body.should.have.property('user-create')
     .and.have.string('/api/v1/events/user-create');
 
-  res.body.should.have.property('user-call-to-action-email')
-    .and.have.string('/api/v1/events/user-call-to-action-email');
-
   res.body.should.have.property('user-signup')
     .and.have.string('/api/v1/events/user-signup');
 
@@ -121,94 +118,6 @@ test('POST /api/v1/events/user-create should validate incoming message', async (
     .and.equal('Message queued');
 
   await t.context.blink.queues.customerIoUpdateCustomerQ.purge();
-});
-
-/**
- * POST /api/v1/events/user-call-to-action-email
- */
-test('POST /api/v1/events/user-call-to-action-email should publish message to user-call-to-action-email-event', async (t) => {
-  const data = MessageFactoryHelper.getCallToActionEmailMessage().getData();
-
-  const res = await t.context.supertest.post('/api/v1/events/user-call-to-action-email')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
-    .send(data);
-
-  res.status.should.be.equal(202);
-
-  // Check response to be json
-  res.header.should.have.property('content-type');
-  res.header['content-type'].should.match(/json/);
-
-  // Check response.
-  res.body.should.have.property('ok', true);
-
-  // Check that the message is queued.
-  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
-  const messages = await rabbit.getMessagesFrom('customer-io-call-to-action-email', 1, false);
-  messages.should.be.an('array').and.to.have.lengthOf(1);
-
-  messages[0].should.have.property('payload');
-  const payload = messages[0].payload;
-  const messageData = JSON.parse(payload);
-  messageData.should.have.property('data');
-
-  // Required.
-  messageData.data.actionText.should.be.eql(data.actionText);
-  messageData.data.actionUrl.should.be.eql(data.actionUrl);
-  messageData.data.intro.should.be.eql(data.intro);
-  messageData.data.outro.should.be.eql(data.outro);
-  messageData.data.subject.should.be.eql(data.subject);
-});
-
-test('POST /api/v1/events/user-call-to-action-email should return error if missing actionUrl parameter', async (t) => {
-  const data = {
-    id: MessageFactoryHelper.getFakeUserId(),
-    type: MessageFactoryHelper.getBroadcastId(),
-  };
-
-  const res = await t.context.supertest.post('/api/v1/events/user-call-to-action-email')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
-    .send(data);
-
-  res.status.should.be.equal(422);
-
-  // Check response to be json
-  res.header.should.have.property('content-type');
-  res.header['content-type'].should.match(/json/);
-});
-
-test('POST /api/v1/events/user-call-to-action-email should return error if missing id parameter', async (t) => {
-  const data = {
-    actionUrl: MessageFactoryHelper.getRandomUrl(),
-    type: MessageFactoryHelper.getBroadcastId(),
-  };
-
-  const res = await t.context.supertest.post('/api/v1/events/user-call-to-action-email')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
-    .send(data);
-
-  res.status.should.be.equal(422);
-
-  // Check response to be json
-  res.header.should.have.property('content-type');
-  res.header['content-type'].should.match(/json/);
-});
-
-test('POST /api/v1/events/user-call-to-action-email should return error if missing type parameter', async (t) => {
-  const data = {
-    actionUrl: MessageFactoryHelper.getRandomUrl(),
-    id: MessageFactoryHelper.getFakeUserId(),
-  };
-
-  const res = await t.context.supertest.post('/api/v1/events/user-call-to-action-email')
-    .auth(t.context.config.app.auth.name, t.context.config.app.auth.password)
-    .send(data);
-
-  res.status.should.be.equal(422);
-
-  // Check response to be json
-  res.header.should.have.property('content-type');
-  res.header['content-type'].should.match(/json/);
 });
 
 /**

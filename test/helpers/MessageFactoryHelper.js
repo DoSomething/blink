@@ -11,7 +11,6 @@ const CustomerIoSmsStatusActiveMessage = require('../../src/messages/CustomerIoS
 const CampaignSignupPostReviewMessage = require('../../src/messages/CampaignSignupPostReviewMessage');
 const CustomerIoUpdateCustomerMessage = require('../../src/messages/CustomerIoUpdateCustomerMessage');
 const CustomerIoGambitBroadcastMessage = require('../../src/messages/CustomerIoGambitBroadcastMessage');
-const CallToActionEmailMessage = require('../../src/messages/CallToActionEmailMessage');
 const FreeFormMessage = require('../../src/messages/FreeFormMessage');
 const TwilioOutboundStatusCallbackMessage = require('../../src/messages/TwilioOutboundStatusCallbackMessage');
 const CustomerIoWebhookMessage = require('../../src/messages/CustomerIoWebhookMessage');

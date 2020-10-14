@@ -4,7 +4,6 @@ const CampaignSignupMessage = require('../../messages/CampaignSignupMessage');
 const CampaignSignupPostMessage = require('../../messages/CampaignSignupPostMessage');
 const CampaignSignupPostReviewMessage = require('../../messages/CampaignSignupPostReviewMessage');
 const FreeFormMessage = require('../../messages/FreeFormMessage');
-const CallToActionEmailMessage = require('../../messages/CallToActionEmailMessage');
 const UserMessage = require('../../messages/UserMessage');
 const WebController = require('./WebController');
 const basicAuthStrategy = require('../middleware/auth/strategies/basicAuth');
@@ -25,12 +24,6 @@ class EventsWebController extends WebController {
       '/api/v1/events/user-create',
       basicAuthStrategy(this.blink.config.app.auth),
       this.userCreate.bind(this),
-    );
-    this.router.post(
-      'v1.events.user-call-to-action-email',
-      '/api/v1/events/user-call-to-action-email',
-      basicAuthStrategy(this.blink.config.app.auth),
-      this.userCallToActionEmail.bind(this),
     );
     this.router.post(
       'v1.events.user-signup',
@@ -61,7 +54,6 @@ class EventsWebController extends WebController {
   async index(ctx) {
     ctx.body = {
       'user-create': this.fullUrl('v1.events.user-create'),
-      'user-call-to-action-email': this.fullUrl('v1.events.user-call-to-action-email'),
       'user-signup': this.fullUrl('v1.events.user-signup'),
       'user-signup-post': this.fullUrl('v1.events.user-signup-post'),
       'user-signup-post-review': this.fullUrl('v1.events.user-signup-post-review'),
@@ -78,20 +70,6 @@ class EventsWebController extends WebController {
         userMessage,
       );
       this.sendOK(ctx, userMessage);
-    } catch (error) {
-      this.sendError(ctx, error);
-    }
-  }
-
-  async userCallToActionEmail(ctx) {
-    try {
-      const message = CallToActionEmailMessage.fromCtx(ctx);
-      message.validate();
-      this.blink.broker.publishToRoute(
-        'call-to-action-email.user.event',
-        message,
-      );
-      this.sendOK(ctx, message);
     } catch (error) {
       this.sendError(ctx, error);
     }
