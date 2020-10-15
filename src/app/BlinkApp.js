@@ -12,14 +12,8 @@ const RabbitMQBroker = require('../lib/brokers/RabbitMQ/RabbitMQBroker');
 const RedisConnectionManager = require('../lib/RedisConnectionManager');
 
 // Queues.
-const CustomerIoCampaignSignupPostQ = require('../queues/CustomerIoCampaignSignupPostQ');
-const CustomerIoCampaignSignupPostReviewQ = require('../queues/CustomerIoCampaignSignupPostReviewQ');
-const CustomerIoCampaignSignupQ = require('../queues/CustomerIoCampaignSignupQ');
 const CustomerIoGambitBroadcastQ = require('../queues/CustomerIoGambitBroadcastQ');
-const CustomerIoCallToActionEmailQ = require('../queues/CustomerIoCallToActionEmailQ');
-const CustomerIoUpdateCustomerQ = require('../queues/CustomerIoUpdateCustomerQ');
 const CustomerIoSmsStatusActiveQ = require('../queues/CustomerIoSmsStatusActiveQ');
-const GambitCampaignSignupRelayQ = require('../queues/GambitCampaignSignupRelayQ');
 const QuasarCustomerIoEmailActivityQ = require('../queues/QuasarCustomerIoEmailActivityQ');
 const QuasarCustomerIoEmailUnsubscribedQ = require('../queues/QuasarCustomerIoEmailUnsubscribedQ');
 const TwilioSmsInboundGambitRelayQ = require('../queues/TwilioSmsInboundGambitRelayQ');
@@ -163,14 +157,8 @@ class BlinkApp {
   static discoverQueueClasses() {
     // TODO: register them from workers, bottom-up approach.
     return [
-      CustomerIoCampaignSignupPostQ,
-      CustomerIoCampaignSignupPostReviewQ,
-      CustomerIoCampaignSignupQ,
       CustomerIoGambitBroadcastQ,
-      CustomerIoCallToActionEmailQ,
-      CustomerIoUpdateCustomerQ,
       CustomerIoSmsStatusActiveQ,
-      GambitCampaignSignupRelayQ,
       QuasarCustomerIoEmailActivityQ,
       QuasarCustomerIoEmailUnsubscribedQ,
       TwilioSmsInboundGambitRelayQ,

@@ -20,16 +20,16 @@ test.afterEach(() => {
 });
 
 test('removePIITransformer should remove PII keys', () => {
-  const message = MessageFactoryHelper.getUserMessage();
+  const message = MessageFactoryHelper.getTwilioInboundMessage();
   const payload = Object.assign({}, message.payload);
   const transformedPayload = removePIITransformer(payload);
-  transformedPayload.data.should.not.have.any.keys(removePIIConfig.northstarPIIKeys);
+  transformedPayload.data.should.not.have.any.keys(removePIIConfig.twilioPIIKeys);
 });
 
 test('removePIITransformer should not remove keys if not enabled', () => {
   const mockConfig = Object.assign({}, removePIIConfig, { enabled: false });
   const revert = removePIITransformer.__set__('removePIIConfig', mockConfig);
-  const message = MessageFactoryHelper.getUserMessage();
+  const message = MessageFactoryHelper.getTwilioInboundMessage();
   const payload = Object.assign({}, message.payload);
   const transformedPayload = removePIITransformer(payload);
   revert();
