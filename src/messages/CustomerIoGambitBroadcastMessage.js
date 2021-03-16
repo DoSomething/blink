@@ -22,14 +22,6 @@ class CustomerIoGambitBroadcastMessage extends Message {
       });
   }
 
-  getBroadcastId() {
-    return this.getData().broadcastId;
-  }
-
-  getNorthstarId() {
-    return this.getData().northstarId;
-  }
-
   getMobileNumber() {
     return this.getData().mobile;
   }
