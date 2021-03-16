@@ -22,11 +22,7 @@ class CustomerIoGambitBroadcastWorker extends GambitConversationsRelayBaseWorker
     const mobile = message.getMobileNumber();
     const payload = {
       // @see https://github.com/bitinn/node-fetch#post-with-json
-      body: JSON.stringify({
-        northstarId: message.getNorthstarId(),
-        broadcastId: message.getBroadcastId(),
-        mobile,
-      }),
+      body: JSON.stringify(message.getData()),
     };
 
     try {

@@ -211,7 +211,9 @@ test('POST /api/v1/webhooks/twilio-sms-inbound should be queued when a valid x-t
 /**
  * POST /api/v1/webhooks/customerio-gambit-broadcast
  */
-test('POST /api/v1/webhooks/customerio-gambit-broadcast responds w/ 422 if northstarId is missing', async (t) => {
+/*
+ Commenting this test out for now until we switch over to broadcastLite
+test('customerio-gambit-broadcast responds w/ 422 if northstarId is missing', async (t) => {
   const data = MessageFactoryHelper.getGambitBroadcastMessage().getData();
   delete data.northstarId;
 
@@ -225,6 +227,7 @@ test('POST /api/v1/webhooks/customerio-gambit-broadcast responds w/ 422 if north
   res.body.should.have.property('message')
     .and.have.string('"northstarId" is required');
 });
+*/
 
 test('POST /api/v1/webhooks/customerio-gambit-broadcast responds w/ 422 if broadcastId is missing', async (t) => {
   const data = MessageFactoryHelper.getGambitBroadcastMessage().getData();
@@ -241,6 +244,7 @@ test('POST /api/v1/webhooks/customerio-gambit-broadcast responds w/ 422 if broad
     .and.have.string('"broadcastId" is required');
 });
 
+// TODO: This will be required eventually.
 test('POST /api/v1/webhooks/customerio-gambit-broadcast responds w/ 201 if mobile is missing (is optional)', async (t) => {
   const data = MessageFactoryHelper.getGambitBroadcastMessage().getData();
   delete data.mobile;
