@@ -1,10 +1,7 @@
 'use strict';
 
-const dateFns = require('date-fns');
-
 const NorthstarRelayBaseWorker = require('./NorthstarRelayBaseWorker');
 const northstarHelper = require('./lib/helpers/northstar');
-const BlinkSendToDLXError = require('../errors/BlinkSendToDLXError');
 
 const logCodes = {
   retry: 'error_customerio_email_unsubscribed_northstar_response_not_200_retry',
@@ -25,16 +22,6 @@ class CustomerIoEmailUnsubscribedNorthstarWorker extends NorthstarRelayBaseWorke
 
   async consume(message) {
     const userId = message.getUserId();
-
-    // TODO: Remove patch when https://www.pivotaltracker.com/story/show/172585118 is accepted
-    const eventTimestamp = message.getEventTimestampInMilliseconds();
-    const startDate = new Date('2020-04-01');
-    const endDate = new Date('2020-05-05');
-
-    if (dateFns.isWithinRange(eventTimestamp, startDate, endDate)) {
-      // Send to DeadLetter Exchange "Blink-dlx"
-      throw new BlinkSendToDLXError('skip this message', message);
-    }
 
     const body = {
       [this.emailUnsubscribedProperty]: this.emailUnsubscribedValue,
