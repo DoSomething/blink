@@ -9,6 +9,7 @@ const RabbitManagement = require('../../../helpers/RabbitManagement');
 const HooksHelper = require('../../../helpers/HooksHelper');
 const MessageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
 const twilioHelper = require('../../../helpers/twilio');
+const CustomerIoEmailUnsubscribedNorthstarWorker = require('../../../../src/workers/CustomerIoEmailUnsubscribedNorthstarWorker');
 
 // ------- Init ----------------------------------------------------------------
 
@@ -113,6 +114,36 @@ test.serial('POST /api/v1/webhooks/customerio-email-activity should publish emai
     messageData.should.have.property('data');
     messageData.data.should.be.eql(data);
   });
+});
+
+// This test should be in it's own CustomerIoEmailUnsubscribedNorthstarWorker.test.js file.
+// But because it would interfere with the previous test.
+// It must run after the previous serial test above.
+test.serial('A customer unsubscribed event w/o customer_id should be suppressed', async (t) => {
+  const blink = t.context.blink;
+  const { quasarCustomerIoEmailUnsubscribedQ } = blink.queues;
+
+  // Create a message without a customer_id:
+  const message = MessageFactoryHelper.getCustomerIoWebhookMessage('email_unsubscribed');
+  message.payload.data.data.customer_id = null;
+
+  message.validate();
+
+  quasarCustomerIoEmailUnsubscribedQ.publish(message);
+
+  const worker = new CustomerIoEmailUnsubscribedNorthstarWorker(blink);
+
+  worker.setup();
+  worker.start();
+
+  // Await consuming to complete
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  const rabbit = new RabbitManagement(t.context.config.amqpManagement);
+  const result = await rabbit.getMessagesFrom('quasar-customer-io-email-unsubscribed', 1, false);
+
+  // The message should not exist
+  result.should.be.an('array').and.to.have.lengthOf(0);
 });
 
 /**
