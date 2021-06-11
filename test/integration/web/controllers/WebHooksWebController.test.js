@@ -3,17 +3,27 @@
 // ------- Imports -------------------------------------------------------------
 
 const chai = require('chai');
+const rewire = require('rewire');
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
 const test = require('ava');
 
 const RabbitManagement = require('../../../helpers/RabbitManagement');
 const HooksHelper = require('../../../helpers/HooksHelper');
 const MessageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
 const twilioHelper = require('../../../helpers/twilio');
-const CustomerIoEmailUnsubscribedNorthstarWorker = require('../../../../src/workers/CustomerIoEmailUnsubscribedNorthstarWorker');
+const CustomerIoEmailUnsubscribedNorthstarWorker = rewire('../../../../src/workers/CustomerIoEmailUnsubscribedNorthstarWorker');
+const northstarHelper = rewire('../../../../src/workers/lib/helpers/northstar');
+
+northstarHelper.__set__('identityService', {
+  getAuthHeader: () => ({ Authorization: 'Bearer 12345' }),
+});
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
+chai.use(sinonChai);
+
 test.beforeEach(HooksHelper.startBlinkWebApp);
 test.afterEach(HooksHelper.stopBlinkWebApp);
 
@@ -123,6 +133,11 @@ test.serial('A customer unsubscribed event w/o customer_id should be suppressed'
   const blink = t.context.blink;
   const { quasarCustomerIoEmailUnsubscribedQ } = blink.queues;
 
+  const updateUserById = sinon.stub();
+  CustomerIoEmailUnsubscribedNorthstarWorker.__set__({
+    northstarHelper: { updateUserById }
+  })
+
   // Create a message without a customer_id:
   const message = MessageFactoryHelper.getCustomerIoWebhookMessage('email_unsubscribed');
   message.payload.data.data.customer_id = null;
@@ -138,6 +153,9 @@ test.serial('A customer unsubscribed event w/o customer_id should be suppressed'
 
   // Await consuming to complete
   await new Promise(resolve => setTimeout(resolve, 500));
+
+  // Since there's no customer_id, we shouldn't have updated a user:
+  updateUserById.should.not.have.been.called;
 
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
   const result = await rabbit.getMessagesFrom('quasar-customer-io-email-unsubscribed', 1, false);
