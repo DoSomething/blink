@@ -12,6 +12,7 @@ const RabbitManagement = require('../../../helpers/RabbitManagement');
 const HooksHelper = require('../../../helpers/HooksHelper');
 const MessageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
 const twilioHelper = require('../../../helpers/twilio');
+
 const CustomerIoEmailUnsubscribedNorthstarWorker = rewire('../../../../src/workers/CustomerIoEmailUnsubscribedNorthstarWorker');
 const northstarHelper = rewire('../../../../src/workers/lib/helpers/northstar');
 
@@ -135,8 +136,8 @@ test.serial('A customer unsubscribed event w/o customer_id should be suppressed'
 
   const updateUserById = sinon.stub();
   CustomerIoEmailUnsubscribedNorthstarWorker.__set__({
-    northstarHelper: { updateUserById }
-  })
+    northstarHelper: { updateUserById },
+  });
 
   // Create a message without a customer_id:
   const message = MessageFactoryHelper.getCustomerIoWebhookMessage('email_unsubscribed');
