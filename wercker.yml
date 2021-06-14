@@ -13,7 +13,7 @@ build:
       code: apt-get update && apt-get install --assume-yes netcat
     - script:
       name: install yarn
-      code: npm install -g yarn@1.13.0
+      code: npm install -g yarn@1.22.4
     - script:
       name: report yarn version
       code: yarn --version
