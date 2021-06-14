@@ -1,10 +1,7 @@
 'use strict';
 
-const dateFns = require('date-fns');
-
 const NorthstarRelayBaseWorker = require('./NorthstarRelayBaseWorker');
 const northstarHelper = require('./lib/helpers/northstar');
-const BlinkSendToDLXError = require('../errors/BlinkSendToDLXError');
 
 const logCodes = {
   retry: 'error_customerio_email_unsubscribed_northstar_response_not_200_retry',
@@ -26,20 +23,17 @@ class CustomerIoEmailUnsubscribedNorthstarWorker extends NorthstarRelayBaseWorke
   async consume(message) {
     const userId = message.getUserId();
 
-    // TODO: Remove patch when https://www.pivotaltracker.com/story/show/172585118 is accepted
-    const eventTimestamp = message.getEventTimestampInMilliseconds();
-    const startDate = new Date('2020-04-01');
-    const endDate = new Date('2020-05-05');
-
-    if (dateFns.isWithinRange(eventTimestamp, startDate, endDate)) {
-      // Send to DeadLetter Exchange "Blink-dlx"
-      throw new BlinkSendToDLXError('skip this message', message);
-    }
-
     const body = {
       [this.emailUnsubscribedProperty]: this.emailUnsubscribedValue,
     };
     const headers = await northstarHelper.getRequestHeaders(message);
+
+    // If we're missing a `customer_id` on the incoming message, that means
+    // that this user has been deleted from Customer.io & thus we don't need
+    // to forward this event on to Northstar (and, without an ID, couldn't!)
+    if (!userId) {
+      return this.logSuppressedRetry(message, 200, 'skipping due to missing customer_id');
+    }
 
     try {
       const response = await northstarHelper.updateUserById(userId, {

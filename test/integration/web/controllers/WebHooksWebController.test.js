@@ -3,17 +3,28 @@
 // ------- Imports -------------------------------------------------------------
 
 const chai = require('chai');
+const rewire = require('rewire');
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
 const test = require('ava');
 
 const RabbitManagement = require('../../../helpers/RabbitManagement');
 const HooksHelper = require('../../../helpers/HooksHelper');
 const MessageFactoryHelper = require('../../../helpers/MessageFactoryHelper');
 const twilioHelper = require('../../../helpers/twilio');
-const CustomerIoEmailUnsubscribedNorthstarWorker = require('../../../../src/workers/CustomerIoEmailUnsubscribedNorthstarWorker');
+
+const CustomerIoEmailUnsubscribedNorthstarWorker = rewire('../../../../src/workers/CustomerIoEmailUnsubscribedNorthstarWorker');
+const northstarHelper = rewire('../../../../src/workers/lib/helpers/northstar');
+
+northstarHelper.__set__('identityService', {
+  getAuthHeader: () => ({ Authorization: 'Bearer 12345' }),
+});
 
 // ------- Init ----------------------------------------------------------------
 
 chai.should();
+chai.use(sinonChai);
+
 test.beforeEach(HooksHelper.startBlinkWebApp);
 test.afterEach(HooksHelper.stopBlinkWebApp);
 
@@ -119,15 +130,21 @@ test.serial('POST /api/v1/webhooks/customerio-email-activity should publish emai
 // This test should be in it's own CustomerIoEmailUnsubscribedNorthstarWorker.test.js file.
 // But because it would interfere with the previous test.
 // It must run after the previous serial test above.
-test.serial('A customer unsubscribed event w/ timestamp in between range of the backfill should be put on the dead letter exchange', async (t) => {
+test.serial('A customer unsubscribed event w/o customer_id should be suppressed', async (t) => {
   const blink = t.context.blink;
   const { quasarCustomerIoEmailUnsubscribedQ } = blink.queues;
 
-  const eventName = 'email_unsubscribed';
-  const timestamp = Math.floor(new Date('2020-04-15').getTime() / 1000);
-  const message = MessageFactoryHelper.getCustomerIoWebhookMessage(eventName, timestamp);
-  const data = message.getData();
+  const updateUserById = sinon.stub();
+  CustomerIoEmailUnsubscribedNorthstarWorker.__set__({
+    northstarHelper: { updateUserById },
+  });
+
+  // Create a message without a customer_id:
+  const message = MessageFactoryHelper.getCustomerIoWebhookMessage('email_unsubscribed');
+  message.payload.data.data.customer_id = null;
+
   message.validate();
+
   quasarCustomerIoEmailUnsubscribedQ.publish(message);
 
   const worker = new CustomerIoEmailUnsubscribedNorthstarWorker(blink);
@@ -138,22 +155,15 @@ test.serial('A customer unsubscribed event w/ timestamp in between range of the 
   // Await consuming to complete
   await new Promise(resolve => setTimeout(resolve, 500));
 
+  // Since there's no customer_id, we shouldn't have updated a user:
+  updateUserById.should.not.have.been.called;
+
   const rabbit = new RabbitManagement(t.context.config.amqpManagement);
   const result = await rabbit.getMessagesFrom('quasar-customer-io-email-unsubscribed', 1, false);
+
   // The message should not exist
   result.should.be.an('array').and.to.have.lengthOf(0);
-
-  const deadLetterQueueResult = await rabbit.getMessagesFrom('blink-dlx', 1, false);
-  // The message should exist in the deadLetter exchange queue
-  // NOTE: Manually created in RabbitMQ
-  deadLetterQueueResult.should.be.an('array').and.to.have.lengthOf(1);
-  deadLetterQueueResult[0].should.have.property('payload');
-  const payload = deadLetterQueueResult[0].payload;
-  const messageData = JSON.parse(payload);
-  messageData.should.have.property('data');
-  messageData.data.should.be.eql(data);
 });
-
 
 /**
  * POST /api/v1/webhooks/twilio-sms-inbound
