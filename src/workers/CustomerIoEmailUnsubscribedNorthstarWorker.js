@@ -29,8 +29,8 @@ class CustomerIoEmailUnsubscribedNorthstarWorker extends NorthstarRelayBaseWorke
     const headers = await northstarHelper.getRequestHeaders(message);
 
     // If we're missing a `customer_id` on the incoming message, that means
-    // means that this user has been deleted from Customer.io & thus we don't
-    // need to forward this event on to Northstar (and, without an ID, couldn't!)
+    // that this user has been deleted from Customer.io & thus we don't need
+    // to forward this event on to Northstar (and, without an ID, couldn't!)
     if (!userId) {
       return this.logSuppressedRetry(message, 200, 'skipping due to missing customer_id');
     }
